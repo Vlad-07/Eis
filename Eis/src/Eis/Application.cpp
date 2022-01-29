@@ -1,17 +1,21 @@
 #include "Application.h"
 
-Eis::Application::Application()
+namespace Eis
 {
-}
 
-Eis::Application::~Application()
-{
-}
-
-void Eis::Application::Run()
-{
-	while (true)
+	Application::Application()
 	{
-		;
+	}
+
+	Application::~Application()
+	{
+	}
+
+	void Application::Run()
+	{
+		while (true)
+		{
+			;
+		}
 	}
 }
