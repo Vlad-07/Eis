@@ -19,6 +19,18 @@
     <ClInclude Include="src\Eis\Log.h">
       <Filter>Eis</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eis\Events\ApplicationEvent.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\Event.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\KeyEvent.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\MouseEvent.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eis\Application.cpp">

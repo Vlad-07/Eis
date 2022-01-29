@@ -10,3 +10,5 @@
 #else
 	#error Eis supports only windows
 #endif
+
+#define BIT(x) (1 << x)

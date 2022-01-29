@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>EIS_BUILD_DLL;EIS_PLATFORM_WINDOWS;EIS_DEBUG;EIS_DISTRIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\Eis\Eis\src;vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -148,6 +148,10 @@
     <ClInclude Include="src\Eis\Core.h" />
     <ClInclude Include="src\Eis\EntryPoint.h" />
     <ClInclude Include="src\Eis\Log.h" />
+    <ClInclude Include="src\Eis\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Eis\Events\Event.h" />
+    <ClInclude Include="src\Eis\Events\KeyEvent.h" />
+    <ClInclude Include="src\Eis\Events\MouseEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eis\Application.cpp" />
