@@ -9,3 +9,5 @@ bin-int/
 *.vcxproj
 *.filters
 *.sln
+Eis/vendor/GLFW/
+Eis/vendor/spdlog/
