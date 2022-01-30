@@ -1,0 +1,19 @@
+#pragma once
+
+#ifdef EIS_PLATFORM_WINDOWS
+	#include <Windows.h>
+#endif
+
+
+#include <iostream>
+#include <fstream>
+#include <utility>
+#include <functional>
+#include <random>
+#include <chrono>
+
+#include <string>
+#include <sstream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>

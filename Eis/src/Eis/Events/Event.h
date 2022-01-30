@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Eis/Core.h"
+#include "Eispch.h"
 
-#include <string>
-#include <functional>
+#include "Eis/Core.h"
 
 namespace Eis
 {

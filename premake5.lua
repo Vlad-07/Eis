@@ -19,6 +19,9 @@ project "Eis"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "Eispch.h"
+	pchsource "Eis/src/Eispch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",

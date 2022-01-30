@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Eis
 {
 	class EIS_API MouseMovedEvent : public Event

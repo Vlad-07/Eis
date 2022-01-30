@@ -4,6 +4,9 @@
     <Filter Include="Eis">
       <UniqueIdentifier>{66E6870B-D2EF-877C-5B6B-9E7CC773937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Eis\Events">
+      <UniqueIdentifier>{8AA39900-765B-DB4D-DF62-B4A9CB39763E}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Eis.h" />
@@ -16,21 +19,22 @@
     <ClInclude Include="src\Eis\EntryPoint.h">
       <Filter>Eis</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eis\Events\ApplicationEvent.h">
+      <Filter>Eis\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\Event.h">
+      <Filter>Eis\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\KeyEvent.h">
+      <Filter>Eis\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\Events\MouseEvent.h">
+      <Filter>Eis\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eis\Log.h">
       <Filter>Eis</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eis\Events\ApplicationEvent.h">
-      <Filter>Eis</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eis\Events\Event.h">
-      <Filter>Eis</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eis\Events\KeyEvent.h">
-      <Filter>Eis</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eis\Events\MouseEvent.h">
-      <Filter>Eis</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Eispch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eis\Application.cpp">
@@ -39,5 +43,6 @@
     <ClCompile Include="src\Eis\Log.cpp">
       <Filter>Eis</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eispch.cpp" />
   </ItemGroup>
 </Project>
