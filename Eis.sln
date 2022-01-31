@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Eis", "Eis\Eis.vcxproj", "{66E6870B-D2EF-877C-5B6B-9E7CC773937C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFW", "Eis\vendor\GLFW\GLFW.vcxproj", "{154B857C-0182-860D-AA6E-6C109684020F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -24,6 +26,12 @@ Global
 		{66E6870B-D2EF-877C-5B6B-9E7CC773937C}.Distrib|x64.Build.0 = Distrib|x64
 		{66E6870B-D2EF-877C-5B6B-9E7CC773937C}.Release|x64.ActiveCfg = Release|x64
 		{66E6870B-D2EF-877C-5B6B-9E7CC773937C}.Release|x64.Build.0 = Release|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.ActiveCfg = Debug|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Debug|x64.Build.0 = Debug|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Distrib|x64.ActiveCfg = Distrib|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Distrib|x64.Build.0 = Distrib|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Release|x64.ActiveCfg = Release|x64
+		{154B857C-0182-860D-AA6E-6C109684020F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

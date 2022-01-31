@@ -1,14 +1,12 @@
 #include "Eispch.h"
 #include "Application.h"
 
-#include "Log.h"
-#include "Events/ApplicationEvent.h"
-
 namespace Eis
 {
 
 	Application::Application()
 	{
+		m_Window = std::unique_ptr<Window>(Window::Create());
 	}
 
 	Application::~Application()
@@ -17,9 +15,9 @@ namespace Eis
 
 	void Application::Run()
 	{
-		WindowResizeEvent e(1200, 600);
-		EIS_TRACE(e);
 
-		while (true);
+		m_Window->OnUpdate();
+
+		m_Window->~Window();
 	}
 }
