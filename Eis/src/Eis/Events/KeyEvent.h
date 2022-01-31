@@ -34,24 +34,23 @@ namespace Eis
 			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
 			return ss.str();
 		}
+
+		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
 	class EIS_API KeyReleasedEvent : public KeyEvent
 	{
-	private:
-		int m_RepeatCount;
-
 	public:
-		KeyReleasedEvent(int keycode, int repeatCount)
-			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+		KeyReleasedEvent(int keycode)
+			: KeyEvent(keycode) {}
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << m_KeyCode;
+			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		EVENT_CLASS_TYPE(KeyReleased)
 	};
 }

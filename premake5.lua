@@ -64,7 +64,11 @@ project "Eis"
 		}
 
 	filter "configurations:Debug"
-		defines "EIS_DEBUG"
+		defines
+		{
+			"EIS_DEBUG",
+			"EIS_ENABLE_ASSERTS"
+		}
 		symbols "On"
 
 	filter "configurations:Release"
