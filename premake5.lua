@@ -70,14 +70,17 @@ project "Eis"
 			"EIS_ENABLE_ASSERTS"
 		}
 		symbols "On"
+		buildoptions "/MDd"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"
 		optimize "On"
+		buildoptions "/MD"
 	
-	filter "configurations:Debug"
+	filter "configurations:Distrib"
 		defines "EIS_DISTRIB"
 		optimize "On"
+		buildoptions "/MD"
 
 project "Sandbox"
 	location "Sandbox"
