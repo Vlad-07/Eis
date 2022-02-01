@@ -105,6 +105,13 @@ namespace Eis
 				}
 		});
 
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				KeyTypedEvent event(keycode);
+				data.EventCallback(event);
+		});
+
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -131,7 +138,7 @@ namespace Eis
 					break;
 				}
 				default:
-					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:124-ish");
+					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:163-ish");
 				}
 		});
 
@@ -153,6 +160,9 @@ namespace Eis
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);
+
+		glClearColor(0.1f, 0.7f, 0.2f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)

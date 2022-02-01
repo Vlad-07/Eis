@@ -6,7 +6,7 @@ public:
 
 	Sandbox()
 	{
-
+		PushOverlay(new Eis::ImGuiLayer());
 	}
 
 	~Sandbox()
