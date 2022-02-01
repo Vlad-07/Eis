@@ -5,6 +5,8 @@
 #include "Eis/Events/KeyEvent.h"
 #include "Eis/Events/MouseEvent.h"
 
+#include <glad/glad.h>
+
 
 namespace Eis
 {
@@ -47,6 +49,10 @@ namespace Eis
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+
+		int  succes = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		EIS_CORE_ASSERT(succes, "Faield to initialize Glad!");
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 

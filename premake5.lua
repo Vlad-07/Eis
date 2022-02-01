@@ -13,8 +13,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
+IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 
 include "Eis/vendor/GLFW"
+include "Eis/vendor/Glad"
 
 project "Eis"
 	location "Eis"
@@ -38,12 +40,14 @@ project "Eis"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 	
@@ -55,7 +59,9 @@ project "Eis"
 		defines
 		{
 			"EIS_BUILD_DLL",
-			"EIS_PLATFORM_WINDOWS"
+			"EIS_PLATFORM_WINDOWS",
+			"EIS_ENABLE_ASSERTS",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands
@@ -64,23 +70,19 @@ project "Eis"
 		}
 
 	filter "configurations:Debug"
-		defines
-		{
-			"EIS_DEBUG",
-			"EIS_ENABLE_ASSERTS"
-		}
-		symbols "On"
+		defines "EIS_DEBUG"
 		buildoptions "/MDd"
+		symbols "On"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"
-		optimize "On"
 		buildoptions "/MD"
-	
-	filter "configurations:Distrib"
+		optimize "On"
+
+	filter "configurations:Debug"
 		defines "EIS_DISTRIB"
-		optimize "On"
 		buildoptions "/MD"
+		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
@@ -99,8 +101,8 @@ project "Sandbox"
 
 	includedirs
 	{
-		"Eis/vendor/spdlog/include",
-		"Eis/src"
+		"Eis/src",
+		"Eis/vendor/spdlog/include"
 	}
 
 	links
@@ -120,12 +122,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
-	
+
 	filter "configurations:Debug"
 		defines "EIS_DISTRIB"
+		buildoptions "/MD"
 		optimize "On"

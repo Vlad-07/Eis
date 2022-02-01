@@ -37,6 +37,12 @@
     <ClInclude Include="src\Eis\Events\MouseEvent.h">
       <Filter>Eis\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eis\Layer.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eis\LayerStack.h">
+      <Filter>Eis</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eis\Log.h">
       <Filter>Eis</Filter>
     </ClInclude>
@@ -50,6 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eis\Application.cpp">
+      <Filter>Eis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eis\Layer.cpp">
+      <Filter>Eis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eis\LayerStack.cpp">
       <Filter>Eis</Filter>
     </ClCompile>
     <ClCompile Include="src\Eis\Log.cpp">

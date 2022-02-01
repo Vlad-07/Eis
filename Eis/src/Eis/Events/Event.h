@@ -35,8 +35,12 @@ namespace Eis
 	
 	class EIS_API Event
 	{
+	private:
 		friend class EventDispatcher;
+
 	public:
+		bool m_Handled = false;
+
 		virtual EventType GetEventType() const = 0;
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
@@ -44,11 +48,8 @@ namespace Eis
 
 		inline bool IsInCategory(EventCategory category)
 		{
-			return GetCategoryFlags() & category;
+			return GetCategoryFlags() & category; // category flags == category
 		}
-
-	protected:
-		bool m_Handled = false;
 	};
 
 	class EventDispatcher

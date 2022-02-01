@@ -12,7 +12,6 @@ int main(int argc, char** args)
 	EIS_CORE_TRACE("Init");
 
 	auto app = Eis::CreateApplication();
-
 	app->Run();
 
 	delete app;
