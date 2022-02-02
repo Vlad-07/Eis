@@ -16,8 +16,8 @@ namespace Eis
 
 		void Run();
 
-		void OnEvent(Event& event);
-
+		void OnEvent(Event& event);		
+		
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 

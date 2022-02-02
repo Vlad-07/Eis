@@ -16,14 +16,18 @@ IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
 IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 IncludeDir["ImGui"] = "Eis/vendor/imgui"
 
-include "Eis/vendor/GLFW"
-include "Eis/vendor/Glad"
-include "Eis/vendor/imgui"
+group "Dependencies"
+	include "Eis/vendor/GLFW"
+	include "Eis/vendor/Glad"
+	include "Eis/vendor/imgui"
+
+group ""
 
 project "Eis"
 	location "Eis"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -57,41 +61,40 @@ project "Eis"
 	
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
 		{
 			"EIS_BUILD_DLL",
 			"EIS_PLATFORM_WINDOWS",
-			"EIS_ENABLE_ASSERTS",
 			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
-	filter "configurations:Debug"
+	filter "configurations:Distrib" 
 		defines "EIS_DISTRIB"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
-	location "Sandbox"
+	location "Sandbox" 
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -116,7 +119,6 @@ project "Sandbox"
 	
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -126,15 +128,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
-	filter "configurations:Debug"
+	filter "configurations:Distrib"
 		defines "EIS_DISTRIB"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"

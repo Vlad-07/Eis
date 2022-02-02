@@ -11,6 +11,10 @@
 	#error Eis supports only windows
 #endif
 
+#ifdef EIS_DEBUG
+	#define EIS_ENABLE_ASSERTS
+#endif
+
 #ifdef EIS_ENABLE_ASSERTS
 	#define EIS_ASSERT(x, ...) {if(!(x)) { EIS_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define EIS_CORE_ASSERT(x, ...) {if(!(x)) { EIS_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
