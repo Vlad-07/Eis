@@ -1,6 +1,8 @@
 #include "Eispch.h"
 #include "Application.h"
 
+#include "Input.h"
+
 namespace Eis
 {
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
@@ -43,6 +45,8 @@ namespace Eis
 		{
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
+
+
 			
 			m_Window->OnUpdate();
 		}
