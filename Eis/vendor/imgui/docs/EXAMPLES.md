@@ -141,6 +141,10 @@ GLUT (e.g., FreeGLUT on Linux/Windows, GLUT framework on OSX) + OpenGL2 example.
 = main.cpp + imgui_impl_glut.cpp + imgui_impl_opengl2.cpp <BR>
 Note that GLUT/FreeGLUT is largely obsolete software, prefer using GLFW or SDL.
 
+[example_marmalade/](https://github.com/ocornut/imgui/blob/master/examples/example_marmalade/) <BR>
+Marmalade example using IwGx. <BR>
+= main.cpp + imgui_impl_marmalade.cpp
+
 [example_null/](https://github.com/ocornut/imgui/blob/master/examples/example_null/) <BR>
 Null example, compile and link imgui, create context, run headless with no inputs and no graphics output. <BR>
 = main.cpp <BR>
@@ -170,12 +174,6 @@ SDL2 (Win32, Mac, Linux, etc.) + OpenGL3+/ES2/ES3 example. <BR>
 = main.cpp + imgui_impl_sdl.cpp + imgui_impl_opengl3.cpp <BR>
 This uses more modern OpenGL calls and custom shaders. <BR>
 This may actually also work with OpenGL 2.x contexts! <BR>
-
-[example_sdl_sdlrenderer/](https://github.com/ocornut/imgui/blob/master/examples/example_sdl_sdlrenderer/) <BR>
-SDL2 (Win32, Mac, Linux, etc.) + SDL_Renderer (most graphics backends are supported underneath) <BR>
-= main.cpp + imgui_impl_sdl.cpp + imgui_impl_sdlrenderer.cpp <BR>
-This requires SDL 2.0.17+ (expected to release November 2021) <BR>
-We do not really recommend using SDL_Renderer as it is a rather primitive API.
 
 [example_sdl_vulkan/](https://github.com/ocornut/imgui/blob/master/examples/example_sdl_vulkan/) <BR>
 SDL2 (Win32, Mac, Linux, etc.) + Vulkan example. <BR>
@@ -222,7 +220,7 @@ If you are interested in using Cmake to build and links examples, see:
 **About mouse cursor latency**
 
 Dear ImGui has no particular extra lag for most behaviors,
-e.g. the last value passed to 'io.AddMousePosEvent()' before NewFrame() will result in windows being moved
+e.g. the value of 'io.MousePos' provided at the time of NewFrame() will result in windows being moved
 to the right spot at the time of EndFrame()/Render(). At 60 FPS your experience should be pleasant.
 
 However, consider that OS mouse cursors are typically drawn through a very specific hardware accelerated

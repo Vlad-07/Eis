@@ -107,7 +107,19 @@
                                                                userInfo:nil];
     [self.view addTrackingArea:trackingArea];
 
-    ImGui_ImplOSX_Init(self.view);
+    // If we want to receive key events, we either need to be in the responder chain of the key view,
+    // or else we can install a local monitor. The consequence of this heavy-handed approach is that
+    // we receive events for all controls, not just Dear ImGui widgets. If we had native controls in our
+    // window, we'd want to be much more careful than just ingesting the complete event stream.
+    // To match the behavior of other backends, we pass every event down to the OS.
+    NSEventMask eventMask = NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged;
+    [NSEvent addLocalMonitorForEventsMatchingMask:eventMask handler:^NSEvent * _Nullable(NSEvent *event)
+    {
+        ImGui_ImplOSX_HandleEvent(event, self.view);
+        return event;
+    }];
+
+    ImGui_ImplOSX_Init();
 
 #endif
 }
@@ -211,7 +223,8 @@
 
 #if TARGET_OS_OSX
 
-// Forward Mouse events to Dear ImGui OSX backend.
+// Forward Mouse/Keyboard events to Dear ImGui OSX backend.
+// Other events are registered via addLocalMonitorForEventsMatchingMask()
 -(void)mouseDown:(NSEvent *)event           { ImGui_ImplOSX_HandleEvent(event, self.view); }
 -(void)rightMouseDown:(NSEvent *)event      { ImGui_ImplOSX_HandleEvent(event, self.view); }
 -(void)otherMouseDown:(NSEvent *)event      { ImGui_ImplOSX_HandleEvent(event, self.view); }
@@ -238,7 +251,7 @@
     UITouch *anyTouch = event.allTouches.anyObject;
     CGPoint touchLocation = [anyTouch locationInView:self.view];
     ImGuiIO &io = ImGui::GetIO();
-    io.AddMousePosEvent(touchLocation.x, touchLocation.y);
+    io.MousePos = ImVec2(touchLocation.x, touchLocation.y);
 
     BOOL hasActiveTouch = NO;
     for (UITouch *touch in event.allTouches)
@@ -249,7 +262,7 @@
             break;
         }
     }
-    io.AddMouseButtonEvent(0, hasActiveTouch);
+    io.MouseDown[0] = hasActiveTouch;
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event      { [self updateIOWithTouchEvent:event]; }

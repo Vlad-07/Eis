@@ -1,12 +1,15 @@
 #pragma once
 
 #ifdef EIS_PLATFORM_WINDOWS
+#ifdef EIS_DYNAMIC_LINK // Used in previous builds to a .dll file
 	#ifdef EIS_BUILD_DLL
 		#define EIS_API __declspec(dllexport)
 	#else
 		#define EIS_API __declspec(dllimport)
-	
 	#endif
+#else
+	#define EIS_API
+#endif
 #else
 	#error Eis supports only windows
 #endif
@@ -23,6 +26,6 @@
 	#define EIS_CORE_ASSERT(x, ...)
 #endif
 
-#define BIT(x) (1 << x)
+#define BIT(x) (1 << x) // Used for event categories
 
 #define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

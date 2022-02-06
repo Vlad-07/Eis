@@ -6,6 +6,8 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
+#include "ImGui/ImGuiLayer.h"
+
 namespace Eis
 {
 	class EIS_API Application
@@ -25,6 +27,7 @@ namespace Eis
 		inline Window& GetWindow() { return *m_Window; }
 	private:
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		static Application* s_Instance;
 		LayerStack m_LayerStack;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Eis/Layer.h"
+
 #include "Eis/Events/KeyEvent.h"
 #include "Eis/Events/MouseEvent.h"
 #include "Eis/Events/ApplicationEvent.h"
@@ -16,19 +17,11 @@ namespace Eis
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void OnAttach();
-		void OnDetach();
-		void OnUpdate() override;
-		void OnEvent(Event& event) override;
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnImGuiRender() override;
 
-	private:
-		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
-		bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& event);
-		bool OnMouseMovedEvent(MouseMovedEvent& event);
-		bool OnMouseMouseScrolledEvent(MouseScrolledEvent& event);
-		bool OnKeyPressedEvent (KeyPressedEvent& event);
-		bool OnKeyReleasedEvent (KeyReleasedEvent& event);
-		bool OnKeyTypedEvent(KeyTypedEvent& event);
-		bool OnWindowResizedEvent(WindowResizeEvent& event);
+		void Begin();
+		void End();
 	};
 }

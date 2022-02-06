@@ -8,11 +8,11 @@
 
 namespace Eis
 {
-	class EIS_API LayerStack
+	class EIS_API LayerStack // A stack that events are propagated trough, and updated/rendered in order
 	{
 	private:
 		std::vector<Layer*> m_Layers;
-		std::vector<Layer*>::iterator m_LayerInsert;
+		unsigned int m_LayerInsertIndex;
 
 	public:
 		LayerStack();

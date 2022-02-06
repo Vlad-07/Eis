@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Eis/Window.h"
+#include "Eis/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -10,6 +11,7 @@ namespace Eis
 	{
 	private:
 		GLFWwindow* m_Window = nullptr;
+		GraphicsContext* m_Context;
 
 		struct WindowData
 		{
