@@ -101,7 +101,7 @@ namespace Eis
 						break;
 					}
 					default:
-						EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:94-ish");
+						EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:104-ish");
 				}
 		});
 
@@ -138,7 +138,7 @@ namespace Eis
 					break;
 				}
 				default:
-					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:163-ish");
+					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:141-ish");
 				}
 		});
 
