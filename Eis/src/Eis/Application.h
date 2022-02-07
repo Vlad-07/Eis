@@ -8,6 +8,9 @@
 
 #include "ImGui/ImGuiLayer.h"
 
+#include "Eis/Renderer/Shader.h"
+#include "Eis/Renderer/Buffer.h"
+
 namespace Eis
 {
 	class EIS_API Application
@@ -33,7 +36,15 @@ namespace Eis
 
 		bool m_Running = true;
 
+	private:
 		bool OnWindowClose(WindowCloseEvent event);
+
+	private:
+
+		unsigned int m_VA;
+		std::unique_ptr<Shader> m_Shader;
+		std::unique_ptr<VertexBuffer> m_VB;
+		std::unique_ptr<IndexBuffer> m_IB;
 	};
 
 	// Is defined in CLIENT:

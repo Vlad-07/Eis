@@ -32,7 +32,7 @@ namespace Eis
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
-		
+		EIS_CORE_INFO("Initialized '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 		
 		if (!s_GLFWInitialized)
 		{
@@ -55,8 +55,6 @@ namespace Eis
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
-
-		EIS_TRACE("Initialized '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
