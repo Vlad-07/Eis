@@ -10,6 +10,7 @@
 
 #include "Eis/Renderer/Shader.h"
 #include "Eis/Renderer/Buffer.h"
+#include "Eis/Renderer/VertexArray.h"
 
 namespace Eis
 {
@@ -41,10 +42,9 @@ namespace Eis
 
 	private:
 
-		unsigned int m_VA;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VB;
-		std::unique_ptr<IndexBuffer> m_IB;
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<VertexArray> m_VA;
+		std::shared_ptr<VertexArray> m_SquareVA;
 	};
 
 	// Is defined in CLIENT:

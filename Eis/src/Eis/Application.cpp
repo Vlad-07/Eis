@@ -4,6 +4,7 @@
 #include "Input.h"
 
 #include <glad/glad.h>
+#include "imgui.h"
 
 namespace Eis
 {
@@ -23,36 +24,61 @@ namespace Eis
 		PushOverlay(m_ImGuiLayer);
 
 
-		glGenVertexArrays(1, &m_VA);
-		glBindVertexArray(m_VA);
+		m_VA.reset(VertexArray::Create());
 
-		float verts[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+		float verts[3 * 7] = {
+			-0.5f, -0.5f, 0.0f,   0.9f, 0.1f, 0.1f, 0.9f,
+			 0.5f, -0.5f, 0.0f,   0.1f, 0.9f, 0.1f, 0.9f,
+			 0.0f,  0.5f, 0.0f,   0.1f, 0.1f, 0.9f, 0.9f
 		};
+		std::shared_ptr<VertexBuffer> VB;
+		VB.reset(VertexBuffer::Create(verts, sizeof(verts)));
 
-		m_VB.reset(VertexBuffer::Create(verts, sizeof(verts)));
-
-		glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(float), verts, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+		BufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" }
+		};
+		VB->SetLayout(layout);
+		m_VA->AddVertexBuffer(VB);
 
 		uint32_t indices[3] = { 0, 1, 2 };
+		std::shared_ptr<IndexBuffer> IB;
+		IB.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VA->SetIndexBuffer(IB);
 
-		m_IB.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+
+		float verts2[4 * 7] = {
+			-0.75f, -0.75f, 0.0f,   0.1f, 0.1f, 0.8f, 1.0f,
+			 0.75f, -0.75f, 0.0f,   0.1f, 0.9f, 0.1f, 1.0f,
+			 0.75f,  0.75f, 0.0f,   0.1f, 0.1f, 0.9f, 1.0f,
+			-0.75f,  0.75f, 0.0f,   0.9f, 0.1f, 0.1f, 1.0f
+		};
+		m_SquareVA.reset(VertexArray::Create());
+		std::shared_ptr<VertexBuffer> squareVB;
+		squareVB.reset(VertexBuffer::Create(verts2, sizeof(verts2)));
+
+		squareVB->SetLayout(layout);
+		m_SquareVA->AddVertexBuffer(squareVB);
+
+		uint32_t indices2[3 * 2] = { 
+			0, 1, 2,
+			2, 3, 0
+		};
+		std::shared_ptr<IndexBuffer> m_IB2;
+		m_IB2.reset(IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t)));
+		m_SquareVA->SetIndexBuffer(m_IB2);
 
 		std::string vertexSrc = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec4 a_Color;
 
-			out vec3 v_Position;
+			out vec4 v_Color;
 			
 			void main()
 			{
-				v_Position = a_Position;
+				v_Color = a_Color;
 				gl_Position = vec4(a_Position, 1.0);
 			}
 		)";
@@ -62,16 +88,15 @@ namespace Eis
 
 			layout(location = 0) out vec4 color;
 
-			in vec3 v_Position;
+			in vec4 v_Color;
 			
 			void main()
 			{
-				color = vec4(v_Position * 0.5 + 0.5, 1.0);
+				color = v_Color;
 			}
 		)";
 
 		m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
-
 	}
 
 	Application::~Application()
@@ -83,7 +108,7 @@ namespace Eis
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
-		EIS_CORE_TRACE("{0}", event);
+//		EIS_CORE_TRACE("{0}", event);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
@@ -109,8 +134,11 @@ namespace Eis
 			m_ImGuiLayer->End();
 
 			m_Shader->Bind();
-			glBindVertexArray(m_VA);
-			glDrawElements(GL_TRIANGLES, m_IB->GetCount(), GL_UNSIGNED_INT, nullptr);
+			m_SquareVA->Bind();
+			glDrawElements(GL_TRIANGLES,  m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
+			m_VA->Bind();
+			glDrawElements(GL_TRIANGLES, m_VA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 			
 			m_Window->OnUpdate();
 		}

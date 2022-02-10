@@ -12,7 +12,7 @@ namespace Eis
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::None:
-			EIS_CORE_ASSERT(false, "'None' API not currently suported");
+			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
 			return nullptr;
 
 		case RendererAPI::OpenGL:
