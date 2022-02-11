@@ -1,10 +1,12 @@
 #include "Eispch.h"
 #include "Application.h"
 
+#include "imgui.h"
+
 #include "Input.h"
 
-#include <glad/glad.h>
-#include "imgui.h"
+
+#include "Eis/Renderer/Renderer.h"
 
 namespace Eis
 {
@@ -122,24 +124,25 @@ namespace Eis
 	{
 		while (m_Running)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommands::SetClearColor(glm::vec4(0.1f, 0.5f, 0.1f, 1.0f));
+			RenderCommands::Clear();
+
+
+			Renderer::BeginScene();
+			m_Shader->Bind();
+			Renderer::Submit(m_SquareVA);
+			Renderer::Submit(m_VA);
+			Renderer::EndScene();
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
+
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)
 				layer->OnImGuiRender();
 			m_ImGuiLayer->End();
 
-			m_Shader->Bind();
-			m_SquareVA->Bind();
-			glDrawElements(GL_TRIANGLES,  m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
-			m_VA->Bind();
-			glDrawElements(GL_TRIANGLES, m_VA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-			
 			m_Window->OnUpdate();
 		}
 	}

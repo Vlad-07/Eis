@@ -1,21 +1,19 @@
 #pragma once
 
+#include "RenderCommands.h"
 
 namespace Eis
 {
-	enum class RendererAPI
-	{
-		None = 0,
-		OpenGL
-	};
-
 	class Renderer
 	{
-	private:
-		static RendererAPI s_RendererAPI;
-
 	public:
-		static inline RendererAPI GetAPI() { return s_RendererAPI; }
+
+		static void BeginScene();
+		static void EndScene();
+
+		static void Submit(const std::shared_ptr<VertexArray>& va);
+
+		static inline RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 	};
 }
