@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "VertexArray.h"
+#include <Eis/Renderer/Objects/VertexArray.h>
 
 namespace Eis
 {

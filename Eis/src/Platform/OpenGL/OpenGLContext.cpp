@@ -25,7 +25,6 @@ namespace Eis
 
 	void OpenGLContext::SwapBuffers()
 	{
-
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

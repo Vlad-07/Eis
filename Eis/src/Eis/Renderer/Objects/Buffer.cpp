@@ -1,7 +1,7 @@
 #include "Eispch.h"
 #include "Buffer.h"
 
-#include "Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer.h"
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
 

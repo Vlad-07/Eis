@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Renderer/Buffer.h"
+#include "Eis/Renderer/Objects/Buffer.h"
 
 namespace Eis
 {

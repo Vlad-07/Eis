@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Eis/Renderer/Shader.h"
+#include "Eis/Renderer/Objects/Shader.h"
 
-#include "Eis/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer.h"
 
 namespace Eis
 {

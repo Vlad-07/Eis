@@ -5,8 +5,7 @@
 
 #include "Input.h"
 
-
-#include "Eis/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer.h"
 
 namespace Eis
 {
@@ -15,6 +14,7 @@ namespace Eis
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -76,12 +76,14 @@ namespace Eis
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_VP;
+
 			out vec4 v_Color;
 			
 			void main()
 			{
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_VP * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -124,14 +126,18 @@ namespace Eis
 	{
 		while (m_Running)
 		{
+			float step = m_Rotation + 0.002f;
+
 			RenderCommands::SetClearColor(glm::vec4(0.1f, 0.5f, 0.1f, 1.0f));
 			RenderCommands::Clear();
 
+			m_Camera.SetRotation(m_Rotation);
 
-			Renderer::BeginScene();
-			m_Shader->Bind();
-			Renderer::Submit(m_SquareVA);
-			Renderer::Submit(m_VA);
+			Renderer::BeginScene(m_Camera);
+
+			Renderer::Submit(m_Shader, m_SquareVA);
+			Renderer::Submit(m_Shader, m_VA);
+
 			Renderer::EndScene();
 
 			for (Layer* layer : m_LayerStack)
@@ -141,6 +147,8 @@ namespace Eis
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)
 				layer->OnImGuiRender();
+			ImGuiIO io = ImGui::GetIO();
+			m_Rotation += step * io.DeltaTime;
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();

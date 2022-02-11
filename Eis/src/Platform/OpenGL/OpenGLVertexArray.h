@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Renderer/VertexArray.h"
+#include "Eis/Renderer/Objects/VertexArray.h"
 
 namespace Eis
 {

@@ -8,9 +8,11 @@
 
 #include "ImGui/ImGuiLayer.h"
 
-#include "Eis/Renderer/Shader.h"
-#include "Eis/Renderer/Buffer.h"
-#include "Eis/Renderer/VertexArray.h"
+#include "Eis/Renderer/Objects/Shader.h"
+#include "Eis/Renderer/Objects/Buffer.h"
+#include "Eis/Renderer/Objects/VertexArray.h"
+
+#include "Eis/Renderer/Objects/OrthographicCamera.h"
 
 namespace Eis
 {
@@ -41,10 +43,12 @@ namespace Eis
 		bool OnWindowClose(WindowCloseEvent event);
 
 	private:
-
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VA;
 		std::shared_ptr<VertexArray> m_SquareVA;
+
+		OrthographicCamera m_Camera;
+		float m_Rotation = 0.0f;
 	};
 
 	// Is defined in CLIENT:

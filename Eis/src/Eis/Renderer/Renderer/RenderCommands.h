@@ -18,9 +18,7 @@ namespace Eis
 		{ s_RenderAPI->Clear(); }
 
 		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& va)
-		{
-			s_RenderAPI->DrawIndex(va);
-		}
+		{ s_RenderAPI->DrawIndex(va); }
 
 	};
 }
