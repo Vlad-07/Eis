@@ -29,6 +29,7 @@ namespace Eis
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
 		glCreateVertexArrays(1, &m_RendererId);
+		// glGenVertexArrays(1, &m_RendererId); // Use if OpenGL version is smaller than 4.5
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
