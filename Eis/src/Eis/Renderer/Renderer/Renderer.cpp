@@ -5,11 +5,11 @@
 
 namespace Eis
 {
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
+	Renderer::SceneData* Renderer::s_SceneData = new Renderer::SceneData;
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
-		m_SceneData->ViewProjMat = camera.GetViewProjectionMatrix();
+		s_SceneData->ViewProjMat = camera.GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()
@@ -19,7 +19,7 @@ namespace Eis
 	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& va)
 	{
 		shader->Bind();
-		shader->UploadUniformMat4("u_VP", m_SceneData->ViewProjMat);
+		shader->UploadUniformMat4("u_VP", s_SceneData->ViewProjMat);
 
 		va->Bind();
 		RenderCommands::DrawIndexed(va);

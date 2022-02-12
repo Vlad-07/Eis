@@ -111,6 +111,7 @@ project "Sandbox"
 	{
 		"Eis/src",
 		"Eis/vendor/spdlog/include",
+		"Eis/vendor/imgui",
 		"%{IncludeDir.glm}"
 	}
 

@@ -3,41 +3,47 @@
 
 namespace Eis
 {
-	Eis::LayerStack::LayerStack()
+	LayerStack::LayerStack()
 	{
 	}
 
-	Eis::LayerStack::~LayerStack()
+	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : m_Layers)
 			delete layer;
 	}
 
-	void Eis::LayerStack::PushLayer(Layer* layer)
+	void LayerStack::PushLayer(Layer* layer)
 	{
 		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
 		m_LayerInsertIndex++;
+		layer->OnAttach();
 	}
 
-	void Eis::LayerStack::PushOverlay(Layer* overlay)
+	void LayerStack::PushOverlay(Layer* overlay)
 	{
 		m_Layers.emplace_back(overlay);
+		overlay->OnAttach();
 	}
 
-	void Eis::LayerStack::PopLayer(Layer* layer)
+	void LayerStack::PopLayer(Layer* layer)
 	{
-		auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
-		if (it != m_Layers.end())
+		auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
+		if (it != m_Layers.begin() + m_LayerInsertIndex)
 		{
+			layer->OnDetach();
 			m_Layers.erase(it);
 			m_LayerInsertIndex--;
 		}
 	}
 
-	void Eis::LayerStack::PopOverlay(Layer* overlay)
+	void LayerStack::PopOverlay(Layer* overlay)
 	{
-		auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
-		if (it != m_Layers.end())
+		auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
+		if (it != m_Layers.begin() + m_LayerInsertIndex)
+		{
+			overlay->OnDetach();
 			m_Layers.erase(it);
+		}
 	}
 }

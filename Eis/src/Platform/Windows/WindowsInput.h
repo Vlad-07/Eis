@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Input.h"
+#include "Eis/Input/Input.h"
 
 namespace Eis
 {
