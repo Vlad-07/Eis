@@ -11,7 +11,7 @@ namespace Eis
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* verticies, uint32_t size)
 	{
 		glCreateBuffers(1, &m_RendererId);
-		// glGenBuffers(1, &m_RendererId); // Use if OpenGL version is smaller than 4.5
+		// glGenBuffers(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererId);
 		glBufferData(GL_ARRAY_BUFFER, size, verticies, GL_STATIC_DRAW);
 	}
@@ -38,7 +38,7 @@ namespace Eis
 		: m_Count(count)
 	{
 		glCreateBuffers(1, &m_RendererId);
-		// glGenBuffers(1, &m_RendererId); // Use if OpenGL version is smaller than 4.5
+		// glGenBuffers(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indicies, GL_STATIC_DRAW);
 	}

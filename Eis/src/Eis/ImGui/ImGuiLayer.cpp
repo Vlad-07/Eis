@@ -18,6 +18,8 @@ namespace Eis
 
 	void ImGuiLayer::OnAttach()
 	{
+		// From ImGui Example
+
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();

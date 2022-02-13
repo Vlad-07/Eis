@@ -29,7 +29,7 @@ namespace Eis
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
 		glCreateVertexArrays(1, &m_RendererId);
-		// glGenVertexArrays(1, &m_RendererId); // Use if OpenGL version is smaller than 4.5
+		// glGenVertexArrays(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
@@ -47,7 +47,7 @@ namespace Eis
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb)
+	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb)
 	{
 		EIS_CORE_ASSERT(vb->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
@@ -70,10 +70,10 @@ namespace Eis
 		}
 
 		m_VertexBuffers.push_back(vb);
-		m_VertexBufferIndexOffset += vbLayout.GetElements().size();
+		m_VertexBufferIndexOffset += static_cast<uint32_t>(vbLayout.GetElements().size());
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& ib)
+	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& ib)
 	{
 		glBindVertexArray(m_RendererId);
 		ib->Bind();

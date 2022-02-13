@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Eis/Core/TimeStep.h"
 #include "Window.h"
 #include "LayerStack.h"
 #include "Events/Event.h"
@@ -25,11 +26,15 @@ namespace Eis
 
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() { return *m_Window; }
+
 	private:
-		std::unique_ptr<Window> m_Window;
-		ImGuiLayer* m_ImGuiLayer;
 		static Application* s_Instance;
+		Eis::Scope<Window> m_Window;
+
 		LayerStack m_LayerStack;
+		ImGuiLayer* m_ImGuiLayer;
+
+		float m_LastFrameTime = 0.0f;
 
 		bool m_Running = true;
 

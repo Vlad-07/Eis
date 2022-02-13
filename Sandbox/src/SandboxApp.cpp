@@ -2,53 +2,65 @@
 
 #include <imgui.h> // Should remove from sandbox aditional include dirs
 
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "Platform/OpenGL/OpenGLShader.h"
+
 class MainLayer : public Eis::Layer
 {
 private:
-	std::shared_ptr<Eis::Shader> m_Shader;
-	std::shared_ptr<Eis::VertexArray> m_VA;
-	std::shared_ptr<Eis::VertexArray> m_SquareVA;
+	Eis::Ref<Eis::Shader> m_Shader;
+	Eis::Ref<Eis::VertexArray> m_VA;
+	Eis::Ref<Eis::VertexArray> m_SquareVA;
 
 	Eis::OrthographicCamera m_Camera;
 	glm::vec3 m_CamPos;
+	float m_CameraRotation;
 	float m_CameraSpeed;
+	float m_CameraRotationSpeed;
 
-	float m_DeltaTime = 0.0f;
+	float m_Spacing = 0.2f;
+	glm::vec4 color = glm::vec4(0.4f, 0.9f, 0.7f, 1.0f);
 
 public:
-	MainLayer() : Layer("Sandbox"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CamPos(0.0f), m_CameraSpeed(1.0f)
+	MainLayer()
+		: Layer("Sandbox"),
+		m_Camera(-1.6f, 1.6f, -0.9f, 0.9f),
+		m_CamPos(0.0f),
+		m_CameraSpeed(1.0f),
+		m_CameraRotation(0.0f),
+		m_CameraRotationSpeed(35.0f)
 	{
 		m_VA.reset(Eis::VertexArray::Create());
 
-		float verts[3 * 7] = {
-			-0.5f, -0.5f, 0.0f,   0.9f, 0.1f, 0.1f, 0.9f,
-			 0.5f, -0.5f, 0.0f,   0.1f, 0.9f, 0.1f, 0.9f,
-			 0.0f,  0.5f, 0.0f,   0.1f, 0.1f, 0.9f, 0.9f
+		float verts[3 * 3] = {
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.0f,  0.5f, 0.0f
 		};
-		std::shared_ptr<Eis::VertexBuffer> VB;
+		Eis::Ref<Eis::VertexBuffer> VB;
 		VB.reset(Eis::VertexBuffer::Create(verts, sizeof(verts)));
 
 		Eis::BufferLayout layout = {
-			{ Eis::ShaderDataType::Float3, "a_Position" },
-			{ Eis::ShaderDataType::Float4, "a_Color" }
+			{ Eis::ShaderDataType::Float3, "a_Position" }
 		};
 		VB->SetLayout(layout);
 		m_VA->AddVertexBuffer(VB);
 
 		uint32_t indices[3] = { 0, 1, 2 };
-		std::shared_ptr<Eis::IndexBuffer> IB;
+		Eis::Ref<Eis::IndexBuffer> IB;
 		IB.reset(Eis::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VA->SetIndexBuffer(IB);
 
 
-		float verts2[4 * 7] = {
-			-0.75f, -0.75f, 0.0f,   0.1f, 0.1f, 0.8f, 1.0f,
-			 0.75f, -0.75f, 0.0f,   0.1f, 0.9f, 0.1f, 1.0f,
-			 0.75f,  0.75f, 0.0f,   0.1f, 0.1f, 0.9f, 1.0f,
-			-0.75f,  0.75f, 0.0f,   0.9f, 0.1f, 0.1f, 1.0f
+		float verts2[3 * 4] = {
+			-0.75f, -0.75f, 0.0f,
+			 0.75f, -0.75f, 0.0f,
+			 0.75f,  0.75f, 0.0f,
+			-0.75f,  0.75f, 0.0f
 		};
 		m_SquareVA.reset(Eis::VertexArray::Create());
-		std::shared_ptr<Eis::VertexBuffer> squareVB;
+		Eis::Ref<Eis::VertexBuffer> squareVB;
 		squareVB.reset(Eis::VertexBuffer::Create(verts2, sizeof(verts2)));
 
 		squareVB->SetLayout(layout);
@@ -58,7 +70,7 @@ public:
 			0, 1, 2,
 			2, 3, 0
 		};
-		std::shared_ptr<Eis::IndexBuffer> m_IB2;
+		Eis::Ref<Eis::IndexBuffer> m_IB2;
 		m_IB2.reset(Eis::IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(m_IB2);
 
@@ -66,16 +78,17 @@ public:
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_VP;
+			uniform mat4 u_Transform;
+			uniform vec4 u_Color;
 
 			out vec4 v_Color;
 			
 			void main()
 			{
-				v_Color = a_Color;
-				gl_Position = u_VP * vec4(a_Position, 1.0);
+				v_Color = u_Color;
+				gl_Position = u_VP * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -92,66 +105,75 @@ public:
 			}
 		)";
 
-		m_Shader = std::make_unique<Eis::Shader>(vertexSrc, fragmentSrc);
+		m_Shader.reset(Eis::Shader::Create(vertexSrc, fragmentSrc));
 	}
 
-	virtual void OnUpdate()
+	virtual void OnUpdate(Eis::TimeStep ts) override
 	{
+		float deltaTime = ts;
+
+		EIS_TRACE("Frametime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMilliseconds());
+
 		Eis::RenderCommands::SetClearColor(glm::vec4(m_CamPos.x / 10, m_CamPos.y / 10, 0.2f, 1.0f));
 		Eis::RenderCommands::Clear();
 
-		if (Eis::Input::IsKeyPressed(EIS_KEY_LEFT))
-			m_CamPos.x -= m_CameraSpeed * m_DeltaTime;
+		if (Eis::Input::IsKeyPressed(EIS_KEY_LEFT) || Eis::Input::IsKeyPressed(EIS_KEY_A))
+			m_CamPos.x -= m_CameraSpeed * deltaTime;
 
-		if (Eis::Input::IsKeyPressed(EIS_KEY_RIGHT))
-			m_CamPos.x += m_CameraSpeed * m_DeltaTime;
+		if (Eis::Input::IsKeyPressed(EIS_KEY_RIGHT) || Eis::Input::IsKeyPressed(EIS_KEY_D))
+			m_CamPos.x += m_CameraSpeed * deltaTime;
 
-		if (Eis::Input::IsKeyPressed(EIS_KEY_UP))
-			m_CamPos.y += m_CameraSpeed * m_DeltaTime;
+		if (Eis::Input::IsKeyPressed(EIS_KEY_UP) || Eis::Input::IsKeyPressed(EIS_KEY_W))
+			m_CamPos.y += m_CameraSpeed * deltaTime;
 
-		if (Eis::Input::IsKeyPressed(EIS_KEY_DOWN))
-			m_CamPos.y -= m_CameraSpeed * m_DeltaTime;
+		if (Eis::Input::IsKeyPressed(EIS_KEY_DOWN) || Eis::Input::IsKeyPressed(EIS_KEY_S))
+			m_CamPos.y -= m_CameraSpeed * deltaTime;
 
+		if (Eis::Input::IsKeyPressed(EIS_KEY_Q))
+			m_CameraRotation += m_CameraRotationSpeed * deltaTime;
+
+		if (Eis::Input::IsKeyPressed(EIS_KEY_E))
+			m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
 
 		m_Camera.SetPosition(m_CamPos);
+		m_Camera.SetRotation(m_CameraRotation);
 
 		Eis::Renderer::BeginScene(m_Camera);
 
-		Eis::Renderer::Submit(m_Shader, m_SquareVA);
-		Eis::Renderer::Submit(m_Shader, m_VA);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->Bind();
+
+		for (int x = 0; x < 10; x++)
+		{
+			for (int y = 0; y < 10; y++)
+			{
+				if (x % 2 == 0)
+					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", glm::vec4(0.2f, 0.8f, 0.3f, 1.0f));
+				else
+					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.2f, 0.3f, 1.0f));
+
+				glm::vec3 pos(y * m_Spacing, x * m_Spacing, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				Eis::Renderer::Submit(m_Shader, m_SquareVA, transform);
+			}
+		}
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", color);
+		Eis::Renderer::Submit(m_Shader, m_VA);
 		Eis::Renderer::EndScene();
 	}
 
-	virtual void OnImGuiRender()
+	virtual void OnImGuiRender() override
 	{
-		ImGuiIO io = ImGui::GetIO();
-		m_DeltaTime = io.DeltaTime;
-		
-		ImGui::SliderFloat("Camera speed", &m_CameraSpeed, 0.0f, 50.0f);
+		ImGui::Begin("Controls");
+		ImGui::SliderFloat("Camera speed", &m_CameraSpeed, 1.0f, 50.0f);
+		ImGui::SliderFloat("Spacing", &m_Spacing, 0.0f, 1.0f);
+		ImGui::ColorEdit3("Color", (float*)&color);
+		ImGui::End();
 	}
 
-	virtual void OnEvent(Eis::Event& event)
+	virtual void OnEvent(Eis::Event& event) override
 	{
-//		Eis::EventDispatcher dispatcher(event);
-//		dispatcher.Dispatch<Eis::KeyPressedEvent>(EIS_BIND_EVENT_FN(MainLayer::OnKeyPressedEvent));
-	}
-
-	bool OnKeyPressedEvent(Eis::KeyPressedEvent& event)
-	{
-		if (event.GetKeyCode() == EIS_KEY_LEFT)
-			m_CamPos.x -= m_CameraSpeed * m_DeltaTime;
-
-		if (event.GetKeyCode() == EIS_KEY_RIGHT)
-			m_CamPos.x += m_CameraSpeed * m_DeltaTime;
-
-		if (event.GetKeyCode() == EIS_KEY_UP)
-			m_CamPos.y += m_CameraSpeed * m_DeltaTime;
-
-		if (event.GetKeyCode() == EIS_KEY_DOWN)
-			m_CamPos.y -= m_CameraSpeed * m_DeltaTime;
-
-		return false;
 	}
 };
 

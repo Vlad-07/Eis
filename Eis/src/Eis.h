@@ -5,6 +5,7 @@
 
 #include "Eis/Application.h"
 #include "Eis/Log.h"
+#include "Eis/Core/TimeStep.h"
 
 #include "Eis/Layer.h"
 #include "Eis/ImGui/ImGuiLayer.h"

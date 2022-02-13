@@ -5,6 +5,9 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
 
+// #include <stdarg.h>
+// Should consider over compiler specific "__VA_ARGS__" ?
+
 
 // Core log macros
 #define EIS_CORE_TRACE(...)		::Eis::Log::GetCoreLogger()->trace(__VA_ARGS__);

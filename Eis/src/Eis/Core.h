@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef EIS_PLATFORM_WINDOWS
 #ifdef EIS_DYNAMIC_LINK // Used in previous builds to a .dll file
 	#ifdef EIS_BUILD_DLL
@@ -28,4 +30,16 @@
 
 #define BIT(x) (1 << x) // Used for event categories
 
-#define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1) // Used for event functions
+
+
+// Wraps for smart pointers
+// Code looks nicer + can easily switch to an actual class in the future for an asset manager
+namespace Eis
+{
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+}

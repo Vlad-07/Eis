@@ -7,6 +7,8 @@
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Eis
 {
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
@@ -18,7 +20,7 @@ namespace Eis
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = Scope<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		m_ImGuiLayer = new ImGuiLayer();
@@ -44,8 +46,12 @@ namespace Eis
 	{
 		while (m_Running)
 		{
+			float time = glfwGetTime();					// should be in platform specific
+			TimeStep timeStep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(timeStep);
 
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)

@@ -1,7 +1,7 @@
 #include "Eispch.h"
 #include "RenderCommands.h"
 
-#include "Platform/OpenGL/OpenGLRendererAPI.h";
+#include "Platform/OpenGL/OpenGLRendererAPI.h"
 
 namespace Eis
 {
