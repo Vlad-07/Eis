@@ -10,6 +10,8 @@ namespace Eis
 		static RendererAPI* s_RenderAPI;
 
 	public:
+		inline static void Init()
+		{ s_RenderAPI->Init(); }
 
 		inline static void SetClearColor(const glm::vec4& color)
 		{ s_RenderAPI->SetClearColor(color); }

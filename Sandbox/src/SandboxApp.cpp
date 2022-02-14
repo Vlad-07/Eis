@@ -5,13 +5,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 
 class MainLayer : public Eis::Layer
 {
 private:
-	Eis::Ref<Eis::Shader> m_Shader;
+	Eis::Ref<Eis::Shader> m_Shader, m_TextureShader;
 	Eis::Ref<Eis::VertexArray> m_VA;
 	Eis::Ref<Eis::VertexArray> m_SquareVA;
+
+	Eis::Ref<Eis::Texture2D> m_Texture, m_MouceTexture;
 
 	Eis::OrthographicCamera m_Camera;
 	glm::vec3 m_CamPos;
@@ -19,8 +22,7 @@ private:
 	float m_CameraSpeed;
 	float m_CameraRotationSpeed;
 
-	float m_Spacing = 0.2f;
-	glm::vec4 color = glm::vec4(0.4f, 0.9f, 0.7f, 1.0f);
+	float m_Spacing;
 
 public:
 	MainLayer()
@@ -29,25 +31,31 @@ public:
 		m_CamPos(0.0f),
 		m_CameraSpeed(1.0f),
 		m_CameraRotation(0.0f),
-		m_CameraRotationSpeed(35.0f)
+		m_CameraRotationSpeed(35.0f),
+		m_Spacing(0.2f)
 	{
 		m_VA.reset(Eis::VertexArray::Create());
 
-		float verts[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+		float verts[5 * 4] = {
+			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f,  0.0f, 1.0f
 		};
 		Eis::Ref<Eis::VertexBuffer> VB;
 		VB.reset(Eis::VertexBuffer::Create(verts, sizeof(verts)));
 
 		Eis::BufferLayout layout = {
-			{ Eis::ShaderDataType::Float3, "a_Position" }
+			{ Eis::ShaderDataType::Float3, "a_Position" },
+			{ Eis::ShaderDataType::Float2, "a_TexCoord" }
 		};
 		VB->SetLayout(layout);
 		m_VA->AddVertexBuffer(VB);
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[3 * 2] = {
+			0, 1, 2,
+			2, 3, 0
+		};
 		Eis::Ref<Eis::IndexBuffer> IB;
 		IB.reset(Eis::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VA->SetIndexBuffer(IB);
@@ -63,7 +71,10 @@ public:
 		Eis::Ref<Eis::VertexBuffer> squareVB;
 		squareVB.reset(Eis::VertexBuffer::Create(verts2, sizeof(verts2)));
 
-		squareVB->SetLayout(layout);
+		Eis::BufferLayout layout2 = {
+			{ Eis::ShaderDataType::Float3, "a_Position" }
+		};
+		squareVB->SetLayout(layout2);
 		m_SquareVA->AddVertexBuffer(squareVB);
 
 		uint32_t indices2[3 * 2] = {
@@ -81,9 +92,9 @@ public:
 
 			uniform mat4 u_VP;
 			uniform mat4 u_Transform;
-			uniform vec4 u_Color;
+			uniform vec3 u_Color;
 
-			out vec4 v_Color;
+			out vec3 v_Color;
 			
 			void main()
 			{
@@ -97,16 +108,57 @@ public:
 
 			layout(location = 0) out vec4 color;
 
-			in vec4 v_Color;
+			in vec3 v_Color;
 			
 			void main()
 			{
-				color = v_Color;
+				color = vec4(v_Color, 1.0f);
 			}
 		)";
 
 		m_Shader.reset(Eis::Shader::Create(vertexSrc, fragmentSrc));
-	}
+
+
+		std::string vertexSrcTex = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
+
+			uniform mat4 u_VP;
+			uniform mat4 u_Transform;
+
+			out vec2 v_TexCoord;
+			
+			void main()
+			{
+				v_TexCoord = a_TexCoord;
+				gl_Position = u_VP * u_Transform * vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string fragmentSrcTex = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TexCoord;
+			uniform sampler2D u_Texture;
+			
+			void main()
+			{
+				color = texture(u_Texture, v_TexCoord);
+			}
+		)";
+
+		m_TextureShader.reset(Eis::Shader::Create(vertexSrcTex, fragmentSrcTex));
+
+		m_Texture = Eis::Texture2D::Create("assets/textures/ice.png");
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_TextureShader)->Bind();
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+
+		m_MouceTexture = Eis::Texture2D::Create("assets/textures/mouce.png");
+}
 
 	virtual void OnUpdate(Eis::TimeStep ts) override
 	{
@@ -149,17 +201,22 @@ public:
 			for (int y = 0; y < 10; y++)
 			{
 				if (x % 2 == 0)
-					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", glm::vec4(0.2f, 0.8f, 0.3f, 1.0f));
+					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat3("u_Color", glm::vec3(0.2f, 0.8f, 0.3f));
 				else
-					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", glm::vec4(0.8f, 0.2f, 0.3f, 1.0f));
+					std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat3("u_Color", glm::vec3(0.8f, 0.2f, 0.3f));
 
 				glm::vec3 pos(y * m_Spacing, x * m_Spacing, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 				Eis::Renderer::Submit(m_Shader, m_SquareVA, transform);
 			}
 		}
-		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", color);
-		Eis::Renderer::Submit(m_Shader, m_VA);
+
+		m_Texture->Bind();
+		Eis::Renderer::Submit(m_TextureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
+
+		m_MouceTexture->Bind();
+		Eis::Renderer::Submit(m_TextureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
+
 		Eis::Renderer::EndScene();
 	}
 
@@ -168,7 +225,6 @@ public:
 		ImGui::Begin("Controls");
 		ImGui::SliderFloat("Camera speed", &m_CameraSpeed, 1.0f, 50.0f);
 		ImGui::SliderFloat("Spacing", &m_Spacing, 0.0f, 1.0f);
-		ImGui::ColorEdit3("Color", (float*)&color);
 		ImGui::End();
 	}
 

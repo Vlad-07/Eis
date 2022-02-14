@@ -16,6 +16,7 @@ IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
 IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 IncludeDir["ImGui"] = "Eis/vendor/imgui"
 IncludeDir["glm"] = "Eis/vendor/glm"
+IncludeDir["stb_image"] = "Eis/vendor/stb_image"
 
 group "Dependencies"
 	include "Eis/vendor/GLFW"
@@ -41,7 +42,8 @@ project "Eis"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.hpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 
@@ -54,7 +56,8 @@ project "Eis"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links

@@ -9,6 +9,11 @@ namespace Eis
 {
 	Renderer::SceneData* Renderer::s_SceneData = new Renderer::SceneData;
 
+	void Renderer::Init()
+	{
+		RenderCommands::Init();
+	}
+
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
 		s_SceneData->ViewProjMat = camera.GetViewProjectionMatrix();

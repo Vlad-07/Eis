@@ -22,6 +22,7 @@
 
 #include "Eis/Renderer/Objects/Shader.h"
 #include "Eis/Renderer/Objects/Buffer.h"
+#include "Eis/Renderer/Objects/Texture.h"
 #include "Eis/Renderer/Objects/VertexArray.h"
 
 #include "Eis/Renderer/Objects/OrthographicCamera.h"
