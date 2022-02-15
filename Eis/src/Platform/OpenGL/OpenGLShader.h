@@ -5,14 +5,18 @@
 #include "Eis/Renderer/Objects/Shader.h"
 #include <glm/glm.hpp>
 
+// TODO: remove
+typedef unsigned int GLenum;
+
 namespace Eis
 {
 	class OpenGLShader : public Shader
 	{
 	private:
-		uint32_t m_RendererId;
+		uint32_t m_RendererId = 0;
 
 	public:
+		OpenGLShader(std::string& filePath);
 		OpenGLShader(std::string& vsSrc, std::string& fsSrc);
 		~OpenGLShader();
 
@@ -28,5 +32,10 @@ namespace Eis
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+	private:
+		std::string ReadFile(const std::string& filePath);
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 	};
 }
