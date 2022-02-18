@@ -16,12 +16,15 @@ namespace Eis
 		uint32_t m_RendererId = 0;
 
 	public:
-		OpenGLShader(std::string& filePath);
-		OpenGLShader(std::string& vsSrc, std::string& fsSrc);
+		OpenGLShader(const std::string& filePath);
+		OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
 		~OpenGLShader();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual const std::string& GetName() const override { return m_Name; }
+
 
 		void UploadUniformInt(const std::string& name, const int& value);
 
@@ -32,6 +35,9 @@ namespace Eis
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+	private:
+		std::string m_Name;
 
 	private:
 		std::string ReadFile(const std::string& filePath);

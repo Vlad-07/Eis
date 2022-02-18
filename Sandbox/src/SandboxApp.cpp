@@ -10,7 +10,8 @@
 class MainLayer : public Eis::Layer
 {
 private:
-	Eis::Ref<Eis::Shader> m_Shader, m_TextureShader;
+	Eis::ShaderLibrary m_ShaderLibrary;
+	Eis::Ref<Eis::Shader> m_Shader;
 	Eis::Ref<Eis::VertexArray> m_VA;
 	Eis::Ref<Eis::VertexArray> m_SquareVA;
 
@@ -118,15 +119,14 @@ public:
 			}
 		)";
 
-		m_Shader.reset(Eis::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = Eis::Shader::Create("SolidColor", vertexSrc, fragmentSrc);
 
-		std::string texShaderSrc = "assets/shaders/Texture.glsl";
-		m_TextureShader.reset(Eis::Shader::Create(texShaderSrc));
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 
 		m_Texture = Eis::Texture2D::Create("assets/textures/ice.png");
-		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<Eis::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Eis::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 
 		m_MouceTexture = Eis::Texture2D::Create("assets/textures/mouce.png");
 }
@@ -135,7 +135,7 @@ public:
 	{
 		float deltaTime = ts;
 
-		EIS_TRACE("Frametime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMilliseconds());
+//		EIS_TRACE("Frametime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMilliseconds());
 
 		Eis::RenderCommands::SetClearColor(glm::vec4(m_CamPos.x / 10, m_CamPos.y / 10, 0.2f, 1.0f));
 		Eis::RenderCommands::Clear();
@@ -182,11 +182,13 @@ public:
 			}
 		}
 
-		m_Texture->Bind();
-		Eis::Renderer::Submit(m_TextureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
+		auto textureShader = m_ShaderLibrary.Get("Texture");
 
-		m_MouceTexture->Bind();
-		Eis::Renderer::Submit(m_TextureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
+		m_Texture->Bind();
+		Eis::Renderer::Submit(textureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
+
+//		m_MouceTexture->Bind();
+//		Eis::Renderer::Submit(textureShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.2f)));
 
 		Eis::Renderer::EndScene();
 	}

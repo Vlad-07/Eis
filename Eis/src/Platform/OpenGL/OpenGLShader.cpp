@@ -21,14 +21,25 @@ namespace Eis
 
 
 
-	OpenGLShader::OpenGLShader(std::string& filePath)
+	OpenGLShader::OpenGLShader(const std::string& filePath)
 	{
 		std::string source = ReadFile(filePath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
+		// Extract name
+		// From "assets/textures/CoolShader.glsl"
+		// we get "CoolShader"
+		auto lastSlash = filePath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filePath.rfind('.');
+		auto count = lastDot == std::string::npos ? filePath.size() - lastSlash : lastDot - lastSlash;
+
+		m_Name = filePath.substr(lastSlash, count);
 	}
 
-	OpenGLShader::OpenGLShader(std::string& vsSrc, std::string& fsSrc)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
+		: m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vsSrc;
@@ -45,7 +56,7 @@ namespace Eis
 	std::string OpenGLShader::ReadFile(const std::string& filePath)
 	{
 		std::string result;
-		std::ifstream in(filePath, std::ios::in, std::ios::binary);
+		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 
 		if (in)
 		{
@@ -88,7 +99,10 @@ namespace Eis
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs(shaderSources.size());
+
+		// TODO: consider  stack array instead of a heap vector for performance reasons
+		std::vector<GLenum> glShaderIDs;
+		glShaderIDs.reserve(shaderSources.size());
 		for (auto& keyVal : shaderSources)
 		{
 			GLenum type = keyVal.first;

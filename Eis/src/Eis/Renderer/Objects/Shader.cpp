@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	Shader* Shader::Create(std::string& filepath)
+	Ref<Shader> Shader::Create(const std::string& filepath)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -16,14 +16,14 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return new OpenGLShader(filepath);
+			return std::make_shared<OpenGLShader>(filepath);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");
 		return nullptr;
 	}
 
-	Shader* Shader::Create(std::string& vsSrc, std::string& fsSrc)
+	Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -32,10 +32,52 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return new OpenGLShader(vsSrc, fsSrc);
+			return std::make_shared<OpenGLShader>(name, vsSrc, fsSrc);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");
 		return nullptr;
+	}
+
+
+
+	
+
+	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
+	{
+		EIS_CORE_ASSERT(!Exists(name), "Shader already exists!");
+		m_Shaders[name] = shader;
+	}
+
+	void ShaderLibrary::Add(const Ref<Shader>& shader)
+	{
+		auto& name = shader->GetName();
+		EIS_CORE_ASSERT(!Exists(name), "Shader already exists!");
+		m_Shaders[name] = shader;
+	}
+
+	Ref<Shader> ShaderLibrary::Load(const std::string& filePath)
+	{
+		auto& shader = Shader::Create(filePath);
+		Add(shader);
+		return shader;
+	}
+
+	Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
+	{
+		auto shader = Shader::Create(filePath);
+		Add(name, shader);
+		return shader;
+	}
+
+	Ref<Shader> ShaderLibrary::Get(const std::string& name)
+	{
+		EIS_CORE_ASSERT(Exists(name), "Shader not found!");
+		return m_Shaders[name];
+	}
+
+	bool ShaderLibrary::Exists(const std::string& name)
+	{
+		return m_Shaders.find(name) != m_Shaders.end();
 	}
 }
