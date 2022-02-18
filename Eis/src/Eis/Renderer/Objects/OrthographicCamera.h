@@ -19,12 +19,14 @@ namespace Eis
 
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
+		void SetProjection(float left, float right, float bottom, float top);
 
 		const glm::vec3 GetPosition() { return m_Position; }
 		const float GetRotation() { return m_Rotation; }
 
 		void SetPosition(const glm::vec3& pos) { m_Position = pos; RecalculateViewMatrix(); }
 		void SetRotation(const float& rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
+
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }

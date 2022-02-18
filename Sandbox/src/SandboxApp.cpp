@@ -17,22 +17,16 @@ private:
 
 	Eis::Ref<Eis::Texture2D> m_Texture, m_MouceTexture;
 
-	Eis::OrthographicCamera m_Camera;
-	glm::vec3 m_CamPos;
-	float m_CameraRotation;
-	float m_CameraSpeed;
-	float m_CameraRotationSpeed;
+	Eis::OrthoCameraController m_CameraController;
 
 	float m_Spacing;
+
+	int frame = 0;
 
 public:
 	MainLayer()
 		: Layer("Sandbox"),
-		m_Camera(-1.6f, 1.6f, -0.9f, 0.9f),
-		m_CamPos(0.0f),
-		m_CameraSpeed(1.0f),
-		m_CameraRotation(0.0f),
-		m_CameraRotationSpeed(35.0f),
+		m_CameraController(16.0f / 9.0f),
 		m_Spacing(0.2f)
 	{
 		m_VA.reset(Eis::VertexArray::Create());
@@ -133,35 +127,19 @@ public:
 
 	virtual void OnUpdate(Eis::TimeStep ts) override
 	{
-		float deltaTime = ts;
+		m_CameraController.OnUpdate(ts);
 
-//		EIS_TRACE("Frametime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMilliseconds());
+		if (frame % 72 == 0)
+		{
+			EIS_TRACE("Frametime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMilliseconds());
+			frame = 1;
+		}
+		frame++;
 
-		Eis::RenderCommands::SetClearColor(glm::vec4(m_CamPos.x / 10, m_CamPos.y / 10, 0.2f, 1.0f));
+		Eis::RenderCommands::SetClearColor(glm::vec4(m_CameraController.GetCamera().GetPosition().x / 10, m_CameraController.GetCamera().GetPosition().y / 10, 0.2f, 1.0f));
 		Eis::RenderCommands::Clear();
 
-		if (Eis::Input::IsKeyPressed(EIS_KEY_LEFT) || Eis::Input::IsKeyPressed(EIS_KEY_A))
-			m_CamPos.x -= m_CameraSpeed * deltaTime;
-
-		if (Eis::Input::IsKeyPressed(EIS_KEY_RIGHT) || Eis::Input::IsKeyPressed(EIS_KEY_D))
-			m_CamPos.x += m_CameraSpeed * deltaTime;
-
-		if (Eis::Input::IsKeyPressed(EIS_KEY_UP) || Eis::Input::IsKeyPressed(EIS_KEY_W))
-			m_CamPos.y += m_CameraSpeed * deltaTime;
-
-		if (Eis::Input::IsKeyPressed(EIS_KEY_DOWN) || Eis::Input::IsKeyPressed(EIS_KEY_S))
-			m_CamPos.y -= m_CameraSpeed * deltaTime;
-
-		if (Eis::Input::IsKeyPressed(EIS_KEY_Q))
-			m_CameraRotation += m_CameraRotationSpeed * deltaTime;
-
-		if (Eis::Input::IsKeyPressed(EIS_KEY_E))
-			m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
-
-		m_Camera.SetPosition(m_CamPos);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Eis::Renderer::BeginScene(m_Camera);
+		Eis::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -196,13 +174,13 @@ public:
 	virtual void OnImGuiRender() override
 	{
 		ImGui::Begin("Controls");
-		ImGui::SliderFloat("Camera speed", &m_CameraSpeed, 1.0f, 50.0f);
 		ImGui::SliderFloat("Spacing", &m_Spacing, 0.0f, 1.0f);
 		ImGui::End();
 	}
 
-	virtual void OnEvent(Eis::Event& event) override
+	virtual void OnEvent(Eis::Event& e) override
 	{
+		m_CameraController.OnEvent(e);
 	}
 };
 
@@ -216,9 +194,7 @@ public:
 		PushLayer(new MainLayer());
 	}
 
-	~Sandbox()
-	{
-	}
+	~Sandbox() = default;
 };
 
 Eis::Application* Eis::CreateApplication()

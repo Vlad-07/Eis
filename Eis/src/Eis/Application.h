@@ -39,7 +39,7 @@ namespace Eis
 		bool m_Running = true;
 
 	private:
-		bool OnWindowClose(WindowCloseEvent event);
+		bool OnWindowClose(WindowCloseEvent e);
 	};
 
 	// Is defined in CLIENT:

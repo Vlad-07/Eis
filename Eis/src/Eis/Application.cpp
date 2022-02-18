@@ -29,17 +29,17 @@ namespace Eis
 		PushOverlay(m_ImGuiLayer);
 	}
 	
-	void Application::OnEvent(Event& event)
+	void Application::OnEvent(Event& e)
 	{
-		EventDispatcher dispatcher(event);
+		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
 //		EIS_CORE_TRACE("{0}", event);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
-			(*--it)->OnEvent(event);
-			if (event.m_Handled)
+			(*--it)->OnEvent(e);
+			if (e.m_Handled)
 				break;
 		}
 	}
@@ -74,7 +74,7 @@ namespace Eis
 		m_LayerStack.PushOverlay(overlay);
 	}
 
-	bool Application::OnWindowClose(WindowCloseEvent event)
+	bool Application::OnWindowClose(WindowCloseEvent e)
 	{
 		m_Running = false;
 		return true;
