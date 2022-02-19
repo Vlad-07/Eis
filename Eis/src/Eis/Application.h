@@ -37,8 +37,10 @@ namespace Eis
 		float m_LastFrameTime = 0.0f;
 
 		bool m_Running = true;
+		bool m_Minimized = false;
 
 	private:
+		bool OnWindowResize(WindowResizeEvent e);
 		bool OnWindowClose(WindowCloseEvent e);
 	};
 
