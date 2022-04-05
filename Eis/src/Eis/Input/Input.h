@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Core.h"
+#include "Eis/Core/Core.h"
 
 
 // Include this file and boom you can use the input pooling system

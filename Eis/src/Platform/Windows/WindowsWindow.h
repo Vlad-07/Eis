@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Window.h"
+#include "Eis/Core/Window.h"
 #include "Eis/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>

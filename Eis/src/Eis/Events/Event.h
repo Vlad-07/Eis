@@ -2,7 +2,7 @@
 
 #include "Eispch.h"
 
-#include "Eis/Core.h"
+#include "Eis/Core/Core.h"
 
 namespace Eis
 {

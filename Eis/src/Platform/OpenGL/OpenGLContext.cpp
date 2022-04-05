@@ -14,7 +14,7 @@ namespace Eis
 	void OpenGLContext::Init()
 	{
 		glfwMakeContextCurrent(m_WindowHandle);
-		int  succes = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		int succes = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		EIS_CORE_ASSERT(succes, "Faield to initialize Glad!");
 
 		EIS_CORE_INFO("OpenGL Renderer:" );

@@ -1,6 +1,6 @@
 #include "Eispch.h"
 #include "WindowsInput.h"
-#include "Eis/Application.h"
+#include "Eis/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 

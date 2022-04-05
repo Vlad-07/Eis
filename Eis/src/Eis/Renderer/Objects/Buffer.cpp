@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	VertexBuffer* VertexBuffer::Create(float* verticies, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* verticies, uint32_t size)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -16,14 +16,14 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return new OpenGLVertexBuffer(verticies, size);
+			return std::make_shared<OpenGLVertexBuffer>(verticies, size);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");
 		return nullptr;
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint32_t* indicies, uint32_t count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indicies, uint32_t count)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -32,7 +32,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return new OpenGLIndexBuffer(indicies, count);
+			return std::make_shared<OpenGLIndexBuffer>(indicies, count);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");

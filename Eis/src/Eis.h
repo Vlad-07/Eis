@@ -3,11 +3,11 @@
 // File only used by Eis apps
 
 
-#include "Eis/Application.h"
-#include "Eis/Log.h"
+#include "Eis/Core/Application.h"
+#include "Eis/Core/Log.h"
 #include "Eis/Core/TimeStep.h"
 
-#include "Eis/Layer.h"
+#include "Eis/Core/Layer.h"
 #include "Eis/ImGui/ImGuiLayer.h"
 
 // Input
@@ -27,5 +27,3 @@
 #include "Eis/Renderer/Objects/VertexArray.h"
 
 #include "Eis/Renderer/Objects/OrthographicCamera.h"
-
-#include "Eis/EntryPoint.h"

@@ -2,7 +2,7 @@
 
 #include "Eispch.h"
 #include "Core.h"
-#include "Events/Event.h"
+#include "../Events/Event.h"
 #include "Eis/Core/TimeStep.h"
 
 namespace Eis

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Eis/Core.h"
+#include "Eis/Core/Core.h"
 
 namespace Eis
 {

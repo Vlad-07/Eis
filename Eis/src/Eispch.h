@@ -17,4 +17,4 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Eis/Log.h"
+#include "Eis/Core/Log.h"

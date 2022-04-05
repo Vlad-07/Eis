@@ -1,11 +1,14 @@
 #include <Eis.h>
+#include <Eis/Core/EntryPoint.h>
 
-#include <imgui.h> // Should remove from sandbox aditional include dirs
+#include "imgui.h" // Should remove from sandbox aditional include dirs
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
+
+#include "Sandbox2D.h"
 
 class MainLayer : public Eis::Layer
 {
@@ -19,17 +22,16 @@ private:
 
 	Eis::OrthoCameraController m_CameraController;
 
-	float m_Spacing;
+	float m_Spacing = 0.2f;
 
 	int frame = 0;
 
 public:
 	MainLayer()
 		: Layer("Sandbox"),
-		m_CameraController(16.0f / 9.0f),
-		m_Spacing(0.2f)
+		m_CameraController(16.0f / 9.0f)
 	{
-		m_VA.reset(Eis::VertexArray::Create());
+		m_VA = Eis::VertexArray::Create();
 
 		float verts[5 * 4] = {
 			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
@@ -38,7 +40,7 @@ public:
 			-0.5f,  0.5f, 0.0f,  0.0f, 1.0f
 		};
 		Eis::Ref<Eis::VertexBuffer> VB;
-		VB.reset(Eis::VertexBuffer::Create(verts, sizeof(verts)));
+		VB = Eis::VertexBuffer::Create(verts, sizeof(verts));
 
 		Eis::BufferLayout layout = {
 			{ Eis::ShaderDataType::Float3, "a_Position" },
@@ -52,7 +54,7 @@ public:
 			2, 3, 0
 		};
 		Eis::Ref<Eis::IndexBuffer> IB;
-		IB.reset(Eis::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		IB = Eis::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VA->SetIndexBuffer(IB);
 
 
@@ -62,9 +64,9 @@ public:
 			 0.75f,  0.75f, 0.0f,
 			-0.75f,  0.75f, 0.0f
 		};
-		m_SquareVA.reset(Eis::VertexArray::Create());
+		m_SquareVA = Eis::VertexArray::Create();
 		Eis::Ref<Eis::VertexBuffer> squareVB;
-		squareVB.reset(Eis::VertexBuffer::Create(verts2, sizeof(verts2)));
+		squareVB = Eis::VertexBuffer::Create(verts2, sizeof(verts2));
 
 		Eis::BufferLayout layout2 = {
 			{ Eis::ShaderDataType::Float3, "a_Position" }
@@ -77,43 +79,12 @@ public:
 			2, 3, 0
 		};
 		Eis::Ref<Eis::IndexBuffer> m_IB2;
-		m_IB2.reset(Eis::IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t)));
+		m_IB2 = Eis::IndexBuffer::Create(indices2, sizeof(indices2) / sizeof(uint32_t));
 		m_SquareVA->SetIndexBuffer(m_IB2);
 
 		
 
-		std::string vertexSrc = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-
-			uniform mat4 u_VP;
-			uniform mat4 u_Transform;
-			uniform vec3 u_Color;
-
-			out vec3 v_Color;
-			
-			void main()
-			{
-				v_Color = u_Color;
-				gl_Position = u_VP * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Color;
-			
-			void main()
-			{
-				color = vec4(v_Color, 1.0f);
-			}
-		)";
-
-		m_Shader = Eis::Shader::Create("SolidColor", vertexSrc, fragmentSrc);
+		m_Shader = Eis::Shader::Create("assets/shaders/FlatColor.glsl");
 
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
@@ -127,6 +98,9 @@ public:
 
 	virtual void OnUpdate(Eis::TimeStep ts) override
 	{
+		if (Eis::Input::IsKeyPressed(EIS_KEY_ESCAPE))
+			exit(0);
+
 		m_CameraController.OnUpdate(ts);
 
 		if (frame % 72 == 0)
@@ -184,14 +158,13 @@ public:
 	}
 };
 
-
 class Sandbox : public Eis::Application
 {
 public:
 
 	Sandbox()
 	{
-		PushLayer(new MainLayer());
+		PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox() = default;
