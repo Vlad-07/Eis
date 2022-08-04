@@ -5,57 +5,34 @@
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(16.0f / 9.0f)
 {
-	
 }
 
 void Sandbox2D::OnAttach()
 {
-	m_VA = Eis::VertexArray::Create();
-
-	float verts2[3 * 4] = {
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,
-			-0.5f, -0.5f, 0.0f
-	};
-	m_VA = Eis::VertexArray::Create();
-	Eis::Ref<Eis::VertexBuffer> VB;
-	VB = Eis::VertexBuffer::Create(verts2, sizeof(verts2));
-
-	Eis::BufferLayout layout = {
-		{ Eis::ShaderDataType::Float3, "a_Position" }
-	};
-	VB->SetLayout(layout);
-	m_VA->AddVertexBuffer(VB);
-
-	uint32_t indices[3 * 2] = { 0, 1, 2, 2, 3, 0 };
-	Eis::Ref<Eis::IndexBuffer> IB;
-	IB = Eis::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-	m_VA->SetIndexBuffer(IB);
-
-	m_FlatColorShader = Eis::Shader::Create("assets/shaders/FlatColor.glsl");
+	EIS_TRACE("Loading assets...");
+	ice = Eis::Texture2D::Create("assets/textures/ice.png");
+	map = Eis::Texture2D::Create("assets/textures/10k.png");
+	EIS_TRACE("Done loading assets");
 }
 
 void Sandbox2D::OnDetach()
 {
-
 }
 
 void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 {
 	m_CameraController.OnUpdate(ts);
 
-	Eis::RenderCommands::SetClearColor(glm::vec4(m_CameraController.GetCamera().GetPosition().x / 10, m_CameraController.GetCamera().GetPosition().y / 10, 0.2f, 1.0f));
+	Eis::RenderCommands::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	Eis::RenderCommands::Clear();
 
-	Eis::Renderer::BeginScene(m_CameraController.GetCamera());
+	Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
+	
+	Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
+	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
+	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
 
-	std::dynamic_pointer_cast<Eis::OpenGLShader>(m_FlatColorShader)->Bind();
-	std::dynamic_pointer_cast<Eis::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", glm::vec3(0.2f, 0.8f, 0.3f));
-
-	Eis::Renderer::Submit(m_FlatColorShader, m_VA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-	Eis::Renderer::EndScene();
+	Eis::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImGuiRender()

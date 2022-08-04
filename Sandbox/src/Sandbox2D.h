@@ -2,20 +2,14 @@
 
 #include "Eis.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 #include "imgui.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 class Sandbox2D : public Eis::Layer
 {
 private:
-	Eis::Ref<Eis::VertexArray> m_VA;
-	Eis::Ref<Eis::Shader> m_FlatColorShader;
 	Eis::OrthoCameraController m_CameraController;
-
-
-	int frame = 0;
+	Eis::Ref<Eis::Texture2D> ice, map;
 
 public:
 	Sandbox2D();

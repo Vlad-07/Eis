@@ -3,7 +3,6 @@
 
 #ifdef EIS_PLATFORM_WINDOWS
 
-
 extern Eis::Application* Eis::CreateApplication();
 
 int main(int argc, char** args)

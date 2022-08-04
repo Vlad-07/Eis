@@ -19,6 +19,7 @@
 
 // Rendering
 #include "Eis/Renderer/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 #include "Eis/Renderer/Renderer/RenderCommands.h"
 
 #include "Eis/Renderer/Objects/Shader.h"

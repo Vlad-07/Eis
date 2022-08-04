@@ -7,39 +7,38 @@
 namespace Eis
 {
 	OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
-		: m_AspectRatio(aspectRatio),
-		m_Rotation(rotation),
+		: m_AspectRatio(aspectRatio), m_Rotation(rotation),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel)
 	{
-
 	}
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
 		float deltaTime = ts;
+		float speedModifier = 1.0f;
 
-		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
-			m_CamPos.x -= m_CameraSpeed * deltaTime;
-
-		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
-			m_CamPos.x += m_CameraSpeed * deltaTime;
+		if (Input::IsKeyPressed(EIS_KEY_LEFT_SHIFT))
+			speedModifier = m_SpeedMultiplier;
 
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
-			m_CamPos.y += m_CameraSpeed * deltaTime;
-
+			m_CamPos.y += m_CameraSpeed * deltaTime * speedModifier;
 		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
-			m_CamPos.y -= m_CameraSpeed * deltaTime;
+			m_CamPos.y -= m_CameraSpeed * deltaTime * speedModifier;
+		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
+			m_CamPos.x -= m_CameraSpeed * deltaTime * speedModifier;
+		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
+			m_CamPos.x += m_CameraSpeed * deltaTime * speedModifier;
 
 		if (m_Rotation)
 		{
 			if (Input::IsKeyPressed(EIS_KEY_Q))
-				m_CameraRotation += m_CameraRotationSpeed * deltaTime;
-
+				m_CameraRotation += m_CameraRotationSpeed * deltaTime * speedModifier;
 			if (Input::IsKeyPressed(EIS_KEY_E))
-				m_CameraRotation -= m_CameraRotationSpeed * deltaTime;
+				m_CameraRotation -= m_CameraRotationSpeed * deltaTime * speedModifier;
 
 			m_Camera.SetRotation(m_CameraRotation);
 		}
+
 
 		m_Camera.SetPosition(m_CamPos);
 

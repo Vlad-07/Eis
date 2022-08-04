@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "RenderCommands.h"
+#include "Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -12,6 +13,7 @@ namespace Eis
 	void Renderer::Init()
 	{
 		RenderCommands::Init();
+		Renderer2D::Init();
 	}
 
 	void Renderer::OnWindowResized(uint32_t width, uint32_t height)

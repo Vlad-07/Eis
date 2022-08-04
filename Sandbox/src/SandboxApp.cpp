@@ -161,7 +161,6 @@ public:
 class Sandbox : public Eis::Application
 {
 public:
-
 	Sandbox()
 	{
 		PushLayer(new Sandbox2D());
