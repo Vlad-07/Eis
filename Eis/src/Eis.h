@@ -14,8 +14,8 @@
 #include "Eis/Input/Input.h"
 #include "Eis/Input/Keycodes.h"
 #include "Eis/Input/MouseButtonCodes.h"
-#include "Eis/Renderer/Objects/OrthoCameraController.h"
 
+#include "Eis/Renderer/Objects/OrthoCameraController.h"
 
 // Rendering
 #include "Eis/Renderer/Renderer/Renderer.h"

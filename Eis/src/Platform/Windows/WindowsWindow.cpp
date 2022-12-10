@@ -36,7 +36,6 @@ namespace Eis
 		
 		if (!s_GLFWInitialized)
 		{
-			// TODO: glfwTerminate on sys shutdown
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
 
@@ -154,6 +153,7 @@ namespace Eis
 	{
 		EIS_TRACE("Destroyed '{0}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
+		glfwTerminate();
 	}
 
 	void WindowsWindow::OnUpdate()
