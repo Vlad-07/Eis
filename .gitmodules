@@ -1,7 +1,3 @@
 [submodule "Eis/vendor/glm"]
 	path = Eis/vendor/glm
 	url = https://github.com/g-truc/glm
-[submodule "Eis/vendor/imgui"]
-	path = Eis/vendor/imgui
-	url = https://github.com/ocornut/imgui
-	branch = docking
