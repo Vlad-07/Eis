@@ -9,7 +9,7 @@ void Sandbox2D::OnAttach()
 {
 	EIS_TRACE("Loading assets...");
 	ice = Eis::Texture2D::Create("assets/textures/ice.png");
-	map = Eis::Texture2D::Create("assets/textures/10k.png");
+//	map = Eis::Texture2D::Create("assets/textures/10k.png");
 	EIS_TRACE("Done loading assets");
 }
 
@@ -28,7 +28,7 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 
 	Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
 	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
-	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
+//	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
 
 	Eis::Renderer2D::EndScene();
 }
