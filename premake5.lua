@@ -73,7 +73,6 @@ project "Eis"
 
 		defines
 		{
-			"EIS_BUILD_DLL",
 			"EIS_PLATFORM_WINDOWS",
 			"GLFW_INCLUDE_NONE"
 		}
