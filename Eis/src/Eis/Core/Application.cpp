@@ -6,6 +6,7 @@
 #include "../Input/Input.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
+#include "Eis/Core/Random.h"
 
 #include <GLFW/glfw3.h>
 
@@ -25,6 +26,7 @@ namespace Eis
 		m_Window->SetVSync(true);
 
 		Renderer::Init();
+		Random::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
