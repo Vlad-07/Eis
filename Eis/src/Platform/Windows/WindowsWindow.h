@@ -11,7 +11,7 @@ namespace Eis
 	{
 	private:
 		GLFWwindow* m_Window = nullptr;
-		GraphicsContext* m_Context;
+		Scope<GraphicsContext> m_Context;
 
 		struct WindowData
 		{

@@ -7,7 +7,7 @@ namespace Eis
 	class RenderCommands
 	{
 	private:
-		static RendererAPI* s_RenderAPI;
+		static Scope<RendererAPI> s_RenderAPI;
 
 	public:
 		inline static void Init()

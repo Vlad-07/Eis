@@ -55,22 +55,21 @@ namespace Eis
 		vb->Bind();
 
 		const auto& vbLayout = vb->GetLayout();
-		uint32_t index = 0;
+
 		for (const auto& element : vbLayout)
 		{
-			glEnableVertexAttribArray(index + m_VertexBufferIndexOffset);
-			glVertexAttribPointer(index + m_VertexBufferIndexOffset,
+			glEnableVertexAttribArray(m_VertexBufferIndex);
+			glVertexAttribPointer(m_VertexBufferIndex,
 				element.GetComponentCount(),
 				ShaderDataTypeToOpenGLType(element.Type),
 				element.Normalized ? GL_TRUE : GL_FALSE,
 				vbLayout.GetStride(),
-				(const void*)(intptr_t)element.Offset); // (intptr_t) is ok?
+				(const void*)element.Offset);
 
-			index++;
+			m_VertexBufferIndex++;
 		}
 
 		m_VertexBuffers.push_back(vb);
-		m_VertexBufferIndexOffset += static_cast<uint32_t>(vbLayout.GetElements().size());
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& ib)

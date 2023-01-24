@@ -18,10 +18,10 @@ namespace Eis
 
 		bool m_Rotation;
 
-		glm::vec3 m_CamPos = { 0.0f, 0.0f, 0.0f };
-		float m_CameraRotation = 0.0f;
+		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+		float m_CameraRotation = 0.0f; //Degrees, anti-clockwise direction
 		float m_CameraSpeed = 2.0f,
-			m_CameraRotationSpeed = 90.0f, // degrees/second
+			m_CameraRotationSpeed = 90.0f,
 			m_ZoomSensitivity = 5.0f;
 
 	public:

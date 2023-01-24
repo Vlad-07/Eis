@@ -15,7 +15,7 @@ namespace Eis
 			glm::mat4 ViewProjMat;
 		};
 
-		static SceneData* s_SceneData;
+		static Scope<SceneData> s_SceneData;
 
 	public:
 

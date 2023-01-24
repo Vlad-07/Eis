@@ -9,7 +9,7 @@
 
 namespace Eis
 {
-	static bool s_GLFWInitialized = false;
+	static uint8_t s_GLFWWindowCount = 0;
 
 	Window* Window::Create(const WindowProps& props)
 	{
@@ -34,8 +34,9 @@ namespace Eis
 
 		EIS_CORE_INFO("Initialized '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 		
-		if (!s_GLFWInitialized)
+		if (s_GLFWWindowCount == 0)
 		{
+			EIS_CORE_INFO("Initializing GLFW");
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
 
@@ -43,14 +44,14 @@ namespace Eis
 			{
 					EIS_CORE_CRITICAL("Open GL error ({0}): {1}", error_code, description);
 			});
-
-			s_GLFWInitialized = true;
 		}
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		m_Context = new OpenGLContext(m_Window);
+		s_GLFWWindowCount++;
+
+		m_Context = CreateScope<OpenGLContext>(m_Window);
 		m_Context->Init();
 		
 
@@ -153,7 +154,13 @@ namespace Eis
 	{
 		EIS_TRACE("Destroyed '{0}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
-		glfwTerminate();
+		s_GLFWWindowCount--;
+
+		if (s_GLFWWindowCount == 0)
+		{
+			EIS_INFO("Terminating GLFW");
+			glfwTerminate();
+		}
 	}
 
 	void WindowsWindow::OnUpdate()

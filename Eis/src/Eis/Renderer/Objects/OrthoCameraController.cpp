@@ -14,33 +14,44 @@ namespace Eis
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
-		float deltaTime = ts;
-		float speedModifier = 1.0f;
-
-		if (Input::IsKeyPressed(EIS_KEY_LEFT_SHIFT))
-			speedModifier = m_SpeedMultiplier;
-
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
-			m_CamPos.y += m_CameraSpeed * deltaTime * speedModifier;
+		{
+			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.y +=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+		}
 		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
-			m_CamPos.y -= m_CameraSpeed * deltaTime * speedModifier;
+		{
+			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.y -=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+		}
 		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
-			m_CamPos.x -= m_CameraSpeed * deltaTime * speedModifier;
+		{
+			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+		}
 		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
-			m_CamPos.x += m_CameraSpeed * deltaTime * speedModifier;
+		{
+			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+		}
 
 		if (m_Rotation)
 		{
 			if (Input::IsKeyPressed(EIS_KEY_Q))
-				m_CameraRotation += m_CameraRotationSpeed * deltaTime * speedModifier;
+				m_CameraRotation += m_CameraRotationSpeed * ts;
 			if (Input::IsKeyPressed(EIS_KEY_E))
-				m_CameraRotation -= m_CameraRotationSpeed * deltaTime * speedModifier;
+				m_CameraRotation -= m_CameraRotationSpeed * ts;
+
+			if (m_CameraRotation > 180.0f)
+				m_CameraRotation -= 360.0f;
+			else if (m_CameraRotation <= -180.0f)
+				m_CameraRotation += 360.0f;
 
 			m_Camera.SetRotation(m_CameraRotation);
 		}
 
 
-		m_Camera.SetPosition(m_CamPos);
+		m_Camera.SetPosition(m_CameraPosition);
 
 		m_CameraSpeed = m_ZoomLevel; // HACK
 	}

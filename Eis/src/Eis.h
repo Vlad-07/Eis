@@ -6,7 +6,7 @@
 #include "Eis/Core/Application.h"
 #include "Eis/Core/Log.h"
 #include "Eis/Core/TimeStep.h"
-#include "Eis/Core/Random.h"
+#include "Eis/Utils/Random.h"
 
 #include "Eis/Core/Layer.h"
 #include "Eis/ImGui/ImGuiLayer.h"

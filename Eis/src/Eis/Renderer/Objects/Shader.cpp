@@ -16,7 +16,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return std::make_shared<OpenGLShader>(filepath);
+			return CreateRef<OpenGLShader>(filepath);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");
@@ -32,7 +32,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return std::make_shared<OpenGLShader>(name, vsSrc, fsSrc);
+			return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");

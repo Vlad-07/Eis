@@ -5,5 +5,5 @@
 
 namespace Eis
 {
-	RendererAPI* RenderCommands::s_RenderAPI = new OpenGLRendererAPI;
+	Scope<RendererAPI> RenderCommands::s_RenderAPI = CreateScope<OpenGLRendererAPI>();
 }

@@ -10,7 +10,10 @@ namespace Eis
 	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : m_Layers)
+		{
+			layer->OnDetach();
 			delete layer;
+		}
 	}
 
 	void LayerStack::PushLayer(Layer* layer)
@@ -40,7 +43,7 @@ namespace Eis
 	void LayerStack::PopOverlay(Layer* overlay)
 	{
 		auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
-		if (it != m_Layers.begin() + m_LayerInsertIndex)
+		if (it != m_Layers.end())
 		{
 			overlay->OnDetach();
 			m_Layers.erase(it);
