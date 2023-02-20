@@ -6,7 +6,7 @@
 #include "../Input/Input.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
-#include "Eis/Utils/Random.h"
+#include "Eis/Core/Random.h"
 
 #include <GLFW/glfw3.h>
 
