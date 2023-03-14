@@ -17,6 +17,11 @@ namespace Eis
 			s_RandomEngine.seed(std::random_device()());
 		}
 
+		static void SetSeed(uint32_t seed)
+		{
+			s_RandomEngine.seed(seed);
+		}
+
 		static uint32_t UInt()
 		{
 			return s_Distribution(s_RandomEngine);
