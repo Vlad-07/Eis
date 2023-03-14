@@ -22,6 +22,8 @@ IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 IncludeDir["ImGui"] = "Eis/vendor/imgui"
 IncludeDir["glm"] = "Eis/vendor/glm"
 IncludeDir["stb_image"] = "Eis/vendor/stb_image"
+IncludeDir["stb_image_resize"] = "Eis/vendor/stb_image_resize"
+IncludeDir["stb_image_write"] = "Eis/vendor/stb_image_write"
 
 group "Dependencies"
 	include "Eis/vendor/GLFW"
@@ -49,6 +51,10 @@ project "Eis"
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/stb_image_resize/**.h",
+		"%{prj.name}/vendor/stb_image_resize/**.cpp",
+		"%{prj.name}/vendor/stb_image_write/**.h",
+		"%{prj.name}/vendor/stb_image_write/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 
@@ -62,7 +68,9 @@ project "Eis"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.stb_image_resize}",
+		"%{IncludeDir.stb_image_write}"
 	}
 
 	links

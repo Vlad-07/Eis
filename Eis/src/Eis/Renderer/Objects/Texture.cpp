@@ -37,4 +37,20 @@ namespace Eis
 		EIS_CORE_ASSERT(false, "Unknown API");
 		return nullptr;
 	}
+
+	Ref<Texture2D> Texture2D::Create(const Image& image)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None:
+			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			return nullptr;
+
+		case RendererAPI::API::OpenGL:
+			return CreateRef<OpenGLTexture2D>(image);
+		}
+
+		EIS_CORE_ASSERT(false, "Unknown API");
+		return nullptr;
+	}
 }
