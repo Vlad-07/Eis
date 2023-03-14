@@ -25,7 +25,6 @@ namespace Eis
 		glm::vec3 GetPixel(int x, int y);
 
 		void SetChannels(int channels) { m_Channels = channels; }
-		void ChangeColorFormat(ColorFormat format);
 		Image Resize(int newWidth, int newHeight, int newChannels = 0);
 
 		void SaveToDisk(const std::string name);

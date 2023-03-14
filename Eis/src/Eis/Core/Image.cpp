@@ -59,54 +59,6 @@ Eis::Image Eis::Image::Resize(int newWidth, int newHeight, int newChannels)
 	return Image(newData, newWidth, newHeight, newChannels);
 }
 
-void Eis::Image::ChangeColorFormat(ColorFormat format)
-{
-	if (format == None)
-	{
-		EIS_ERROR("Invalid color format used!\n");
-		return;
-	}
-
-	if (format == RGB)
-		return;
-
-	for (int y = 0; y < m_Height; y++)
-	{
-		for (int x = 0; x < m_Width; x++)
-		{
-			glm::ivec3 pixel = { m_Data + x * m_Channels + y * m_Width * m_Channels,
-								 m_Data + x * m_Channels + y * m_Width * m_Channels + 1,
-								 m_Data + x * m_Channels + y * m_Width * m_Channels + 2 };
-			switch (format)
-			{
-			case Image::Y:
-				*(uint8_t*)pixel.x = *(uint8_t*)pixel.y = *(uint8_t*)pixel.z = (*(uint8_t*)pixel.x + *(uint8_t*)pixel.y + *(uint8_t*)pixel.z) / 3;
-				break;
-			case Image::R:
-				*(uint8_t*)pixel.y = *(uint8_t*)pixel.z = 0;
-				break;
-			case Image::G:
-				*(uint8_t*)pixel.x = *(uint8_t*)pixel.z = 0;
-				break;
-			case Image::B:
-				*(uint8_t*)pixel.x = *(uint8_t*)pixel.y = 0;
-				break;
-			case Image::RG:
-				*(uint8_t*)pixel.z = 0;
-				break;
-			case Image::GB:
-				*(uint8_t*)pixel.x = 0;
-				break;
-			case Image::RB:
-				*(uint8_t*)pixel.y = 0;
-				break;
-			default:
-				break;
-			}
-		}
-	}
-}
-
 void Eis::Image::SaveToDisk(const std::string name)
 {
 	auto i = name.find_last_of(".");
