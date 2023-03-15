@@ -8,7 +8,10 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach()
 {
 	EIS_TRACE("Loading assets...");
-	ice = Eis::Texture2D::Create("assets/textures/ice.png");
+
+	Eis::Image img("assets/textures/ice.png");
+
+	ice = Eis::Texture2D::Create(img);
 //	map = Eis::Texture2D::Create("assets/textures/10k.png");
 	EIS_TRACE("Done loading assets");
 }

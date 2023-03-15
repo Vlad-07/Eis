@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stb_image.h>
 #include <glm/glm.hpp>
 
 namespace Eis
@@ -13,16 +12,18 @@ namespace Eis
 			None = 0, Y, R, G, B, RG, GB, RB, RGB
 		};
 
-		Image(const std::string path);
-		Image(stbi_uc* data, int width, int height, int channels);
+		Image(const std::string path, int flipVertically = 1);
+		Image(uint8_t* data, int width, int height, int channels);
+		Image(const Image& img);
+		Image(Image&& img);
 		~Image();
 
-		int GetWidth() const { return m_Width; }
-		int GetHeight() const { return m_Height; }
-		int GetChannels() const { return m_Channels; }
+		uint32_t GetWidth() const { return m_Width; }
+		uint32_t GetHeight() const { return m_Height; }
+		uint32_t GetChannels() const { return m_Channels; }
 		bool ValidImage() const { return m_IsValid; }
-		stbi_uc* GetData() const { return m_Data; }
-		glm::vec3 GetPixel(int x, int y);
+		uint8_t* GetData() const { return m_Data; }
+		glm::vec3 GetPixel(int x, int y) const;
 
 		void SetChannels(int channels) { m_Channels = channels; }
 		Image Resize(int newWidth, int newHeight, int newChannels = 0);
@@ -32,8 +33,8 @@ namespace Eis
 		uint8_t operator[](int i);
 
 	private:
-		stbi_uc* m_Data;
-		int m_Width, m_Height, m_Channels;
+		uint8_t* m_Data;
+		uint32_t m_Width, m_Height, m_Channels;
 		bool m_IsValid;
 	};
 }

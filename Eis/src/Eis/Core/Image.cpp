@@ -3,13 +3,15 @@
 
 #include <Eis/Core/Log.h>
 
+#include <stb_image.h>
 #include <stb_image_resize.h>
 #include <stb_image_write.h>
 
-Eis::Image::Image(const std::string path) : m_IsValid(false)
+Eis::Image::Image(const std::string path, int flipVertically) : m_IsValid(false)
 {
 	int width = 0, height = 0, channels = 0;
-	stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, channels);
+	stbi_set_flip_vertically_on_load(flipVertically);
+	uint8_t* data = (uint8_t*)stbi_load(path.c_str(), &width, &height, &channels, channels);
 	if (!data)
 	{
 		EIS_ERROR("Invalid image path: {0}\n\n", path);
@@ -27,7 +29,7 @@ Eis::Image::Image(const std::string path) : m_IsValid(false)
 	m_Channels = channels;
 }
 
-Eis::Image::Image(stbi_uc* data, int width, int height, int channels) : m_IsValid(true)
+Eis::Image::Image(uint8_t* data, int width, int height, int channels) : m_IsValid(true)
 {
 	m_Data = data;
 	m_Width = width;
@@ -35,17 +37,39 @@ Eis::Image::Image(stbi_uc* data, int width, int height, int channels) : m_IsVali
 	m_Channels = channels;
 }
 
+Eis::Image::Image(const Image& img) : m_IsValid(true)
+{
+	m_Width = img.GetWidth();
+	m_Height = img.GetHeight();
+	m_Channels = img.GetChannels();
+
+	delete[] m_Data;
+	m_Data = new uint8_t[m_Width * m_Height * m_Channels];
+
+	for (uint32_t i = 0; i < m_Width * m_Height * m_Channels; i++)
+		m_Data[i] = img.GetData()[i];
+}
+
+Eis::Image::Image(Image&& img) : m_IsValid(true)
+{
+	m_Width = img.GetWidth();
+	m_Height = img.GetHeight();
+	m_Channels = img.GetChannels();
+	m_Data = img.GetData();
+
+	img.m_Data = nullptr;
+}
+
 Eis::Image::~Image()
 {
 	stbi_image_free(m_Data);
 }
 
-glm::vec3 Eis::Image::GetPixel(int x, int y)
+glm::vec3 Eis::Image::GetPixel(int x, int y) const
 {
-	glm::vec3 pixel (m_Data[x * m_Channels + y * m_Width * m_Channels],
-				m_Data[x * m_Channels + y * m_Width * m_Channels + 1],
-				m_Data[x * m_Channels + y * m_Width * m_Channels + 2]);
-	return pixel;
+	return { m_Data[x * m_Channels + y * m_Width * m_Channels],
+			 m_Data[x * m_Channels + y * m_Width * m_Channels + 1],
+			 m_Data[x * m_Channels + y * m_Width * m_Channels + 2] };
 }
 
 Eis::Image Eis::Image::Resize(int newWidth, int newHeight, int newChannels)
@@ -53,7 +77,7 @@ Eis::Image Eis::Image::Resize(int newWidth, int newHeight, int newChannels)
 	if (newChannels == 0)
 		newChannels = m_Channels;
 
-	stbi_uc* newData = new stbi_uc[newWidth * newHeight * m_Channels];
+	uint8_t* newData = new uint8_t[newWidth * newHeight * m_Channels];
 	stbir_resize_uint8(m_Data, m_Width, m_Height, 0, newData, newWidth, newHeight, 0, newChannels);
 
 	return Image(newData, newWidth, newHeight, newChannels);
