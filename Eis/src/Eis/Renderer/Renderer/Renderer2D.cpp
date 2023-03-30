@@ -72,7 +72,7 @@ namespace Eis
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		DrawQuad({position.x, position.y, 0.0f}, size, color);
+		DrawQuad(glm::vec3(position, 0.0f), size, color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
@@ -89,7 +89,7 @@ namespace Eis
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture);
+		DrawQuad(glm::vec3(position, 0.0f), size, texture);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
@@ -106,7 +106,7 @@ namespace Eis
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
 	{
-		DrawQuad({ position.x, position.y, 0.0f }, size, texture, tint);
+		DrawQuad(glm::vec3(position, 0.0f), size, texture, tint);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
@@ -119,5 +119,15 @@ namespace Eis
 		s_Data->QuadVertexArray->Bind();
 
 		RenderCommands::DrawIndexed(s_Data->QuadVertexArray);
+	}
+
+	void Renderer2D::DrawCircle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+	{
+		DrawCircle(glm::vec3(position, 0.0f), size, color);
+	}
+
+	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+	{
+
 	}
 }

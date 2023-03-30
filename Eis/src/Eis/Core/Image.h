@@ -23,7 +23,7 @@ namespace Eis
 		uint32_t GetChannels() const { return m_Channels; }
 		bool ValidImage() const { return m_IsValid; }
 		uint8_t* GetData() const { return m_Data; }
-		glm::vec3 GetPixel(int x, int y) const;
+		glm::vec3 GetPixel(uint32_t x, uint32_t y) const;
 
 		void SetChannels(int channels) { m_Channels = channels; }
 		Image Resize(int newWidth, int newHeight, int newChannels = 0);
