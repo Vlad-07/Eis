@@ -128,6 +128,6 @@ namespace Eis
 
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-
+		EIS_CORE_CRITICAL("Eis does NOT support circle rendering yet!");
 	}
 }
