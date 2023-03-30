@@ -68,7 +68,10 @@ Eis::Image::~Image()
 glm::vec3 Eis::Image::GetPixel(uint32_t x, uint32_t y) const
 {
 	if (x < 0 || y < 0 || x > m_Width || y > m_Height)
+	{
 		EIS_ERROR("Invalid pixel requested!");
+		return;
+	}
 
 	return { m_Data[x * m_Channels + y * m_Width * m_Channels],
 			 m_Data[x * m_Channels + y * m_Width * m_Channels + 1],
