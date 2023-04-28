@@ -9,7 +9,7 @@ class Sandbox2D : public Eis::Layer
 {
 private:
 	Eis::OrthoCameraController m_CameraController;
-	Eis::Ref<Eis::Texture2D> ice, map;
+	Eis::Ref<Eis::Texture2D> ice, map, mouce;
 
 public:
 	Sandbox2D();

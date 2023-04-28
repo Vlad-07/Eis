@@ -9,9 +9,8 @@ void Sandbox2D::OnAttach()
 {
 	EIS_TRACE("Loading assets...");
 
-	Eis::Image img("assets/textures/ice.png");
-
-	ice = Eis::Texture2D::Create(img);
+	ice = Eis::Texture2D::Create("assets/textures/ice.png");
+	mouce = Eis::Texture2D::Create("assets/textures/mouce.png");
 //	map = Eis::Texture2D::Create("assets/textures/10k.png");
 	EIS_TRACE("Done loading assets");
 }
@@ -33,14 +32,15 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
 //	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
 
+	static float x = 0.0f, inc = 0.01f;
+	Eis::Renderer2D::DrawCircle({ x += inc, 1.0f }, glm::vec2(1.0f), mouce);
+	if (x > 2.0f || x < -2.0f) inc *= -1;
+
 	Eis::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImGuiRender()
 {
-	ImGui::Begin("Controls");
-
-	ImGui::End();
 }
 
 void Sandbox2D::OnEvent(Eis::Event& e)

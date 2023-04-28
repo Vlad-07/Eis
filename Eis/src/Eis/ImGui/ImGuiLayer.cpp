@@ -82,8 +82,4 @@ namespace Eis
 			glfwMakeContextCurrent(backup_current_context);
 		}
 	}
-
-	void ImGuiLayer::OnImGuiRender()
-	{
-	}
 }

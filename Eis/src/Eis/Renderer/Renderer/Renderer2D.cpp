@@ -13,6 +13,7 @@ namespace Eis
 	{
 		Ref<VertexArray> QuadVertexArray;
 		Ref<Shader> TextureShader;
+		Ref<Shader> CircleShader;
 		Ref<Texture2D> WhiteTexture;
 	};
 
@@ -52,6 +53,10 @@ namespace Eis
 		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetInt("u_Texture", 0);
+
+		s_Data->CircleShader = Shader::Create("assets/shaders/Circle.glsl");
+		s_Data->TextureShader->Bind();
+		s_Data->TextureShader->SetInt("u_Texture", 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -61,6 +66,9 @@ namespace Eis
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
+		s_Data->CircleShader->Bind();
+		s_Data->CircleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
+
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 	}
@@ -74,9 +82,9 @@ namespace Eis
 	{
 		DrawQuad(glm::vec3(position, 0.0f), size, color);
 	}
-
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", color);
 		s_Data->WhiteTexture->Bind();
 
@@ -91,9 +99,9 @@ namespace Eis
 	{
 		DrawQuad(glm::vec3(position, 0.0f), size, texture);
 	}
-
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
+		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", glm::vec4(1.0f));
 		texture->Bind();
 
@@ -108,9 +116,9 @@ namespace Eis
 	{
 		DrawQuad(glm::vec3(position, 0.0f), size, texture, tint);
 	}
-
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
 	{
+		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", tint);
 		texture->Bind();
 
@@ -125,9 +133,57 @@ namespace Eis
 	{
 		DrawCircle(glm::vec3(position, 0.0f), size, color);
 	}
-
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		EIS_CORE_CRITICAL("Eis does NOT support circle rendering yet!");
+		s_Data->CircleShader->Bind();
+		s_Data->CircleShader->SetFloat4("u_Color", color);
+		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f); // TODO: access these parameters
+		s_Data->CircleShader->SetFloat("u_Fade", 0.005f);
+
+		s_Data->WhiteTexture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  *rotation */ * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_Data->CircleShader->SetMat4("u_Transform", transform);
+		s_Data->QuadVertexArray->Bind();
+
+		RenderCommands::DrawIndexed(s_Data->QuadVertexArray);
+	}
+
+	void Renderer2D::DrawCircle(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+	{
+		DrawCircle(glm::vec3(position, 0.0f), size, texture);
+	}
+	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+	{
+		s_Data->CircleShader->Bind();
+		s_Data->CircleShader->SetFloat4("u_Color", glm::vec4(1.0f));
+		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f);
+		s_Data->CircleShader->SetFloat("u_Fade", 0.005f);
+		texture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  *rotation */ * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_Data->CircleShader->SetMat4("u_Transform", transform);
+		s_Data->QuadVertexArray->Bind();
+
+		RenderCommands::DrawIndexed(s_Data->QuadVertexArray);
+	}
+
+	void Renderer2D::DrawCircle(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
+	{
+		DrawCircle(glm::vec3(position, 0.0f), size, texture, tint);
+	}
+	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
+	{
+		s_Data->CircleShader->Bind();
+		s_Data->CircleShader->SetFloat4("u_Color", tint);
+		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f);
+		s_Data->CircleShader->SetFloat("u_Fade", 0.005f);
+		texture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) /*  *rotation */ * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_Data->CircleShader->SetMat4("u_Transform", transform);
+		s_Data->QuadVertexArray->Bind();
+
+		RenderCommands::DrawIndexed(s_Data->QuadVertexArray);
 	}
 }

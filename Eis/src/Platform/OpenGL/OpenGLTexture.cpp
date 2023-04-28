@@ -10,8 +10,7 @@ namespace Eis
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		: m_Path(path)
 	{
-		std::size_t found = path.find("C:/");
-		if (found != std::string::npos)
+		if (path.find("C:/") != std::string::npos)
 			EIS_CORE_WARN("Absolute path is not going to work on other computers!");
 
 		int width = 0, height = 0, channels = 0;

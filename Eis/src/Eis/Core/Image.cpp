@@ -42,6 +42,7 @@ Eis::Image::Image(const Image& img) : m_IsValid(true)
 	m_Width = img.GetWidth();
 	m_Height = img.GetHeight();
 	m_Channels = img.GetChannels();
+	m_Path = img.GetPath();
 
 	delete[] m_Data;
 	m_Data = new uint8_t[m_Width * m_Height * m_Channels];
@@ -50,12 +51,13 @@ Eis::Image::Image(const Image& img) : m_IsValid(true)
 		m_Data[i] = img.GetData()[i];
 }
 
-Eis::Image::Image(Image&& img) : m_IsValid(true)
+Eis::Image::Image(Image&& img) noexcept : m_IsValid(true)
 {
 	m_Width = img.GetWidth();
 	m_Height = img.GetHeight();
 	m_Channels = img.GetChannels();
 	m_Data = img.GetData();
+	m_Path = img.GetPath();
 
 	img.m_Data = nullptr;
 }
@@ -67,7 +69,7 @@ Eis::Image::~Image()
 
 glm::vec3 Eis::Image::GetPixel(uint32_t x, uint32_t y) const
 {
-	if (x < 0 || y < 0 || x > m_Width || y > m_Height)
+	if (x > m_Width || y > m_Height)
 	{
 		EIS_ERROR("Invalid pixel requested!");
 		return glm::vec3(1.0f, 0.0f, 1.0f);
@@ -89,7 +91,11 @@ Eis::Image Eis::Image::Resize(int newWidth, int newHeight, int newChannels)
 	return Image(newData, newWidth, newHeight, newChannels);
 }
 
-void Eis::Image::SaveToDisk(const std::string name)
+void Eis::Image::SaveToDisk() const
+{
+	SaveToDisk(m_Path.substr(m_Path.find_last_of('/') + 1));
+}
+void Eis::Image::SaveToDisk(const std::string name) const
 {
 	auto i = name.find_last_of(".");
 	std::string type = name.substr(i);
