@@ -6,9 +6,6 @@ namespace Eis
 {
 	class RenderCommands
 	{
-	private:
-		static Scope<RendererAPI> s_RenderAPI;
-
 	public:
 		inline static void Init()
 		{ s_RenderAPI->Init(); }
@@ -25,5 +22,13 @@ namespace Eis
 		inline static void DrawIndexed(const Ref<VertexArray>& va)
 		{ s_RenderAPI->DrawIndex(va); }
 
+		inline static void Enable(uint32_t code)
+		{ s_RenderAPI->Enable(code); }
+
+		inline static void Disable(uint32_t code)
+		{ s_RenderAPI->Disable(code); }
+
+	private:
+		static Scope<RendererAPI> s_RenderAPI;
 	};
 }

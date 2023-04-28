@@ -8,11 +8,12 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach()
 {
 	EIS_TRACE("Loading assets...");
-
 	ice = Eis::Texture2D::Create("assets/textures/ice.png");
 	mouce = Eis::Texture2D::Create("assets/textures/mouce.png");
 //	map = Eis::Texture2D::Create("assets/textures/10k.png");
-	EIS_TRACE("Done loading assets");
+	EIS_TRACE("Done loading assets.");
+
+	Eis::RenderCommands::Disable(0x0B71); // GL_DEPTH_TEST
 }
 
 void Sandbox2D::OnDetach()
@@ -27,7 +28,7 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 	Eis::RenderCommands::Clear();
 
 	Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
+	
 	Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
 	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
 //	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);

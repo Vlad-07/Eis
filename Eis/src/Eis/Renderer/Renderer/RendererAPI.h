@@ -23,6 +23,9 @@ namespace Eis
 
 		virtual void DrawIndex(const Ref<VertexArray>& va) = 0;
 
+		virtual void Enable(uint32_t code) = 0;
+		virtual void Disable(uint32_t code) = 0;
+
 		static inline API GetAPI() { return s_API; }
 
 	private:

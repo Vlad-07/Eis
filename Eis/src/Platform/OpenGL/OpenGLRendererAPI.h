@@ -14,5 +14,7 @@ namespace Eis
 
 		virtual void DrawIndex(const Ref<VertexArray>& va) override;
 
+		virtual void Enable(uint32_t code) override;
+		virtual void Disable(uint32_t code) override;
 	};
 }

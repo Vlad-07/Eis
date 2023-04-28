@@ -32,4 +32,14 @@ namespace Eis
 	{
 		glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
+
+	void OpenGLRendererAPI::Enable(uint32_t code)
+	{
+		glEnable(code);
+	}
+
+	void OpenGLRendererAPI::Disable(uint32_t code)
+	{
+		glDisable(code);
+	}
 }
