@@ -14,17 +14,14 @@ namespace Eis
 		OrthoCameraController(float aspectRatio, bool lock = false, bool rotation = false);
 		~OrthoCameraController() = default;
 
-		inline OrthographicCamera& GetCamera() { return m_Camera; }
-		const inline OrthographicCamera& GetCamera() const { return m_Camera; }
-
 		void OnUpdate(TimeStep ts);
 		void OnEvent(Event& e);
 
-		inline float GetCameraSpeed() { return m_CameraSpeed; }
-		inline void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
+		inline OrthographicCamera& GetCamera() { return m_Camera; }
+		inline const OrthographicCamera& GetCamera() const { return m_Camera; }
 
-		inline float GetSpeedModifier() { return m_SpeedMultiplier; }
-		inline void SetSpeedModifier(float speedMultiplier) { m_SpeedMultiplier = speedMultiplier; }
+		inline float GetCameraSpeed() const { return m_CameraSpeed; }
+		inline void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent e);
@@ -33,7 +30,6 @@ namespace Eis
 	private:
 		float m_AspectRatio;
 		float m_ZoomLevel = 1.0f;
-		float m_SpeedMultiplier = 2.0f;
 		OrthographicCamera m_Camera;
 
 		bool m_Rotation;
@@ -41,7 +37,7 @@ namespace Eis
 
 		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
 		float m_CameraRotation = 0.0f; //Degrees, anti-clockwise direction
-		float m_CameraSpeed = 2.0f,
+		float m_CameraSpeed = 1.0f,
 			  m_CameraRotationSpeed = 90.0f,
 		      m_ZoomSensitivity = 5.0f;
 	};

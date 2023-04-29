@@ -19,23 +19,23 @@ namespace Eis
 
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
 		{
-			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
-			m_CameraPosition.y +=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts; // Hack: find better way to influence speed according to zoom
+			m_CameraPosition.y +=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
 		{
-			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
-			m_CameraPosition.y -=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			m_CameraPosition.y -=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
 		{
-			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
-			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
 		{
-			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
-			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;
+			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
 		}
 
 		if (m_Rotation)
@@ -49,14 +49,11 @@ namespace Eis
 				m_CameraRotation -= 360.0f;
 			else if (m_CameraRotation <= -180.0f)
 				m_CameraRotation += 360.0f;
-
+			
 			m_Camera.SetRotation(m_CameraRotation);
 		}
 
-
 		m_Camera.SetPosition(m_CameraPosition);
-
-		m_CameraSpeed = m_ZoomLevel; // HACK
 	}
 
 	void OrthoCameraController::OnEvent(Event& e)
