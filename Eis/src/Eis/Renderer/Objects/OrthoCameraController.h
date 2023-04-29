@@ -33,7 +33,7 @@ namespace Eis
 		OrthographicCamera m_Camera;
 
 		bool m_Rotation;
-		bool m_Locked;
+		bool m_Locked; // TODO: specific movement/zoom lock
 
 		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
 		float m_CameraRotation = 0.0f; //Degrees, anti-clockwise direction

@@ -22,22 +22,35 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 {
-	m_CameraController.OnUpdate(ts);
+	EIS_PROFILE_FUNCTION();
 
-	Eis::RenderCommands::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-	Eis::RenderCommands::Clear();
 
-	Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	
-	Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
-	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
-//	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
+	{
+		EIS_PROFILE_SCOPE("CameraController::OnUpdate");
+		m_CameraController.OnUpdate(ts);
+	}
 
-	static float x = 0.0f, inc = 0.01f;
-	Eis::Renderer2D::DrawCircle({ x += inc, 1.0f }, glm::vec2(1.0f), glm::vec4(1.0f));
-	if (x > 2.0f || x < -2.0f) inc *= -1;
+	{
+		EIS_PROFILE_SCOPE("Renderer Prep");
+		Eis::RenderCommands::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+		Eis::RenderCommands::Clear();
+	}
 
-	Eis::Renderer2D::EndScene();
+	{
+		EIS_PROFILE_SCOPE("Renderer Draw");
+
+		Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
+
+		Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
+		Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
+		//	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
+
+		static float x = 0.0f, inc = 0.01f;
+		Eis::Renderer2D::DrawCircle({ x += inc, 1.0f }, glm::vec2(1.0f), glm::vec4(1.0f));
+		if (x > 2.0f || x < -2.0f) inc *= -1;
+
+		Eis::Renderer2D::EndScene();
+	}
 }
 
 void Sandbox2D::OnImGuiRender()

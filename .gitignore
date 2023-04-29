@@ -10,3 +10,6 @@ bin-int/
 *.filters
 *.sln
 imgui.ini
+Sandbox/EisProfile-Runtime.json
+Sandbox/EisProfile-Shutdown.json
+Sandbox/EisProfile-Startup.json

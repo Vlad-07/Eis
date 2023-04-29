@@ -44,6 +44,6 @@ namespace Eis
 		bool OnWindowClose(WindowCloseEvent e);
 	};
 
-	// Is defined in CLIENT:
+	// Is defined in CLIENT
 	Application* CreateApplication();
 }

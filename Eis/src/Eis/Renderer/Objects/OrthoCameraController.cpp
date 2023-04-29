@@ -19,7 +19,7 @@ namespace Eis
 
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
 		{
-			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts; // Hack: find better way to influence speed according to zoom
+			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts; // HACK: find better way to influence speed according to zoom
 			m_CameraPosition.y +=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
