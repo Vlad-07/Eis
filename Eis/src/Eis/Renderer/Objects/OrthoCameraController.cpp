@@ -6,14 +6,17 @@
 
 namespace Eis
 {
-	OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
-		: m_AspectRatio(aspectRatio), m_Rotation(rotation),
+	OrthoCameraController::OrthoCameraController(float aspectRatio, bool lock, bool rotation)
+		: m_AspectRatio(aspectRatio), m_Rotation(rotation), m_Locked(lock),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel)
 	{
 	}
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
+		if (m_Locked)
+			return;
+
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
 		{
 			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * ts;

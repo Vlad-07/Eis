@@ -10,22 +10,9 @@ namespace Eis
 {
 	class OrthoCameraController
 	{
-	private:
-		float m_AspectRatio;
-		float m_ZoomLevel = 1.0f;
-		float m_SpeedMultiplier = 2.0f;
-		OrthographicCamera m_Camera;
-
-		bool m_Rotation;
-
-		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
-		float m_CameraRotation = 0.0f; //Degrees, anti-clockwise direction
-		float m_CameraSpeed = 2.0f,
-			m_CameraRotationSpeed = 90.0f,
-			m_ZoomSensitivity = 5.0f;
-
 	public:
-		OrthoCameraController(float aspectRatio, bool rotation = false);
+		OrthoCameraController(float aspectRatio, bool lock = false, bool rotation = false);
+		~OrthoCameraController() = default;
 
 		inline OrthographicCamera& GetCamera() { return m_Camera; }
 		const inline OrthographicCamera& GetCamera() const { return m_Camera; }
@@ -42,5 +29,20 @@ namespace Eis
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent e);
 		bool OnWindowResized(WindowResizeEvent e);
+
+	private:
+		float m_AspectRatio;
+		float m_ZoomLevel = 1.0f;
+		float m_SpeedMultiplier = 2.0f;
+		OrthographicCamera m_Camera;
+
+		bool m_Rotation;
+		bool m_Locked;
+
+		glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
+		float m_CameraRotation = 0.0f; //Degrees, anti-clockwise direction
+		float m_CameraSpeed = 2.0f,
+			  m_CameraRotationSpeed = 90.0f,
+		      m_ZoomSensitivity = 5.0f;
 	};
 }

@@ -42,11 +42,8 @@ namespace Eis
 		bool Normalized;
 
 		BufferElement() = default;
-
 		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
-		{
-		}
+			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {}
 
 		uint32_t GetComponentCount() const
 		{
@@ -73,15 +70,9 @@ namespace Eis
 
 	class BufferLayout
 	{
-	private:
-		std::vector<BufferElement> m_Elements;
-		uint32_t m_Stride = 0;
-
 	public:
-		BufferLayout() {}
-
-		BufferLayout(const std::initializer_list<BufferElement>& elements)
-			: m_Elements(elements)
+		BufferLayout() = default;
+		BufferLayout(const std::initializer_list<BufferElement>& elements) : m_Elements(elements)
 		{
 			CalculateOffAndStride();
 		}
@@ -106,6 +97,10 @@ namespace Eis
 				m_Stride += element.Size;
 			}
 		}
+
+	private:
+		std::vector<BufferElement> m_Elements;
+		uint32_t m_Stride = 0;
 	};
 
 

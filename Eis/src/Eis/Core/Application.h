@@ -11,7 +11,7 @@
 
 namespace Eis
 {
-	class EIS_API Application
+	class Application
 	{
 	public:
 		Application();

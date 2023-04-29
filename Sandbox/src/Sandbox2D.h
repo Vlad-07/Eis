@@ -7,10 +7,6 @@
 
 class Sandbox2D : public Eis::Layer
 {
-private:
-	Eis::OrthoCameraController m_CameraController;
-	Eis::Ref<Eis::Texture2D> ice, map, mouce;
-
 public:
 	Sandbox2D();
 	virtual ~Sandbox2D() = default;
@@ -21,4 +17,8 @@ public:
 	virtual void OnUpdate(Eis::TimeStep ts) override;
 	virtual void OnImGuiRender() override;
 	virtual void OnEvent(Eis::Event& e) override;
+
+private:
+	Eis::OrthoCameraController m_CameraController;
+	Eis::Ref<Eis::Texture2D> ice, map, mouce;
 };

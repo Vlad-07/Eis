@@ -11,14 +11,12 @@ namespace Eis
 		unsigned int Width;
 		unsigned int Height;
 
-		WindowProps(const std::string& title = "Eis Engine", unsigned int width = 1280, unsigned int height = 720) : Title(title), Width(width), Height(height)
-		{
-		}
+		WindowProps(const std::string& title = "Default Window", unsigned int width = 1280, unsigned int height = 720) : Title(title), Width(width), Height(height) {}
 	};
 
 
 	// Desktop system based window interface
-	class EIS_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

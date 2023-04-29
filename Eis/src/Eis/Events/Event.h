@@ -33,11 +33,8 @@ namespace Eis
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
 	
-	class EIS_API Event
+	class Event
 	{
-	private:
-		friend class EventDispatcher;
-
 	public:
 		bool m_Handled = false;
 
@@ -50,14 +47,15 @@ namespace Eis
 		{
 			return GetCategoryFlags() & category; // category flags == category
 		}
+
+	private:
+		friend class EventDispatcher;
 	};
 
 	class EventDispatcher
 	{
 	public:
-		EventDispatcher(Event& event)
-			: m_Event(event)
-		{}
+		EventDispatcher(Event& event) : m_Event(event) {}
 
 		// F will be deduced by the compiler
 		template<typename T, typename F>

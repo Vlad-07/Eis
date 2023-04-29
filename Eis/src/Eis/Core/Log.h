@@ -6,7 +6,7 @@
 #include "spdlog/fmt/ostr.h"
 
 // #include <stdarg.h>
-// Should consider over compiler specific "__VA_ARGS__" ?
+// SUS: Consider over compiler specific "__VA_ARGS__" ?
 
 
 // Core log macros
@@ -27,18 +27,16 @@
 
 namespace Eis
 {
-	class EIS_API Log
+	class Log
 	{
-	private:
-		static std::shared_ptr<spdlog::logger> s_CoreLogger;
-		static std::shared_ptr<spdlog::logger> s_ClientLogger;
-		
 	public:
-		
 		static void Init();
 
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
+	private:
+		static std::shared_ptr<spdlog::logger> s_CoreLogger;
+		static std::shared_ptr<spdlog::logger> s_ClientLogger;
 	};
 }

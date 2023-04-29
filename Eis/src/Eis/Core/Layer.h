@@ -7,11 +7,8 @@
 
 namespace Eis
 {
-	class EIS_API Layer
+	class Layer
 	{
-	protected:
-		std::string m_DebugName;
-
 	public:
 		Layer(const std::string& debugName = "Layer");
 		virtual ~Layer() = default;
@@ -23,5 +20,8 @@ namespace Eis
 		virtual void OnEvent(Event& event) {}
 
 		inline const std::string& GetName() const { return m_DebugName; }
+
+	protected:
+		std::string m_DebugName;
 	};
 }

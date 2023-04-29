@@ -4,24 +4,21 @@
 
 namespace Eis
 {
-	class EIS_API KeyEvent : public Event
+	class KeyEvent : public Event
 	{
-	protected:
-		KeyEvent(int keycode) : m_KeyCode(keycode) {}
-
-		int m_KeyCode;
-
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
 
 		EVENT_CLASS_CATEGORY (EventCategoryKeyboard | EventCategoryInput)
+
+	protected:
+		KeyEvent(int keycode) : m_KeyCode(keycode) {}
+
+		int m_KeyCode;
 	};
 
-	class EIS_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
-	private:
-		int m_RepeatCount;
-
 	public:
 		KeyPressedEvent(int keycode, int repeatCount)
 			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
@@ -36,9 +33,12 @@ namespace Eis
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
+
+	private:
+		int m_RepeatCount;
 	};
 
-	class EIS_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode)
@@ -54,7 +54,7 @@ namespace Eis
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class EIS_API KeyTypedEvent : public KeyEvent
+	class KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(int keycode)

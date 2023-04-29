@@ -4,11 +4,8 @@
 
 namespace Eis
 {
-	class EIS_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
-	private:
-		float m_MouseX, m_MouseY;
-
 	public:
 		MouseMovedEvent(float x, float y) : m_MouseX(x), m_MouseY(y) {}
 
@@ -24,13 +21,13 @@ namespace Eis
 
 		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+	private:
+		float m_MouseX, m_MouseY;
 	};
 
-	class EIS_API MouseScrolledEvent : public Event
+	class MouseScrolledEvent : public Event
 	{
-	private:
-		float m_XOffset, m_YOffset;
-
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset) : m_XOffset(xOffset), m_YOffset(yOffset) {}
 
@@ -46,28 +43,27 @@ namespace Eis
 
 		EVENT_CLASS_TYPE(MouseScrolled)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+	private:
+		float m_XOffset, m_YOffset;
 	};
 
 
-
-	class EIS_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
-	protected:
-		int m_Button;
-
-		MouseButtonEvent(int button) : m_Button(button) {}
-
 	public:
 		inline int GetMouseButton() const { return m_Button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+	protected:
+		MouseButtonEvent(int button) : m_Button(button) {}
+
+		int m_Button;
 	};
 
-	class EIS_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
-	private:
-
-
 	public:
 		MouseButtonPressedEvent(int button) : MouseButtonEvent(button) {}
 
@@ -81,11 +77,8 @@ namespace Eis
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class EIS_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
-	private:
-
-
 	public:
 		MouseButtonReleasedEvent(int button) : MouseButtonEvent(button) {}
 

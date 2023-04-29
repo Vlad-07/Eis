@@ -12,9 +12,7 @@
 
 namespace Eis
 {
-	ImGuiLayer::ImGuiLayer(): Layer("ImGuiLayer")
-	{
-	}
+	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 	void ImGuiLayer::OnAttach()
 	{

@@ -10,7 +10,6 @@ namespace Eis
 	class Renderer2D
 	{
 	public:
-
 		static void Init();
 		static void Shutdown();
 
