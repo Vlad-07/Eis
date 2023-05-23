@@ -50,7 +50,7 @@ namespace Eis
 	{
 		while (m_Running)
 		{
-			float time = glfwGetTime(); // should be in platform specific
+			float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
 			TimeStep timeStep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
