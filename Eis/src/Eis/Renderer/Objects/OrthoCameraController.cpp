@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "OrthoCameraController.h"
+
+#include "Eis/Renderer/Objects/OrthoCameraController.h"
 
 #include "Eis/Input/Input.h"
 #include "Eis/Input/Keycodes.h"
@@ -9,8 +10,7 @@ namespace Eis
 	OrthoCameraController::OrthoCameraController(float aspectRatio, bool lock, bool rotation)
 		: m_AspectRatio(aspectRatio), m_Rotation(rotation), m_Locked(lock),
 		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel)
-	{
-	}
+	{}
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{

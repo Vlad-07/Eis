@@ -1,10 +1,11 @@
 #include "Eispch.h"
-#include "Log.h"
+
+#include "Eis/Core/Log.h"
 
 namespace Eis
 {
-	std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
-	std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
+	Ref<spdlog::logger> Log::s_CoreLogger;
+	Ref<spdlog::logger> Log::s_ClientLogger;
 
 	void Log::Init()
 	{

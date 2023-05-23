@@ -3,8 +3,6 @@
 #include "Eis/Core/Core.h"
 
 
-// Include this file and boom you can use the input pooling system
-
 namespace Eis
 {
 	class Input

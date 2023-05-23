@@ -1,8 +1,9 @@
 #include "Eispch.h"
-#include "Renderer.h"
 
-#include "RenderCommands.h"
-#include "Renderer2D.h"
+#include "Eis/Renderer/Renderer/Renderer.h"
+
+#include "Eis/Renderer/Renderer/RenderCommands.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -42,8 +43,8 @@ namespace Eis
 	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& va, const glm::mat4& transform)
 	{
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_VP", s_SceneData->ViewProjMat);
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
+		shader->SetMat4("u_VP", s_SceneData->ViewProjMat);
+		shader->SetMat4("u_Transform", transform);
 
 		va->Bind();
 		RenderCommands::DrawIndexed(va);

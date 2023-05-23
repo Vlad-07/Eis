@@ -1,7 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <Eis/Renderer/Objects/VertexArray.h>
+
+#include "Eis/Renderer/Objects/VertexArray.h"
 
 namespace Eis
 {
@@ -27,6 +28,7 @@ namespace Eis
 		virtual void Disable(uint32_t code) = 0;
 
 		static inline API GetAPI() { return s_API; }
+		static Scope<RendererAPI> Create();
 
 	private:
 		static API s_API;

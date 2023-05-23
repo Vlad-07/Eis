@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event.h"
+#include "Eis/Events/Event.h"
 
 namespace Eis
 {
@@ -9,7 +9,7 @@ namespace Eis
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
 
-		EVENT_CLASS_CATEGORY (EventCategoryKeyboard | EventCategoryInput)
+		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
 	protected:
 		KeyEvent(int keycode) : m_KeyCode(keycode) {}

@@ -3,7 +3,7 @@
 
 #include "imgui.h"
 
-#include "../Input/Input.h"
+#include "Eis/Input/Input.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 #include "Eis/Core/Random.h"
@@ -14,7 +14,7 @@ namespace Eis
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
+	Application::Application() : m_Running(true), m_Minimized(false), m_LastFrameTime(0.0f)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -34,6 +34,8 @@ namespace Eis
 
 	Application::~Application()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		Renderer::Shutdown();
 	}
 
@@ -80,9 +82,9 @@ namespace Eis
 		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(Application::OnWindowResize));
 
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
-			(*--it)->OnEvent(e);
+			(*it)->OnEvent(e);
 			if (e.m_Handled)
 				break;
 		}

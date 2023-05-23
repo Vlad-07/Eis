@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "WindowsWindow.h"
+
+#include "Platform/Windows/WindowsWindow.h"
 
 #include "Eis/Events/ApplicationEvent.h"
 #include "Eis/Events/KeyEvent.h"
@@ -44,7 +45,6 @@ namespace Eis
 		{
 			EIS_PROFILE_SCOPE("glfwInit");
 
-			EIS_CORE_INFO("Initializing GLFW");
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
 
@@ -63,7 +63,7 @@ namespace Eis
 			s_GLFWWindowCount++;
 		}
 
-		m_Context = CreateScope<OpenGLContext>(m_Window);
+		m_Context = OpenGLContext::Create(m_Window);
 		m_Context->Init();
 		
 
@@ -171,10 +171,7 @@ namespace Eis
 		s_GLFWWindowCount--;
 
 		if (s_GLFWWindowCount == 0)
-		{
-			EIS_INFO("Terminating GLFW");
 			glfwTerminate();
-		}
 	}
 
 	void WindowsWindow::OnUpdate()

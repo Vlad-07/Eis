@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "Shader.h"
+
+#include "Eis/Renderer/Objects/Shader.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 
@@ -12,14 +13,14 @@ namespace Eis
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLShader>(filepath);
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
+		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
 
@@ -28,14 +29,14 @@ namespace Eis
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
+		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
 

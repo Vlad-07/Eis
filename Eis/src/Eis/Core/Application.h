@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Core.h"
-#include "Eis/Core/TimeStep.h"
-#include "Window.h"
-#include "LayerStack.h"
-#include "../Events/Event.h"
-#include "../Events/ApplicationEvent.h"
+#include "Eis/Core/Core.h"
 
-#include "../ImGui/ImGuiLayer.h"
+#include "Eis/Core/TimeStep.h"
+#include "Eis/Core/Window.h"
+#include "Eis/Core/LayerStack.h"
+
+#include "Eis/Events/Event.h"
+#include "Eis/Events/ApplicationEvent.h"
+
+#include "Eis/ImGui/ImGuiLayer.h"
 
 namespace Eis
 {
@@ -28,20 +30,20 @@ namespace Eis
 		inline Window& GetWindow() { return *m_Window; }
 
 	private:
+		bool OnWindowResize(WindowResizeEvent e);
+		bool OnWindowClose(WindowCloseEvent e);
+
+	private:
 		static Application* s_Instance;
 		Eis::Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
 
-		float m_LastFrameTime = 0.0f;
+		float m_LastFrameTime;
 
-		bool m_Running = true;
-		bool m_Minimized = false;
-
-	private:
-		bool OnWindowResize(WindowResizeEvent e);
-		bool OnWindowClose(WindowCloseEvent e);
+		bool m_Running;
+		bool m_Minimized;
 	};
 
 	// Is defined in CLIENT

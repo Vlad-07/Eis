@@ -2,7 +2,8 @@
 
 #include "Eis.h"
 
-#include "imgui.h"
+#include <imgui.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 class Sandbox2D : public Eis::Layer

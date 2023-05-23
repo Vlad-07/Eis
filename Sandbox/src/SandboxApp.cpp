@@ -1,15 +1,14 @@
 #include <Eis.h>
 #include <Eis/Core/EntryPoint.h>
 
-#include "imgui.h" // Should remove from sandbox aditional include dirs
+#include <imgui.h> // Should remove from sandbox aditional include dirs
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Platform/OpenGL/OpenGLShader.h"
-#include "Platform/OpenGL/OpenGLTexture.h"
 
 #include "Sandbox2D.h"
 
+/* Deprecated
 class MainLayer : public Eis::Layer
 {
 private:
@@ -156,7 +155,7 @@ public:
 	{
 		m_CameraController.OnEvent(e);
 	}
-};
+};*/
 
 class Sandbox : public Eis::Application
 {

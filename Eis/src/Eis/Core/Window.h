@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core.h"
-#include "../Events/Event.h"
+#include "Eis/Core/Core.h"
+#include "Eis/Events/Event.h"
 
 namespace Eis
 {

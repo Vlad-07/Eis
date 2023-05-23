@@ -2,10 +2,10 @@
 
 #include "../Core/Core.h"
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <algorithm>
 #include <thread>
 
 namespace Eis
@@ -14,7 +14,7 @@ namespace Eis
 	{
 		std::string Name;
 		int64_t Start, End;
-		uint32_t ThreadID;
+		std::thread::id ThreadID;
 	};
 
 	struct InstrumentationSession
@@ -110,8 +110,7 @@ namespace Eis
 			int64_t start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
 			int64_t end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
 
-			uint32_t threadId = (uint32_t)std::hash<std::thread::id>{}(std::this_thread::get_id());
-			Instrumentor::Get().WriteProfile({m_Name, start, end, threadId});
+			Instrumentor::Get().WriteProfile({ m_Name, start, end, std::this_thread::get_id() });
 
 			m_Stopped = true;
 		}

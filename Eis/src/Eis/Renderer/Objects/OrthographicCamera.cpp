@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "OrthographicCamera.h"
+
+#include "Eis/Renderer/Objects/OrthographicCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

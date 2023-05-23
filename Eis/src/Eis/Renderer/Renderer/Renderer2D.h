@@ -2,8 +2,8 @@
 
 #include "Eis/Renderer/Objects/OrthographicCamera.h"
 
-#include "../Objects/Texture.h"
-#include "../Objects/Shader.h"
+#include "Eis/Renderer/Objects/Shader.h"
+#include "Eis/Renderer/Objects/Texture.h"
 
 namespace Eis
 {

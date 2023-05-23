@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Eis/Core/Core.h"
 
 #ifdef EIS_PLATFORM_WINDOWS
 

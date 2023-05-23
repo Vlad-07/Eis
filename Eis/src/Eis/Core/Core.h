@@ -44,21 +44,6 @@
 #endif // End of platform detection
 
 
-// DLL support
-#ifdef EIS_PLATFORM_WINDOWS
-	#if EIS_DYNAMIC_LINK
-		#ifdef EIS_BUILD_DLL
-			#define EIS_API __declspec(dllexport)
-		#else
-			#define EIS_API __declspec(dllimport)
-		#endif
-	#else
-		#define EIS_API
-	#endif
-#else
-	#error Eis only supports Windows!
-#endif // End of DLL support
-
 
 #ifdef EIS_DEBUG
 	#define EIS_ENABLE_ASSERTS

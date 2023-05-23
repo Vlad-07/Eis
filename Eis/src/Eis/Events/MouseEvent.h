@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event.h"
+#include "Eis/Events/Event.h"
 
 namespace Eis
 {

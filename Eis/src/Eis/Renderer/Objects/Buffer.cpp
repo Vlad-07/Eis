@@ -1,8 +1,8 @@
 #include "Eispch.h"
-#include "Buffer.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 
+#include "Eis/Renderer/Objects/Buffer.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 
 namespace Eis
@@ -16,7 +16,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return std::make_shared<OpenGLVertexBuffer>(verticies, size);
+			return CreateRef<OpenGLVertexBuffer>(verticies, size);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");
@@ -32,7 +32,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return std::make_shared<OpenGLIndexBuffer>(indicies, count);
+			return CreateRef<OpenGLIndexBuffer>(indicies, count);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");

@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "OpenGLVertexArray.h"
+
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 #include <glad/glad.h>
 
@@ -9,17 +10,17 @@ namespace Eis
 	{
 		switch (type)
 		{
-		case Eis::ShaderDataType::Bool:		return GL_BOOL;
-		case Eis::ShaderDataType::Int:		return GL_INT;
-		case Eis::ShaderDataType::Int2:		return GL_INT;
-		case Eis::ShaderDataType::Int3:		return GL_INT;
-		case Eis::ShaderDataType::Int4:		return GL_INT;
-		case Eis::ShaderDataType::Float:	return GL_FLOAT;
-		case Eis::ShaderDataType::Float2:	return GL_FLOAT;
-		case Eis::ShaderDataType::Float3:	return GL_FLOAT;
-		case Eis::ShaderDataType::Float4:	return GL_FLOAT;
-		case Eis::ShaderDataType::Mat3:		return GL_FLOAT;
-		case Eis::ShaderDataType::Mat4:		return GL_FLOAT;
+		case ShaderDataType::Bool:		return GL_BOOL;
+		case ShaderDataType::Int:		return GL_INT;
+		case ShaderDataType::Int2:		return GL_INT;
+		case ShaderDataType::Int3:		return GL_INT;
+		case ShaderDataType::Int4:		return GL_INT;
+		case ShaderDataType::Float:		return GL_FLOAT;
+		case ShaderDataType::Float2:	return GL_FLOAT;
+		case ShaderDataType::Float3:	return GL_FLOAT;
+		case ShaderDataType::Float4:	return GL_FLOAT;
+		case ShaderDataType::Mat3:		return GL_FLOAT;
+		case ShaderDataType::Mat4:		return GL_FLOAT;
 		}
 
 		EIS_ASSERT(false, "Unknown ShaderDataType!");

@@ -1,5 +1,6 @@
 #include "Eispch.h"
-#include "Texture.h"
+
+#include "Eis/Renderer/Objects/Texture.h"
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
@@ -11,14 +12,14 @@ namespace Eis
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLTexture2D>(path);
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
+		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
 
@@ -27,14 +28,14 @@ namespace Eis
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLTexture2D>(width, height);
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
+		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
 
@@ -50,7 +51,7 @@ namespace Eis
 			return CreateRef<OpenGLTexture2D>(image);
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
+		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
 }

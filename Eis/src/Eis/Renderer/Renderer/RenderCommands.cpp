@@ -1,9 +1,8 @@
 #include "Eispch.h"
-#include "RenderCommands.h"
 
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "Eis/Renderer/Renderer/RenderCommands.h"
 
 namespace Eis
 {
-	Scope<RendererAPI> RenderCommands::s_RenderAPI = CreateScope<OpenGLRendererAPI>();
+	Scope<RendererAPI> RenderCommands::s_RenderAPI = RendererAPI::Create();
 }
