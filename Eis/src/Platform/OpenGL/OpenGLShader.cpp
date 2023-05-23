@@ -22,6 +22,8 @@ namespace Eis
 
 	OpenGLShader::OpenGLShader(const std::string& filePath)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		std::string source = ReadFile(filePath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -40,6 +42,8 @@ namespace Eis
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
 		: m_Name(name)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vsSrc;
 		sources[GL_FRAGMENT_SHADER] = fsSrc;
@@ -48,12 +52,16 @@ namespace Eis
 
 	OpenGLShader::~OpenGLShader()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glDeleteProgram(m_RendererId);
 	}
 
 
 	std::string OpenGLShader::ReadFile(const std::string& filePath)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		std::string result;
 		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 
@@ -79,6 +87,8 @@ namespace Eis
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const char* typeToken = "#type";
@@ -105,6 +115,8 @@ namespace Eis
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		GLuint program = glCreateProgram();
 
 		// TODO: consider  stack array instead of a heap vector for performance reasons
@@ -176,11 +188,15 @@ namespace Eis
 
 	void OpenGLShader::Bind() const
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glUseProgram(m_RendererId);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glUseProgram(0);
 	}
 
@@ -188,31 +204,43 @@ namespace Eis
 
 	void OpenGLShader::SetInt(const std::string& name, const int& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformInt(name, value);
 	}
 
 	void OpenGLShader::SetFloat(const std::string& name, const float& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformFloat(name, value);
 	}
 
 	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformFloat2(name, value);
 	}
 
 	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformFloat3(name, value);
 	}
 
 	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformFloat4(name, value);
 	}
 
 	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		UploadUniformMat4(name, value);
 	}
 

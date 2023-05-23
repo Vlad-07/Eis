@@ -16,6 +16,8 @@ namespace Eis
 
 	void ImGuiLayer::OnAttach()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		// From ImGui Example
 
 		// Setup Dear ImGui context
@@ -50,6 +52,8 @@ namespace Eis
 
 	void ImGuiLayer::OnDetach()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -57,6 +61,8 @@ namespace Eis
 
 	void ImGuiLayer::Begin()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -64,6 +70,8 @@ namespace Eis
 
 	void ImGuiLayer::End()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow().GetWidth()), static_cast<float>(app.GetWindow().GetHeight()));

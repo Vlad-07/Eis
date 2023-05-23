@@ -12,8 +12,17 @@ namespace Eis
 
 	void Renderer::Init()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		RenderCommands::Init();
 		Renderer2D::Init();
+	}
+
+	void Renderer::Shutdown()
+	{
+		EIS_PROFILE_FUNCTION();
+
+		Renderer2D::Shutdown();
 	}
 
 	void Renderer::OnWindowResized(uint32_t width, uint32_t height)

@@ -8,8 +8,6 @@
 #include <algorithm>
 #include <thread>
 
-// TODO: populate engine with profiling
-
 namespace Eis
 {
 	struct ProfileResult
@@ -131,9 +129,19 @@ namespace Eis
 	#define EIS_PROFILE_END_SESSION() ::Eis::Instrumentor::Get().EndSession();
 	#define EIS_PROFILE_SCOPE(name) ::Eis::InstrumentationTimer timer##__LINE__(name);
 	#define EIS_PROFILE_FUNCTION() EIS_PROFILE_SCOPE(__FUNCSIG__)
+	
+#ifdef EIS_PROFILE_RENDERER
+	#define EIS_PROFILE_RENDERER_SCOPE(name) EIS_PROFILE_SCOPE(name)
+	#define EIS_PROFILE_RENDERER_FUNCTION() EIS_PROFILE_SCOPE(__FUNCSIG__)
+#else
+#define EIS_PROFILE_RENDERER_SCOPE(name)
+	#define EIS_PROFILE_RENDERER_FUNCTION()
+#endif
+
 #else
 	#define EIS_PROFILE_BEGIN_SESSION(name, filepath)
 	#define EIS_PROFILE_END_SESSION()
 	#define EIS_PROFILE_SCOPE(name)
 	#define EIS_PROFILE_FUNCTION()
+	#define EIS_PROFILE_RENDERER_FUNCTION()
 #endif

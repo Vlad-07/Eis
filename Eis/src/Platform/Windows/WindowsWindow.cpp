@@ -11,23 +11,29 @@ namespace Eis
 {
 	static uint8_t s_GLFWWindowCount = 0;
 
-	Window* Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return CreateScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		Init(props);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		Shutdown();
 	}
 
 	void WindowsWindow::Init(const WindowProps& props)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -36,6 +42,8 @@ namespace Eis
 		
 		if (s_GLFWWindowCount == 0)
 		{
+			EIS_PROFILE_SCOPE("glfwInit");
+
 			EIS_CORE_INFO("Initializing GLFW");
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
@@ -48,8 +56,12 @@ namespace Eis
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		s_GLFWWindowCount++;
+		{
+			EIS_PROFILE_SCOPE("glfwCreateWindow");
+
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			s_GLFWWindowCount++;
+		}
 
 		m_Context = CreateScope<OpenGLContext>(m_Window);
 		m_Context->Init();
@@ -152,6 +164,8 @@ namespace Eis
 
 	void WindowsWindow::Shutdown()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		EIS_TRACE("Destroyed '{0}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
 		s_GLFWWindowCount--;
@@ -165,12 +179,16 @@ namespace Eis
 
 	void WindowsWindow::OnUpdate()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else

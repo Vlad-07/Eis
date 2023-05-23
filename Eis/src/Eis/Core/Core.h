@@ -63,6 +63,7 @@
 #ifdef EIS_DEBUG
 	#define EIS_ENABLE_ASSERTS
 	#define EIS_PROFILE
+	#define EIS_PROFILE_RENDERER
 #endif
 
 #ifdef EIS_ENABLE_ASSERTS

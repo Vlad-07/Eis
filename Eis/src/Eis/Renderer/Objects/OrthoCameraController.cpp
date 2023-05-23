@@ -14,6 +14,8 @@ namespace Eis
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		if (m_Locked)
 			return;
 
@@ -58,6 +60,8 @@ namespace Eis
 
 	void OrthoCameraController::OnEvent(Event& e)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(EIS_BIND_EVENT_FN(OrthoCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
@@ -65,6 +69,8 @@ namespace Eis
 
 	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent e)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		float last = m_ZoomLevel; // HACK: find better way to mantain maximum zoom level acording to sensitivity
 		m_ZoomLevel -= e.GetYOffset() / m_ZoomSensitivity;
 
@@ -77,6 +83,8 @@ namespace Eis
 
 	bool OrthoCameraController::OnWindowResized(WindowResizeEvent e)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;

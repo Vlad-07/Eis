@@ -2,6 +2,7 @@
 
 // File only used by Eis apps
 
+#include "Eis/Core/Core.h"
 
 #include "Eis/Core/Application.h"
 #include "Eis/Core/Log.h"

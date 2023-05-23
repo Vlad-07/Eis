@@ -28,27 +28,37 @@ namespace Eis
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glCreateVertexArrays(1, &m_RendererId);
 		// glGenVertexArrays(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glDeleteVertexArrays(1, &m_RendererId);
 	}
 
 	void OpenGLVertexArray::Bind() const
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glBindVertexArray(m_RendererId);
 	}
 
 	void OpenGLVertexArray::Unbind() const
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		EIS_CORE_ASSERT(vb->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(m_RendererId);
@@ -74,6 +84,8 @@ namespace Eis
 
 	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& ib)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		glBindVertexArray(m_RendererId);
 		ib->Bind();
 

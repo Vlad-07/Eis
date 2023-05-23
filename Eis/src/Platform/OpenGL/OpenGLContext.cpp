@@ -13,6 +13,8 @@ namespace Eis
 
 	void OpenGLContext::Init()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		int succes = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		EIS_CORE_ASSERT(succes, "Faield to initialize Glad!");
@@ -34,6 +36,8 @@ namespace Eis
 
 	void OpenGLContext::SwapBuffers()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

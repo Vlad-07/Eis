@@ -7,6 +7,8 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
+	EIS_PROFILE_FUNCTION();
+
 	EIS_TRACE("Loading assets...");
 	ice = Eis::Texture2D::Create("assets/textures/ice.png");
 	mouce = Eis::Texture2D::Create("assets/textures/mouce.png");
@@ -18,23 +20,21 @@ void Sandbox2D::OnAttach()
 
 void Sandbox2D::OnDetach()
 {
+	EIS_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 {
 	EIS_PROFILE_FUNCTION();
 
-
-	{
-		EIS_PROFILE_SCOPE("CameraController::OnUpdate");
-		m_CameraController.OnUpdate(ts);
-	}
+	m_CameraController.OnUpdate(ts);
 
 	{
 		EIS_PROFILE_SCOPE("Renderer Prep");
 		Eis::RenderCommands::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Eis::RenderCommands::Clear();
 	}
+
 
 	{
 		EIS_PROFILE_SCOPE("Renderer Draw");

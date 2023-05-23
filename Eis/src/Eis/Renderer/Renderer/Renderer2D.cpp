@@ -21,6 +21,8 @@ namespace Eis
 
 	void Renderer2D::Init()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data = CreateScope<Renderer2DStorage>();
 
 		float verts2[5 * 4] = {
@@ -61,11 +63,15 @@ namespace Eis
 
 	void Renderer2D::Shutdown()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data.reset();
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->CircleShader->Bind();
 		s_Data->CircleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
@@ -75,6 +81,8 @@ namespace Eis
 
 	void Renderer2D::EndScene()
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 	}
 
 
@@ -84,6 +92,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", color);
 		s_Data->WhiteTexture->Bind();
@@ -101,6 +111,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", glm::vec4(1.0f));
 		texture->Bind();
@@ -118,6 +130,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetFloat4("u_Color", tint);
 		texture->Bind();
@@ -135,6 +149,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->CircleShader->Bind();
 		s_Data->CircleShader->SetFloat4("u_Color", color);
 		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f); // TODO: access these parameters
@@ -155,6 +171,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->CircleShader->Bind();
 		s_Data->CircleShader->SetFloat4("u_Color", glm::vec4(1.0f));
 		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f);
@@ -174,6 +192,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint)
 	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
 		s_Data->CircleShader->Bind();
 		s_Data->CircleShader->SetFloat4("u_Color", tint);
 		s_Data->CircleShader->SetFloat("u_Thickness", 1.0f);
