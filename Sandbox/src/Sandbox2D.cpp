@@ -41,12 +41,15 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 
 		Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-		Eis::Renderer2D::DrawQuad({ 2.0f, 1.0f }, { 1.0f, 0.3f }, { 0.8f, 0.5f, 0.2f, 1.0f });
-		Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, ice);
-		//	Eis::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 10.0f }, map);
+		static float rot = 0.0f; rot += 0.2f;
+		if (rot == 360.f) rot = 0.0f;
+
+		Eis::Renderer2D::DrawRotatedQuad(glm::vec2(2.0f, 1.0f), glm::vec2(1.0f, 0.3f), glm::radians(-rot), glm::vec4(0.8f, 0.5f, 0.2f, 1.0f));
+		Eis::Renderer2D::DrawQuad(glm::vec2(0.0f), glm::vec2(1.0f), ice);
+		//	Eis::Renderer2D::DrawQuad(glm::vec3(0.0f, 0.0f, -0.1f), glm::vec2(20.0f, 10.0f), map);
 
 		static float x = 0.0f, inc = 0.01f;
-		Eis::Renderer2D::DrawCircle({ x += inc, 1.0f }, glm::vec2(1.0f), glm::vec4(1.0f));
+		Eis::Renderer2D::DrawCircle(glm::vec2(x += inc, 1.0f), glm::vec2(1.0f), glm::vec4(1.0f));
 		if (x > 2.0f || x < -2.0f) inc *= -1;
 
 		Eis::Renderer2D::EndScene();
