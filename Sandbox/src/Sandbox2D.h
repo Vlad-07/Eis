@@ -22,4 +22,5 @@ public:
 private:
 	Eis::OrthoCameraController m_CameraController;
 	Eis::Ref<Eis::Texture2D> ice, map, mouce;
+	float m_LineAngle;
 };

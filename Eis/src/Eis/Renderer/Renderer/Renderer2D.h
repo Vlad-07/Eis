@@ -40,5 +40,10 @@ namespace Eis
 
 		static void DrawCircle(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint = glm::vec4(1.0f));
 		static void DrawCircle(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& tint = glm::vec4(1.0f));
+
+		
+		// Lines
+		static void DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color, const float& width);
+		static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, const float& width);
 	};
 }

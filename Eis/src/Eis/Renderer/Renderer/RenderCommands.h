@@ -22,6 +22,9 @@ namespace Eis
 		inline static void DrawIndexed(const Ref<VertexArray>& va)
 		{ s_RenderAPI->DrawIndex(va); }
 
+		inline static void DrawLines(const Ref<VertexArray>& va, const float& width)
+		{ s_RenderAPI->DrawLines(va, width); }
+
 		inline static void Enable(uint32_t code)
 		{ s_RenderAPI->Enable(code); }
 

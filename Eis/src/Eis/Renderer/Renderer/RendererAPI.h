@@ -23,6 +23,7 @@ namespace Eis
 		virtual void Clear() = 0;
 
 		virtual void DrawIndex(const Ref<VertexArray>& va) = 0;
+		virtual void DrawLines(const Ref<VertexArray>& va, const float& width) = 0;
 
 		virtual void Enable(uint32_t code) = 0;
 		virtual void Disable(uint32_t code) = 0;

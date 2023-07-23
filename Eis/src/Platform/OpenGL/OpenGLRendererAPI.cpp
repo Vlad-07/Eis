@@ -10,6 +10,7 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
+		glEnable(GL_LINE_SMOOTH);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -34,6 +35,12 @@ namespace Eis
 	void OpenGLRendererAPI::DrawIndex(const Ref<VertexArray>& va)
 	{
 		glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, const float& width)
+	{
+		glLineWidth((GLfloat)width);
+		glDrawArrays(GL_LINES, 0, va->GetIndexBuffer()->GetCount());
 	}
 
 	void OpenGLRendererAPI::Enable(uint32_t code)
