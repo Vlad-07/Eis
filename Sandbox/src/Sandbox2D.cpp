@@ -53,7 +53,7 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 		if (x > 2.0f || x < -2.0f) inc *= -1;
 
 
-		Eis::Renderer2D::DrawLine(glm::vec3(1.0f, 0.0f, 0.0f), m_LineAngle, 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.5f);
+		Eis::Renderer2D::DrawLine(glm::vec2(1.0f, 0.0f), m_LineAngle, 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 1.5f);
 		m_LineAngle += 0.15f;
 		if (m_LineAngle > 360.0f)
 			m_LineAngle -= 360.0f;

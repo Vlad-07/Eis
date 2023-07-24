@@ -43,7 +43,9 @@ namespace Eis
 
 		
 		// Lines
-		static void DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color, const float& width);
-		static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, const float& width);
+		static void DrawLine(const glm::vec2& start, const float& angle, const float& length, const glm::vec4& color, const float& width = 1.0f);
+		static void DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color, const float& width = 1.0f);
+		static void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color, const float& width = 1.0f);
+		static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, const float& width = 1.0f);
 	};
 }

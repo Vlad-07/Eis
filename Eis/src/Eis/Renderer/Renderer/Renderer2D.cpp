@@ -94,7 +94,6 @@ namespace Eis
 	void Renderer2D::EndScene()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
-
 	}
 
 
@@ -231,11 +230,19 @@ namespace Eis
 
 
 
+	void Renderer2D::DrawLine(const glm::vec2& start, const float& angle, const float& length, const glm::vec4& color, const float& width)
+	{
+		DrawLine(glm::vec3(start, 1.0f), angle, length, color, width);
+	}
 	void Renderer2D::DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color, const float& width)
 	{
 		glm::vec3 offset = glm::rotate(glm::vec3(0.0f, length, 0.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::vec3 end = start + offset;
 		DrawLine(start, end, color, width);
+	}
+	void Renderer2D::DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color, const float& width)
+	{
+		DrawLine(glm::vec3(start, 0.0f), glm::vec3(end, 0.0f), color, width);
 	}
 	void Renderer2D::DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, const float& width) // hacked
 	{
