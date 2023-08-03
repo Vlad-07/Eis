@@ -11,6 +11,8 @@
 
 #include "Eis/ImGui/ImGuiLayer.h"
 
+int main(int argc, char** args);
+
 namespace Eis
 {
 	class Application
@@ -19,19 +21,22 @@ namespace Eis
 		Application();
 		virtual ~Application();
 
-		void Run();
 
 		void OnEvent(Event& event);		
 		
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		inline static Application& Get() { return *s_Instance; }
-		inline Window& GetWindow() { return *m_Window; }
+		static Application& Get() { return *s_Instance; }
+		Window& GetWindow() { return *m_Window; }
 
 	private:
+		void Run();
+
 		bool OnWindowResize(WindowResizeEvent e);
 		bool OnWindowClose(WindowCloseEvent e);
+
+		friend int ::main(int argc, char** args);
 
 	private:
 		static Application* s_Instance;

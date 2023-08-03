@@ -60,6 +60,12 @@ project "Eis"
 
 	}
 
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
+	}
+
 	includedirs
 	{
 		"%{prj.name}/src",
@@ -86,7 +92,6 @@ project "Eis"
 
 		defines
 		{
-			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"

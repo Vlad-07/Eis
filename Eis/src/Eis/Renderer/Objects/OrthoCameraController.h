@@ -17,11 +17,11 @@ namespace Eis
 		void OnUpdate(TimeStep ts);
 		void OnEvent(Event& e);
 
-		inline OrthographicCamera& GetCamera() { return m_Camera; }
-		inline const OrthographicCamera& GetCamera() const { return m_Camera; }
+		OrthographicCamera& GetCamera() { return m_Camera; }
+		const OrthographicCamera& GetCamera() const { return m_Camera; }
 
-		inline float GetCameraSpeed() const { return m_CameraSpeed; }
-		inline void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
+		float GetCameraSpeed() const { return m_CameraSpeed; }
+		void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent e);

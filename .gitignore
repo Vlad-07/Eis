@@ -3,6 +3,7 @@
 bin/
 bin-int/
 
+*.log
 
 # Files
 *.user

@@ -2,8 +2,7 @@
 
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(16.0f / 9.0f), m_LineAngle(0.0f)
-{
-}
+{}
 
 void Sandbox2D::OnAttach()
 {
@@ -22,6 +21,7 @@ void Sandbox2D::OnDetach()
 {
 	EIS_PROFILE_FUNCTION();
 }
+
 
 void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 {

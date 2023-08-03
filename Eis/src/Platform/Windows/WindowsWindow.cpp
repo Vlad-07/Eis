@@ -12,11 +12,6 @@ namespace Eis
 {
 	static uint8_t s_GLFWWindowCount = 0;
 
-	Scope<Window> Window::Create(const WindowProps& props)
-	{
-		return CreateScope<WindowsWindow>(props);
-	}
-
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
 		EIS_PROFILE_FUNCTION();
@@ -96,31 +91,31 @@ namespace Eis
 				{
 					case GLFW_PRESS:
 					{
-						KeyPressedEvent event(key, 0);
+						KeyPressedEvent event(static_cast<KeyCode>(key), 0);
 						data.EventCallback(event);
 						break;
 					}
 					case GLFW_RELEASE:
 					{
-						KeyReleasedEvent event(key);
+						KeyReleasedEvent event(static_cast<KeyCode>(key));
 						data.EventCallback(event);
 						break;
 					}
 					case GLFW_REPEAT:
 					{
-						KeyPressedEvent event(key, 1); // GLFW does not provide a way to get the repeat count. It is possible to extract it but I have lazy
+						KeyPressedEvent event(static_cast<KeyCode>(key), 1); // GLFW does not provide a way to get the repeat count. It is possible to extract it but I have lazy
 						data.EventCallback(event);
 						break;
 					}
 					default:
-						EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:106-ish");
+						EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:116");
 				}
 		});
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				KeyTypedEvent event(keycode);
+				KeyTypedEvent event(static_cast<KeyCode>(keycode));
 				data.EventCallback(event);
 		});
 
@@ -139,18 +134,18 @@ namespace Eis
 				{
 				case GLFW_PRESS:
 				{
-					MouseButtonPressedEvent event(button);
+					MouseButtonPressedEvent event(static_cast<MouseCode>(button));
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					MouseButtonReleasedEvent event(button);
+					MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
 					data.EventCallback(event);
 					break;
 				}
 				default:
-					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:143-ish");
+					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:153");
 				}
 		});
 

@@ -44,16 +44,24 @@
 #endif // End of platform detection
 
 
-
+// Debugging tools
 #ifdef EIS_DEBUG
+	#ifdef EIS_PLATFORM_WINDOWS
+		#define EIS_DEBUGBREAK() __debugbreak();
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+	#endif
+
 	#define EIS_ENABLE_ASSERTS
 	#define EIS_PROFILE
 	#define EIS_PROFILE_RENDERER
+#else
+	#define EIS_DEBUGBREAK()
 #endif
 
 #ifdef EIS_ENABLE_ASSERTS
-	#define EIS_ASSERT(x, ...) {if(!(x)) { EIS_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define EIS_CORE_ASSERT(x, ...) {if(!(x)) { EIS_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define EIS_ASSERT(x, ...) {if(!(x)) { EIS_ERROR("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
+	#define EIS_CORE_ASSERT(x, ...) {if(!(x)) { EIS_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
 #else
 	#define EIS_ASSERT(x, ...)
 	#define EIS_CORE_ASSERT(x, ...)
