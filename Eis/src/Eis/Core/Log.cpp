@@ -14,7 +14,7 @@ namespace Eis
 		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Eis.log", true));
 
 		logSinks[0]->set_pattern("%^[%T | %O] %n:%$ %v");
-		logSinks[0]->set_pattern("[%T] [%l] %n: %v");
+		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
 
 		s_CoreLogger = std::make_shared<spdlog::logger>("EIS", begin(logSinks), end(logSinks));
 		spdlog::register_logger(s_CoreLogger);

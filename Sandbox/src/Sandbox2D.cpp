@@ -42,11 +42,11 @@ void Sandbox2D::OnUpdate(Eis::TimeStep ts)
 		Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 		static float rot = 0.0f; rot += 0.2f;
-		if (rot == 360.f) rot = 0.0f;
+		if (rot >= 360.f) rot = 0.0f;
 
-		Eis::Renderer2D::DrawRotatedQuad(glm::vec2(2.0f, 1.0f), glm::vec2(1.0f, 0.3f), glm::radians(-rot), glm::vec4(0.8f, 0.5f, 0.2f, 1.0f));
+		Eis::Renderer2D::DrawRotatedQuad(glm::vec2(2.0f, 1.0f), glm::vec2(1.0f, 0.3f), glm::radians(rot), glm::vec4(0.8f, 0.5f, 0.2f, 1.0f));
 		Eis::Renderer2D::DrawQuad(glm::vec2(-1.0f, 0.0f), glm::vec2(1.0f), ice);
-		//	Eis::Renderer2D::DrawQuad(glm::vec3(0.0f, 0.0f, -0.1f), glm::vec2(20.0f, 10.0f), map);
+//		Eis::Renderer2D::DrawQuad(glm::vec3(0.0f, 0.0f, -0.1f), glm::vec2(20.0f, 10.0f), map);
 
 		static float x = 0.0f, inc = 0.01f;
 		Eis::Renderer2D::DrawCircle(glm::vec2(x += inc, 1.0f), glm::vec2(1.0f), glm::vec4(1.0f));
@@ -67,6 +67,7 @@ void Sandbox2D::OnImGuiRender()
 	ImGui::Begin("Stats");
 
 	ImGui::Text("Line Angle: %.1f", m_LineAngle);
+	ImGui::Text("Mouse Pos: %.3f, %.3f", m_CameraController.CalculateMouseWorldPos().x, m_CameraController.CalculateMouseWorldPos().y);
 
 	ImGui::End();
 }

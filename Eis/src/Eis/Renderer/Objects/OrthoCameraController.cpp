@@ -5,6 +5,8 @@
 #include "Eis/Input/Input.h"
 #include "Eis/Input/Keycodes.h"
 
+#include "Eis/Core/Application.h"
+
 namespace Eis
 {
 	OrthoCameraController::OrthoCameraController(float aspectRatio, bool lock, bool rotation)
@@ -67,6 +69,22 @@ namespace Eis
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
 	}
 
+	glm::vec2 OrthoCameraController::CalculateMouseWorldPos()
+	{
+		glm::vec2 mousePos = Eis::Input::GetMousePos();
+
+		mousePos /= glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		mousePos = mousePos * 2.0f - glm::vec2(1.0f);
+		mousePos.y *= -1.0f;
+
+		glm::mat4 inverseProjectionMatrix = glm::inverse(m_Camera.GetProjectionMatrix());
+		glm::mat4 inverseViewMatrix = glm::inverse(m_Camera.GetViewMatrix());
+
+		glm::vec4 worldPos = inverseViewMatrix * inverseProjectionMatrix * glm::vec4(mousePos.x, mousePos.y, 0.0f, 1.0f);
+
+		return glm::vec2(worldPos.x, worldPos.y);
+	}
+
 	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent e)
 	{
 		EIS_PROFILE_FUNCTION();
@@ -80,7 +98,6 @@ namespace Eis
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}
-
 	bool OrthoCameraController::OnWindowResized(WindowResizeEvent e)
 	{
 		EIS_PROFILE_FUNCTION();

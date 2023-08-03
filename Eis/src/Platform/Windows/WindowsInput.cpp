@@ -24,22 +24,21 @@ namespace Eis
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePosImpl()
+	glm::vec2 WindowsInput::GetMousePosImpl()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
 
-		return { (float)xPos, (float)yPos };
+		return glm::vec2((float)xPos, (float)yPos);
 	}
 
 	float WindowsInput::GetMouseXImpl()
 	{
-		return GetMousePosImpl().first;
+		return GetMousePosImpl().x;
 	}
-
 	float WindowsInput::GetMouseYImpl()
 	{
-		return GetMousePosImpl().second;
+		return GetMousePosImpl().y;
 	}
 }

@@ -23,6 +23,8 @@ namespace Eis
 		float GetCameraSpeed() const { return m_CameraSpeed; }
 		void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
 
+		glm::vec2 CalculateMouseWorldPos();
+
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent e);
 		bool OnWindowResized(WindowResizeEvent e);
