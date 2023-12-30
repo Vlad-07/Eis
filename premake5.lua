@@ -20,7 +20,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
 IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 IncludeDir["ImGui"] = "Eis/vendor/imgui"
-IncludeDir["implot"] = "Eis/vendor/implot"
+IncludeDir["ImPlot"] = "Eis/vendor/implot"
 IncludeDir["glm"] = "Eis/vendor/glm"
 IncludeDir["spdlog"] = "Eis/vendor/spdlog/include"
 IncludeDir["stb_image"] = "Eis/vendor/stb_image"
@@ -72,12 +72,12 @@ project "Eis"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.implot}",
+		"%{IncludeDir.ImPlot}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.stb_image_resize}",
 		"%{IncludeDir.stb_image_write}"
@@ -132,6 +132,7 @@ project "Sandbox"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"Eis/src",
 		"Eis/vendor/spdlog/include",
 		"Eis/vendor/imgui",

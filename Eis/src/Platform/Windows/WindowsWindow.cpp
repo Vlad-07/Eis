@@ -161,7 +161,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		EIS_TRACE("Destroyed '{0}' window", m_Data.Title);
+		EIS_CORE_TRACE("Destroyed '{0}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
 		s_GLFWWindowCount--;
 
