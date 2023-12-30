@@ -28,6 +28,12 @@ project "ImGui"
         "backends/imgui_impl_opengl3_loader.h"
 	}
 
+	includedirs
+	{
+		"./",
+		"../GLFW/include"
+	}
+
 	filter "system:windows"
 		systemversion "latest"
 

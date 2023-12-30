@@ -20,7 +20,9 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
 IncludeDir["Glad"] = "Eis/vendor/Glad/include"
 IncludeDir["ImGui"] = "Eis/vendor/imgui"
+IncludeDir["implot"] = "Eis/vendor/implot"
 IncludeDir["glm"] = "Eis/vendor/glm"
+IncludeDir["spdlog"] = "Eis/vendor/spdlog/include"
 IncludeDir["stb_image"] = "Eis/vendor/stb_image"
 IncludeDir["stb_image_resize"] = "Eis/vendor/stb_image_resize"
 IncludeDir["stb_image_write"] = "Eis/vendor/stb_image_write"
@@ -29,6 +31,7 @@ group "Dependencies"
 	include "Eis/vendor/GLFW"
 	include "Eis/vendor/Glad"
 	include "Eis/vendor/imgui"
+	include "Eis/vendor/implot"
 
 group ""
 
@@ -69,10 +72,11 @@ project "Eis"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.implot}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.stb_image_resize}",
@@ -131,12 +135,14 @@ project "Sandbox"
 		"Eis/src",
 		"Eis/vendor/spdlog/include",
 		"Eis/vendor/imgui",
-		"%{IncludeDir.glm}"
+		"Eis/vendor/implot",
+		"Eis/vendor/glm"
 	}
 
 	links
 	{
-		"Eis"
+		"Eis",
+		"ImPlot"
 	}
 	
 	filter "system:windows"
