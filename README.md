@@ -1,7 +1,2 @@
-# Eis Engine
-
-# Setup
-1. Run Freezer.bat
-
-# Usage
-  None.
+# Eis Engine Demos
+Various demo projects implemented with the help of [Eis](https://Vlad-07/Eis)
