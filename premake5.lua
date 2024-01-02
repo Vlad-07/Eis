@@ -1,42 +1,17 @@
-workspace "Eis"
-	architecture "x86_64"
-	startproject "Sandbox"
-
-	configurations
-	{
-		"Debug",
-		"Release",
-		"Distrib"
-	}
-
-	flags
-	{
-		"MultiProcessorCompile"
-	}
-
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
-IncludeDir["Glad"] = "Eis/vendor/Glad/include"
-IncludeDir["ImGui"] = "Eis/vendor/imgui"
-IncludeDir["ImPlot"] = "Eis/vendor/implot"
-IncludeDir["glm"] = "Eis/vendor/glm"
-IncludeDir["spdlog"] = "Eis/vendor/spdlog/include"
-IncludeDir["stb_image"] = "Eis/vendor/stb_image"
-IncludeDir["stb_image_resize"] = "Eis/vendor/stb_image_resize"
-IncludeDir["stb_image_write"] = "Eis/vendor/stb_image_write"
-
-group "Dependencies"
-	include "Eis/vendor/GLFW"
-	include "Eis/vendor/Glad"
-	include "Eis/vendor/imgui"
-	include "Eis/vendor/implot"
-
-group ""
+IncludeDir["GLFW"] = "vendor/GLFW/include"
+IncludeDir["Glad"] = "vendor/Glad/include"
+IncludeDir["ImGui"] = "vendor/imgui"
+IncludeDir["ImPlot"] = "vendor/implot"
+IncludeDir["glm"] = "vendor/glm"
+IncludeDir["spdlog"] = "vendor/spdlog/include"
+IncludeDir["stb_image"] = "vendor/stb_image"
+IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
+IncludeDir["stb_image_write"] = "vendor/stb_image_write"
 
 project "Eis"
-	location "Eis"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -46,20 +21,20 @@ project "Eis"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "Eispch.h"
-	pchsource "Eis/src/Eispch.cpp"
+	pchsource "src/Eispch.cpp"
 
 	files
 	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/stb_image_resize/**.h",
-		"%{prj.name}/vendor/stb_image_resize/**.cpp",
-		"%{prj.name}/vendor/stb_image_write/**.h",
-		"%{prj.name}/vendor/stb_image_write/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"src/**.h",
+		"src/**.cpp",
+		"vendor/stb_image/**.h",
+		"vendor/stb_image/**.cpp",
+		"vendor/stb_image_resize/**.h",
+		"vendor/stb_image_resize/**.cpp",
+		"vendor/stb_image_write/**.h",
+		"vendor/stb_image_write/**.cpp",
+		"vendor/glm/glm/**.hpp",
+		"vendor/glm/glm/**.inl"
 
 	}
 
@@ -71,7 +46,7 @@ project "Eis"
 
 	includedirs
 	{
-		"%{prj.name}/src",
+		"src",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -109,57 +84,6 @@ project "Eis"
 		optimize "on"
 
 	filter "configurations:Distrib" 
-		defines "EIS_DISTRIB"
-		runtime "Release"
-		optimize "on"
-
-project "Sandbox"
-	location "Sandbox" 
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.hpp"
-	}
-
-	includedirs
-	{
-		"%{prj.name}/src",
-		"Eis/src",
-		"Eis/vendor/spdlog/include",
-		"Eis/vendor/imgui",
-		"Eis/vendor/implot",
-		"Eis/vendor/glm"
-	}
-
-	links
-	{
-		"Eis",
-		"ImPlot"
-	}
-	
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "EIS_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "EIS_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Distrib"
 		defines "EIS_DISTRIB"
 		runtime "Release"
 		optimize "on"
