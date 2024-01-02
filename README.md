@@ -1,2 +1,2 @@
-# Eis Engine Demos
-Various demo projects implemented with the help of [Eis](https://Vlad-07/Eis)
+# Eis Engine
+[Demos](https://github.com/Vlad-07/Eis_demos)
