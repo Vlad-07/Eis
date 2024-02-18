@@ -10,6 +10,7 @@ IncludeDir["spdlog"] = "vendor/spdlog/include"
 IncludeDir["stb_image"] = "vendor/stb_image"
 IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
 IncludeDir["stb_image_write"] = "vendor/stb_image_write"
+IncludeDir["GameNetworkingSockets"] = "vendor/GameNetworkingSockets/include/steam"
 
 project "Eis"
 	kind "StaticLib"
@@ -55,7 +56,8 @@ project "Eis"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.stb_image_resize}",
-		"%{IncludeDir.stb_image_write}"
+		"%{IncludeDir.stb_image_write}",
+		"%{IncludeDir.GameNetworkingSockets}"
 	}
 
 	links
@@ -68,9 +70,19 @@ project "Eis"
 	
 	filter "system:windows"
 		systemversion "latest"
+		defines "EIS_PLATFORM_WINDOWS"
+    	links { "Ws2_32.lib" }
 
-		defines
+	filter { "system:windows", "configurations:Debug" }	
+		links
 		{
+			"vendor/GameNetworkingSockets/.bin/Windows/Debug/GameNetworkingSockets.lib"
+		}
+
+	filter { "system:windows", "configurations:Release or configurations:Dist" }	
+		links
+		{
+			"vendor/GameNetworkingSockets/.bin/Windows/Release/GameNetworkingSockets.lib"
 		}
 
 	filter "configurations:Debug"
