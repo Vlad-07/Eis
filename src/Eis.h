@@ -26,7 +26,7 @@
 #include "Eis/Renderer/Renderer/RenderCommands.h"
 
 #include "Eis/Renderer/Objects/Shader.h"
-#include "Eis/Renderer/Objects/Buffer.h"
+#include "Eis/Renderer/Objects/Buffers.h"
 #include "Eis/Renderer/Objects/Texture.h"
 #include "Eis/Renderer/Objects/VertexArray.h"
 

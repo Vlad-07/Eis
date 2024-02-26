@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace Eis
 {
 	class TimeStep

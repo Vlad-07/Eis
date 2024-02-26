@@ -10,7 +10,7 @@ IncludeDir["spdlog"] = "vendor/spdlog/include"
 IncludeDir["stb_image"] = "vendor/stb_image"
 IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
 IncludeDir["stb_image_write"] = "vendor/stb_image_write"
-IncludeDir["GameNetworkingSockets"] = "vendor/GameNetworkingSockets/include/steam"
+IncludeDir["GameNetworkingSockets"] = "vendor/GameNetworkingSockets/include"
 
 project "Eis"
 	kind "StaticLib"

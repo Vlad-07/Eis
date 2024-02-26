@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Eispch.h"
 #include "Core.h"
-#include "../Events/Event.h"
 #include "Eis/Core/TimeStep.h"
+#include "Eis/Events/Event.h"
 
 namespace Eis
 {

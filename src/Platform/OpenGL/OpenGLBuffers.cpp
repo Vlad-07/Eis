@@ -1,6 +1,6 @@
 #include "Eispch.h"
 
-#include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Platform/OpenGL/OpenGLBuffers.h"
 
 #include <glad/glad.h>
 

@@ -2,8 +2,8 @@
 
 #include "Eis/Renderer/Renderer/Renderer.h"
 
-#include "Eis/Renderer/Objects/Buffer.h"
-#include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Eis/Renderer/Objects/Buffers.h"
+#include "Platform/OpenGL/OpenGLBuffers.h"
 
 namespace Eis
 {

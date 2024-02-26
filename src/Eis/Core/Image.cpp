@@ -1,11 +1,11 @@
 #include <Eispch.h>
 #include "Image.h"
 
-#include <Eis/Core/Log.h>
-
 #include <stb_image.h>
 #include <stb_image_resize.h>
 #include <stb_image_write.h>
+
+#include "Eis/Core/Log.h"
 
 Eis::Image::Image(const std::string path, int flipVertically) : m_IsValid(false)
 {
