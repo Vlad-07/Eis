@@ -60,8 +60,8 @@
 #endif
 
 #ifdef EIS_ENABLE_ASSERTS
-	#define EIS_ASSERT(x, ...) { if(!(x)) { EIS_ERROR("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
-	#define EIS_CORE_ASSERT(x, ...) { if(!(x)) { EIS_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
+	#define EIS_ASSERT(x, ...) { if(!(x)) { EIS_CRITICAL("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
+	#define EIS_CORE_ASSERT(x, ...) { if(!(x)) { EIS_CORE_CRITICAL("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
 #else
 	#define EIS_ASSERT(x, ...)
 	#define EIS_CORE_ASSERT(x, ...)
@@ -72,7 +72,7 @@
 #define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1) // Used for event functions
 
 
-// Wraps for smart pointers
+// Wrappers for smart pointers
 // Code looks nicer + can easily switch to an actual class in the future for an asset manager
 namespace Eis
 {

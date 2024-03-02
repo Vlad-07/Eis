@@ -34,6 +34,15 @@ void Eis::Buffer::Allocate(uint64_t size)
 	m_Data = new uint8_t[size];
 }
 
+void Eis::Buffer::Resize(uint64_t size)
+{
+	void* newData = new uint8_t[size]; // create new buffer
+	memcpy(newData, m_Data, std::min(size, m_Size)); // copy data
+	delete[] m_Data; // remove old buffer
+	m_Data = newData;
+	m_Size = size;
+}
+
 void Eis::Buffer::Release()
 {
 	delete[](uint8_t*)m_Data;
@@ -44,6 +53,13 @@ void Eis::Buffer::Release()
 void Eis::Buffer::ZeroInit()
 {
 	memset(m_Data, 0, m_Size);
+}
+
+void Eis::Buffer::NullTerminate()
+{
+	Resize(m_Size + 1);
+	char c = '\0';
+	Write(&c, 1, m_Size - 1);
 }
 
 template<typename T>

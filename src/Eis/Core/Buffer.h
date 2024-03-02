@@ -2,6 +2,7 @@
 
 namespace Eis
 {
+	// Dynamically allocated buffer
 	class Buffer
 	{
 	public:
@@ -12,9 +13,11 @@ namespace Eis
 		~Buffer() { Release(); }
 
 		void Allocate(uint64_t size);
+		void Resize(uint64_t size);
 		void Release();
 
 		void ZeroInit();
+		void NullTerminate();
 
 		void* Data() const { return m_Data; }
 
