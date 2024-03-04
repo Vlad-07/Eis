@@ -2,15 +2,14 @@
 
 namespace Eis
 {
-	// Dynamically allocated buffer
 	class Buffer
 	{
 	public:
-		Buffer() : m_Data(nullptr), m_Size(0) {}
-		Buffer(const void* data, uint64_t size);
-		Buffer(const Buffer& buf);
-		Buffer(Buffer&& buf);
-		~Buffer() { Release(); }
+		Buffer() noexcept : m_Data(nullptr), m_Size(0) {}
+		Buffer(const void* data, uint64_t size) noexcept;
+		Buffer(const Buffer& buf) noexcept;
+		Buffer(Buffer&& buf) noexcept;
+		~Buffer() noexcept;
 
 		void Allocate(uint64_t size);
 		void Resize(uint64_t size);

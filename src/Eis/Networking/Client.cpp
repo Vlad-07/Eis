@@ -10,11 +10,15 @@ namespace Eis
 
 	Client::Client() : m_Running(false)
 	{
+		EIS_CORE_ASSERT(!s_ClientInstance, "Client already exists!");
+		s_ClientInstance = this;
 	}
 	Client::~Client()
 	{
+		m_Running = false;
 		if (m_NetworkThread.joinable())
 			m_NetworkThread.join();
+		s_ClientInstance = nullptr;
 	}
 
 
@@ -40,8 +44,6 @@ namespace Eis
 
 	void Client::NetworkThreadFunc()
 	{
-		EIS_CORE_ASSERT(!s_ClientInstance, "Client already exists!");
-		s_ClientInstance = this;
 		m_ConnectionStatus = Connecting;
 
 		// Startup

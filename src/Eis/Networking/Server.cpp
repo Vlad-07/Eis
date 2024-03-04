@@ -8,11 +8,17 @@ namespace Eis
 	static Server* s_ServerInstance = nullptr;
 
 
-	Server::Server(int port) : m_Port(port), m_Running(false) {}
+	Server::Server(int port) : m_Port(port), m_Running(false)
+	{
+		EIS_CORE_ASSERT(!s_ServerInstance, "Server already exists!");
+		s_ServerInstance = this;
+	}
 	Server::~Server()
 	{
+		m_Running = false;
 		if (m_NetworkThread.joinable())
 			m_NetworkThread.join();
+		s_ServerInstance = nullptr;
 	}
 
 
@@ -26,14 +32,13 @@ namespace Eis
 	void Server::Stop()
 	{
 		m_Running = false;
+		if (m_NetworkThread.joinable())
+			m_NetworkThread.join();
 	}
 
 
 	void Server::NetworkThreadFunc()
 	{
-		EIS_CORE_ASSERT(!s_ServerInstance, "Server already exists!");
-		s_ServerInstance = this;
-
 		// Startup
 
 		SteamDatagramErrMsg errMsg;

@@ -1,63 +1,67 @@
 #include "Eispch.h"
-
 #include "Eis/Renderer/Objects/OrthoCameraController.h"
-
 #include "Eis/Input/Input.h"
-#include "Eis/Input/Keycodes.h"
-
 #include "Eis/Core/Application.h"
 
 namespace Eis
 {
-	OrthoCameraController::OrthoCameraController(float aspectRatio, bool lock, bool rotation)
-		: m_AspectRatio(aspectRatio), m_Rotation(rotation), m_Locked(lock),
-		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel)
-	{}
+	OrthoCameraController::OrthoCameraController(float aspectRatio)
+		: m_AspectRatio(aspectRatio), m_PoseLock(false), m_ZoomLock(false), m_RotationLock(true), m_ZoomSpeedEffect(true),
+		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {}
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		if (m_Locked)
-			return;
+		if (m_PoseLock) return; // you kinda never use rotation, even less without position
 
+		glm::fvec2 delta(0.0f);
+		float sinRot = sin(glm::radians(m_CameraRotation)), cosRot = cos(glm::radians(m_CameraRotation));
 		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
 		{
-			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts; // HACK: find better way to influence speed according to zoom
-			m_CameraPosition.y +=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			delta.x += -sinRot;
+			delta.y +=  cosRot;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
 		{
-			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
-			m_CameraPosition.y -=  cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			delta.x -= -sinRot;
+			delta.y -=  cosRot;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
 		{
-			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
-			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			delta.x -=  cosRot;
+			delta.y -=  sinRot;
 		}
 		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
 		{
-			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
-			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraSpeed * m_ZoomLevel * ts;
+			delta.x +=  cosRot;
+			delta.y +=  sinRot;
 		}
 
-		if (m_Rotation)
-		{
-			if (Input::IsKeyPressed(EIS_KEY_Q))
-				m_CameraRotation += m_CameraRotationSpeed * ts;
-			if (Input::IsKeyPressed(EIS_KEY_E))
-				m_CameraRotation -= m_CameraRotationSpeed * ts;
+		// limit diagonal movement
+		if (glm::length(delta) > 1.0f)
+			delta /= 1.4142f; // sqrtf(2)
 
-			if (m_CameraRotation > 180.0f)
-				m_CameraRotation -= 360.0f;
-			else if (m_CameraRotation <= -180.0f)
-				m_CameraRotation += 360.0f;
-			
-			m_Camera.SetRotation(m_CameraRotation);
-		}
+		if (m_ZoomSpeedEffect)
+			delta *= m_ZoomLevel; // HACK: find better way to influence speed according to zoom
 
+		m_CameraPosition += glm::vec3(delta * (ts.GetSeconds() * m_CameraSpeed), 0.0f);
 		m_Camera.SetPosition(m_CameraPosition);
+
+
+		if (m_RotationLock) return;
+
+		if (Input::IsKeyPressed(EIS_KEY_Q))
+			m_CameraRotation += m_CameraRotationSpeed * ts;
+		if (Input::IsKeyPressed(EIS_KEY_E))
+			m_CameraRotation -= m_CameraRotationSpeed * ts;
+
+		if (m_CameraRotation > 180.0f)
+			m_CameraRotation -= 360.0f;
+		else if (m_CameraRotation <= -180.0f)
+			m_CameraRotation += 360.0f;
+		
+		m_Camera.SetRotation(m_CameraRotation);
 	}
 
 	void OrthoCameraController::OnEvent(Event& e)
@@ -71,6 +75,8 @@ namespace Eis
 
 	glm::vec2 OrthoCameraController::CalculateMouseWorldPos()
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glm::vec2 mousePos = Eis::Input::GetMousePos();
 
 		mousePos /= glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
@@ -89,11 +95,14 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		float last = m_ZoomLevel; // HACK: find better way to mantain maximum zoom level acording to sensitivity
+		if (m_ZoomLock) return false;
+
 		m_ZoomLevel -= e.GetYOffset() / m_ZoomSensitivity;
 
-		if (m_ZoomLevel <= 0.2f)
-			m_ZoomLevel = last;
+		if (m_ZoomLevel < m_MinZoom)
+			m_ZoomLevel = m_MinZoom;
+		else if (m_ZoomLevel > m_MaxZoom)
+			m_ZoomLevel = m_MaxZoom;
 
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
