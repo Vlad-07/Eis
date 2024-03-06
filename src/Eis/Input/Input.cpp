@@ -6,6 +6,7 @@
     #include "Platform/Windows/WindowsInput.h"
 #endif
 
+
 namespace Eis
 {
     Scope<Input> Input::s_Instance = Input::Create();

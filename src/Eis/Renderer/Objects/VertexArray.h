@@ -1,14 +1,15 @@
 #pragma once
 
 #include <memory>
-#include "Buffers.h"
+#include "Eis/Renderer/Objects/Buffers.h"
+
 
 namespace Eis
 {
 	class VertexArray
 	{
 	public:
-		virtual ~VertexArray() {}
+		virtual ~VertexArray() = default;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;

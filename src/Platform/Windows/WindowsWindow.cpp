@@ -1,12 +1,12 @@
 #include "Eispch.h"
+#include "WindowsWindow.h"
 
-#include "Platform/Windows/WindowsWindow.h"
-
-#include "Eis/Events/ApplicationEvent.h"
 #include "Eis/Events/KeyEvent.h"
 #include "Eis/Events/MouseEvent.h"
+#include "Eis/Events/ApplicationEvent.h"
 
 #include "Platform/OpenGL/OpenGLContext.h"
+
 
 namespace Eis
 {
@@ -54,11 +54,11 @@ namespace Eis
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
 
-			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 			s_GLFWWindowCount++;
 		}
 
-		m_Context = OpenGLContext::Create(m_Window);
+		m_Context = OpenGLContext::Create(m_Window); // TODO: use abstract context instead
 		m_Context->Init();
 		
 
@@ -75,14 +75,12 @@ namespace Eis
 				data.Height = height;
 				data.EventCallback(event);
 		});
-
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				WindowCloseEvent event;
 				data.EventCallback(event);
 		});
-
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -111,21 +109,18 @@ namespace Eis
 						EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:116");
 				}
 		});
-
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				KeyTypedEvent event(static_cast<KeyCode>(keycode));
 				data.EventCallback(event);
 		});
-
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				MouseMovedEvent event((float)xpos, (float)ypos);
 				data.EventCallback(event);
 		});
-		
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -148,7 +143,6 @@ namespace Eis
 					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:153");
 				}
 		});
-
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -177,6 +171,15 @@ namespace Eis
 		m_Context->SwapBuffers();
 	}
 
+	void WindowsWindow::SetSize(uint32_t width, uint32_t height)
+	{
+		EIS_PROFILE_FUNCTION();
+
+		glfwSetWindowSize(m_Window, width, height);
+		m_Data.Width = width;
+		m_Data.Height = height;
+	}
+
 	void WindowsWindow::SetVSync(bool enabled)
 	{
 		EIS_PROFILE_FUNCTION();
@@ -186,11 +189,6 @@ namespace Eis
 		else
 			glfwSwapInterval(0);
 		m_Data.VSync = enabled;
-	}
-
-	bool WindowsWindow::IsVSync() const
-	{
-		return m_Data.VSync;
 	}
 
 	void Eis::WindowsWindow::SetTitle(const std::string& title)

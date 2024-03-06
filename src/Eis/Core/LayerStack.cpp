@@ -1,6 +1,6 @@
 #include "Eispch.h"
+#include "LayerStack.h"
 
-#include "Eis/Core/LayerStack.h"
 
 namespace Eis
 {

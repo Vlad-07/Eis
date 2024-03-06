@@ -1,6 +1,6 @@
 #include "Eispch.h"
+#include "Log.h"
 
-#include "Eis/Core/Log.h"
 
 namespace Eis
 {

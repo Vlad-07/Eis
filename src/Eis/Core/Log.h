@@ -6,9 +6,8 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/ostr.h>
 
-// #include <stdarg.h>
-// SUS: Consider over compiler specific "__VA_ARGS__" ?
 
+// Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 
 // Core log macros
 #define EIS_CORE_TRACE(...)		::Eis::Log::GetCoreLogger()->trace(__VA_ARGS__);
@@ -17,14 +16,12 @@
 #define EIS_CORE_ERROR(...)		::Eis::Log::GetCoreLogger()->error(__VA_ARGS__);
 #define EIS_CORE_CRITICAL(...)	::Eis::Log::GetCoreLogger()->critical(__VA_ARGS__);
 
-
 // Client log macros
 #define EIS_TRACE(...)			::Eis::Log::GetClientLogger()->trace(__VA_ARGS__);
 #define EIS_INFO(...)			::Eis::Log::GetClientLogger()->info(__VA_ARGS__);
 #define EIS_WARN(...)			::Eis::Log::GetClientLogger()->warn(__VA_ARGS__);
 #define EIS_ERROR(...)			::Eis::Log::GetClientLogger()->error(__VA_ARGS__);
 #define EIS_CRITICAL(...)		::Eis::Log::GetClientLogger()->critical(__VA_ARGS__);
-
 
 namespace Eis
 {

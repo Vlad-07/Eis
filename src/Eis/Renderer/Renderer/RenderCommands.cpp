@@ -1,6 +1,6 @@
 #include "Eispch.h"
+#include "RenderCommands.h"
 
-#include "Eis/Renderer/Renderer/RenderCommands.h"
 
 namespace Eis
 {

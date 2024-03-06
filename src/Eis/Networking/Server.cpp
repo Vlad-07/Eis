@@ -3,6 +3,7 @@
 
 #include <chrono>
 
+
 namespace Eis
 {
 	static Server* s_ServerInstance = nullptr;
@@ -40,6 +41,7 @@ namespace Eis
 	void Server::NetworkThreadFunc()
 	{
 		// Startup
+		EIS_CORE_INFO("Starting server...");
 
 		SteamDatagramErrMsg errMsg;
 		if (!GameNetworkingSockets_Init(nullptr, errMsg))
@@ -100,6 +102,8 @@ namespace Eis
 
 		GameNetworkingSockets_Kill();
 		m_Interface = nullptr;
+
+		EIS_CORE_INFO("Server stopped.");
 	}
 
 	void Server::ConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* info) { s_ServerInstance->OnConnectionStatusChanged(info); }

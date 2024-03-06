@@ -5,6 +5,7 @@
     #include "Platform/Windows/WindowsWindow.h"
 #endif
 
+
 namespace Eis
 {
     Scope<Window> Eis::Window::Create(const WindowProps& props)

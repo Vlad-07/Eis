@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Eis/Core/Image.h"
 #include "Eis/Renderer/Objects/Texture.h"
+#include "Eis/Core/Image.h"
+
 
 typedef unsigned int GLenum;
 

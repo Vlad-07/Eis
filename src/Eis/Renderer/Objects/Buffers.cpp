@@ -1,15 +1,16 @@
 #include "Eispch.h"
+#include "Buffers.h"
 
-#include "Eis/Renderer/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
-#include "Eis/Renderer/Objects/Buffers.h"
 #include "Platform/OpenGL/OpenGLBuffers.h"
+
 
 namespace Eis
 {
 	Ref<VertexBuffer> VertexBuffer::Create(float* verticies, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
@@ -25,7 +26,7 @@ namespace Eis
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indicies, uint32_t count)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "'None' API not currently suported");

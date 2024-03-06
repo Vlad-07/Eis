@@ -1,6 +1,5 @@
 #include "Eispch.h"
-
-#include "Eis/Renderer/Renderer/Renderer2D.h"
+#include "Renderer2D.h"
 
 #include "Eis/Renderer/Objects/VertexArray.h"
 #include "Eis/Renderer/Objects/Shader.h"
@@ -8,6 +7,7 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 
 namespace Eis
 {
@@ -25,6 +25,8 @@ namespace Eis
 	void Renderer2D::Init()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
+
+		RenderCommands::Init();
 
 		s_Data = CreateScope<Renderer2DStorage>();
 

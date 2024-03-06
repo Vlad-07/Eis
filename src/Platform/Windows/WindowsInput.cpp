@@ -1,10 +1,10 @@
 #include "Eispch.h"
-
-#include "Platform/Windows/WindowsInput.h"
+#include "WindowsInput.h"
 
 #include "Eis/Core/Application.h"
 
 #include <GLFW/glfw3.h>
+
 
 namespace Eis
 {

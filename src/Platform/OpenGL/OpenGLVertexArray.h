@@ -2,16 +2,11 @@
 
 #include "Eis/Renderer/Objects/VertexArray.h"
 
+
 namespace Eis
 {
 	class OpenGLVertexArray : public VertexArray
 	{
-	private:
-		uint32_t m_RendererId;
-		uint32_t m_VertexBufferIndex = 0;
-		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
-		Ref<IndexBuffer> m_IndexBuffer;
-
 	public:
 		OpenGLVertexArray();
 		virtual ~OpenGLVertexArray();
@@ -24,5 +19,11 @@ namespace Eis
 
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
+
+	private:
+		uint32_t m_RendererId;
+		uint32_t m_VertexBufferIndex = 0;
+		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+		Ref<IndexBuffer> m_IndexBuffer;
 	};
 }

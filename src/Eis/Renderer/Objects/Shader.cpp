@@ -1,8 +1,7 @@
 #include "Eispch.h"
+#include "Shader.h"
 
-#include "Eis/Renderer/Objects/Shader.h"
-
-#include "Eis/Renderer/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -10,7 +9,7 @@ namespace Eis
 {
 	Ref<Shader> Shader::Create(const std::string& filepath)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
@@ -26,7 +25,7 @@ namespace Eis
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
@@ -39,8 +38,6 @@ namespace Eis
 		EIS_CORE_ASSERT(false, "Unknown graphics API");
 		return nullptr;
 	}
-
-
 
 	
 

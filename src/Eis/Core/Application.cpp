@@ -1,31 +1,29 @@
 #include "Eispch.h"
 #include "Application.h"
 
-#include "imgui.h"
-
-#include "Eis/Input/Input.h"
-
-#include "Eis/Renderer/Renderer/Renderer.h"
 #include "Eis/Core/Random.h"
+#include "Eis/Input/Input.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+
 
 namespace Eis
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() : m_Running(true), m_Minimized(false), m_LastFrameTime(0.0f)
+	Application::Application(WindowProps props) : m_Running(true), m_Minimized(false), m_LastFrameTime(0.0f)
 	{
 		EIS_PROFILE_FUNCTION();
 
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		m_Window = Window::Create();
+		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
-		m_Window->SetVSync(true);
 
-		Renderer::Init();
+		Renderer2D::Init();
 		Random::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
@@ -36,7 +34,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		Renderer::Shutdown();
+		Renderer2D::Shutdown();
 	}
 
 	void Application::Run()
@@ -59,7 +57,7 @@ namespace Eis
 					for (Layer* layer : m_LayerStack)
 						layer->OnUpdate(timeStep);
 				}
-			
+
 				m_ImGuiLayer->Begin();
 				{
 					EIS_PROFILE_SCOPE("LayerStack OnImGuiRender");
@@ -118,7 +116,7 @@ namespace Eis
 
 		m_Minimized = false;
 
-		Renderer::OnWindowResized(e.GetWidth(), e.GetHeight());
+		Renderer2D::OnWindowResized(e.GetWidth(), e.GetHeight());
 		
 		return false;
 	}

@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Eispch.h"
+#include <random>
 #include <glm/glm.hpp>
+#include "Eis/Debug/Instrumentor.h"
 
-// Stupid max() macro in "Windows.h"
-#pragma push_macro("max")
-#undef max
 
 namespace Eis
 {
@@ -71,5 +69,3 @@ namespace Eis
 		static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
 	};
 }
-
-#pragma pop_macro("max")

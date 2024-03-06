@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Eis/Core/Core.h"
-
-#include "Eis/Core/TimeStep.h"
 #include "Eis/Core/Window.h"
 #include "Eis/Core/LayerStack.h"
+#include "Eis/Core/TimeStep.h"
 
 #include "Eis/Events/Event.h"
 #include "Eis/Events/ApplicationEvent.h"
@@ -18,7 +17,7 @@ namespace Eis
 	class Application
 	{
 	public:
-		Application();
+		Application(WindowProps props = WindowProps());
 		virtual ~Application();
 
 
@@ -29,6 +28,8 @@ namespace Eis
 
 		static Application& Get() { return *s_Instance; }
 		Window& GetWindow() { return *m_Window; }
+
+		static void ShouldClose() { s_Instance->m_Running = false; }
 
 	private:
 		void Run();
@@ -45,10 +46,9 @@ namespace Eis
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
 
-		float m_LastFrameTime;
-
 		bool m_Running;
 		bool m_Minimized;
+		float m_LastFrameTime;
 	};
 
 	// Is defined in CLIENT

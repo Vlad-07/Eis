@@ -3,6 +3,7 @@
 
 #include <chrono>
 
+
 namespace Eis
 {
 	static Client* s_ClientInstance = nullptr;

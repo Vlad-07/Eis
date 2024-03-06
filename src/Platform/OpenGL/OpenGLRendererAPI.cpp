@@ -1,8 +1,8 @@
 #include "Eispch.h"
-
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "OpenGLRendererAPI.h"
 
 #include <glad/glad.h>
+
 
 namespace Eis
 {
@@ -21,7 +21,7 @@ namespace Eis
 	{
 		glViewport(x, y, width, height);
 	}
-
+	
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);

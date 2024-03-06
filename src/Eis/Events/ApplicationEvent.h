@@ -1,6 +1,8 @@
 #pragma once
 
+#include <sstream>
 #include "Eis/Events/Event.h"
+
 
 namespace Eis
 {

@@ -1,16 +1,16 @@
 #include "Eispch.h"
+#include "VertexArray.h"
 
-#include "Eis/Renderer/Objects/VertexArray.h"
-
-#include "Eis/Renderer/Renderer/Renderer.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLVertexArray.h"
+
 
 namespace Eis
 {
 	Ref<VertexArray> VertexArray::Create()
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: None");

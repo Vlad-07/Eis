@@ -1,7 +1,9 @@
 #include "Eispch.h"
-#include "Eis/Renderer/Objects/OrthoCameraController.h"
-#include "Eis/Input/Input.h"
+#include "OrthoCameraController.h"
+
 #include "Eis/Core/Application.h"
+#include "Eis/Input/Input.h"
+
 
 namespace Eis
 {

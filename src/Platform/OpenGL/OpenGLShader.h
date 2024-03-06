@@ -4,16 +4,13 @@
 
 #include "Eis/Renderer/Objects/Shader.h"
 
-// TODO: remove
+
 typedef unsigned int GLenum;
 
 namespace Eis
 {
 	class OpenGLShader : public Shader
 	{
-	private:
-		uint32_t m_RendererId = 0;
-
 	public:
 		OpenGLShader(const std::string& filePath);
 		OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
@@ -41,6 +38,7 @@ namespace Eis
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 	private:
+		uint32_t m_RendererId;
 		std::string m_Name;
 
 	private:

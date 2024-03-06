@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 
+
 namespace Eis
 {
 	using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
@@ -37,7 +38,6 @@ namespace Eis
 			WriteHeader();
 			m_CurrentSession = std::make_shared<InstrumentationSession>(InstrumentationSession{ name });
 		}
-
 		void EndSession()
 		{
 			WriteFooter();
@@ -74,7 +74,6 @@ namespace Eis
 			m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
 			m_OutputStream.flush();
 		}
-
 		void WriteFooter()
 		{
 			m_OutputStream << "]}";
@@ -107,6 +106,7 @@ namespace Eis
 				Stop();
 		}
 
+
 		void Stop()
 		{
 			auto endTimepoint = std::chrono::steady_clock::now();
@@ -126,6 +126,7 @@ namespace Eis
 		bool m_Stopped;
 	};
 }
+
 
 
 #ifdef EIS_PROFILE

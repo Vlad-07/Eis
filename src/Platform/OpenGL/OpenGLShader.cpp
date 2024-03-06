@@ -1,13 +1,11 @@
 #include "Eispch.h"
-
-#include "Platform/OpenGL/OpenGLShader.h"
+#include "OpenGLShader.h"
 
 #include <ios>
 #include <fstream>
-
 #include <glad/glad.h>
-
 #include <glm/gtc/type_ptr.hpp>
+
 
 namespace Eis
 {
@@ -21,7 +19,7 @@ namespace Eis
 	}
 
 
-	OpenGLShader::OpenGLShader(const std::string& filePath)
+	OpenGLShader::OpenGLShader(const std::string& filePath) : m_RendererId(0)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -30,8 +28,8 @@ namespace Eis
 		Compile(shaderSources);
 
 		// Extract name
-		// From "assets/textures/CoolShader.glsl"
-		// we get "CoolShader"
+		// From "assets/shaders/Example.glsl"
+		// we get "Example"
 		auto lastSlash = filePath.find_last_of("/\\");
 		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
 		auto lastDot = filePath.rfind('.');
@@ -41,7 +39,7 @@ namespace Eis
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
-		: m_Name(name)
+		: m_RendererId(0), m_Name(name)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 

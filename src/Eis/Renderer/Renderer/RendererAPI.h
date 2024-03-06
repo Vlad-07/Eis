@@ -4,6 +4,7 @@
 
 #include "Eis/Renderer/Objects/VertexArray.h"
 
+
 namespace Eis
 {
 	class RendererAPI
@@ -28,7 +29,7 @@ namespace Eis
 		virtual void Enable(uint32_t code) = 0;
 		virtual void Disable(uint32_t code) = 0;
 
-		static inline API GetAPI() { return s_API; }
+		static API GetAPI() { return s_API; }
 		static Scope<RendererAPI> Create();
 
 	private:

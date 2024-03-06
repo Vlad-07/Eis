@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Eispch.h"
-
+#include <string>
+#include <ostream>
 #include "Eis/Core/Core.h"
 
 namespace Eis

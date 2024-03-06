@@ -1,15 +1,16 @@
 #include "Eispch.h"
+#include "Texture.h"
 
-#include "Eis/Renderer/Objects/Texture.h"
+#include "Eis/Renderer/Renderer/Renderer2D.h"
 
-#include "Eis/Renderer/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
+
 
 namespace Eis
 {
 	Ref<Texture2D> Texture2D::Create(const std::string& path)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
@@ -25,7 +26,7 @@ namespace Eis
 
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
@@ -41,7 +42,7 @@ namespace Eis
 
 	Ref<Texture2D> Texture2D::Create(const Image& image)
 	{
-		switch (Renderer::GetAPI())
+		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::None:
 			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");

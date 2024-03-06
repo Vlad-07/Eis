@@ -1,10 +1,12 @@
 #pragma once
 
 #include "OrthographicCamera.h"
+
 #include "Eis/Core/TimeStep.h"
 
 #include "Eis/Events/ApplicationEvent.h"
 #include "Eis/Events/MouseEvent.h"
+
 
 namespace Eis
 {

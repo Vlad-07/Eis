@@ -18,12 +18,11 @@
 #include "Eis/Input/Keycodes.h"
 #include "Eis/Input/MouseCodes.h"
 
+// Rendering
+#include "Eis/Renderer/Renderer/Renderer2D.h"
+
 #include "Eis/Renderer/Objects/OrthoCameraController.h"
 
-// Rendering
-#include "Eis/Renderer/Renderer/Renderer.h"
-#include "Eis/Renderer/Renderer/Renderer2D.h"
-#include "Eis/Renderer/Renderer/RenderCommands.h"
 
 #include "Eis/Renderer/Objects/Shader.h"
 #include "Eis/Renderer/Objects/Buffers.h"

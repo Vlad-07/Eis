@@ -16,14 +16,16 @@ namespace Eis
 		void Release();
 
 		void ZeroInit();
-		void NullTerminate();
+		void AppendNull();
 
 		void* Data() const { return m_Data; }
 
 		template<typename T>
-		T& Read(uint64_t offset = 0);
+		T& Read(uint64_t offset = 0)
+		{ return *(T*)((uint32_t*)m_Data + offset); }
 		template<typename T>
-		T Read(uint64_t offset = 0) const;
+		T Read(uint64_t offset = 0) const
+		{ return *(T*)((uint32_t*)m_Data + offset); }
 
 		void Write(const void* data, uint64_t size, uint64_t offset = 0);
 

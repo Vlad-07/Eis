@@ -1,8 +1,8 @@
 #include "Eispch.h"
-
-#include "Platform/OpenGL/OpenGLBuffers.h"
+#include "OpenGLBuffers.h"
 
 #include <glad/glad.h>
+
 
 namespace Eis
 {
@@ -39,6 +39,7 @@ namespace Eis
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
+
 
 	// Index Buffer ------------------------------------------------------------------------------------------------|
 	// -------------------------------------------------------------------------------------------------------------|
