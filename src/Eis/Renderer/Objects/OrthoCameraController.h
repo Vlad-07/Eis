@@ -27,6 +27,7 @@ namespace Eis
 		float GetCameraSpeed() const { return m_CameraSpeed; }
 		void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
 
+		void SetZoom(float zoom);
 		void SetMinZoom(float minZoom) { m_MinZoom = minZoom; }
 		void SetMaxZoom(float maxZoom) { m_MaxZoom = maxZoom; }
 

@@ -22,10 +22,10 @@ namespace Eis
 
 		template<typename T>
 		T& Read(uint64_t offset = 0)
-		{ return *(T*)((uint32_t*)m_Data + offset); }
+		{ return *(T*)((uint8_t*)m_Data + offset); }
 		template<typename T>
 		T Read(uint64_t offset = 0) const
-		{ return *(T*)((uint32_t*)m_Data + offset); }
+		{ return *(T*)((uint8_t*)m_Data + offset); }
 
 		void Write(const void* data, uint64_t size, uint64_t offset = 0);
 
