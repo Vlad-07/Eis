@@ -48,7 +48,7 @@ namespace Eis
 			float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
 			TimeStep timeStep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
-
+			// TODO: fps limiter
 			if (!m_Minimized)
 			{
 				{
