@@ -16,10 +16,21 @@ namespace Eis
 		static void Shutdown();
 
 		static void BeginScene(const OrthographicCamera& camera);
-		static void StartBatch();
 		static void EndScene();
+
+		static void StartBatch();
+		static void StartBatchQuads();
+		static void StartBatchCircles();
+		static void StartBatchLines();
+
+		static void NextBatchQuads();
+		static void NextBatchCircles();
+		static void NextBatchLines();
+
 		static void Flush();
-		// TODO: more batches if count excedes capacity
+		static void FlushQuads();
+		static void FlushCircles();
+		static void FlushLines();
 
 		// Primitives
 
@@ -49,6 +60,21 @@ namespace Eis
 		static void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color);
 		static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color);
 
+
+		// Stats
+		struct Statistics
+		{
+			uint32_t DrawCalls = 0;
+			uint32_t QuadCount = 0;
+			uint32_t CircleCount = 0;
+			uint32_t LineCount = 0;
+
+			uint32_t VerexCount() const { return (QuadCount + CircleCount) * 4.0f + LineCount * 2.0f; }
+			uint32_t IndexCount() const { return (QuadCount + CircleCount) * 6.0f + LineCount * 2.0f; }
+		};
+
+		static const Statistics& GetStats();
+		static void ResetStats();
 
 		// Commands
 		static float GetLineWidth();
