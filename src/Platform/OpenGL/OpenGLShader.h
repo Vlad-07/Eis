@@ -20,6 +20,7 @@ namespace Eis
 		virtual void Unbind() const override;
 
 		virtual void SetInt(const std::string& name, const int& value) override;
+		virtual void SetIntArray(const std::string& name, const int* values, uint32_t count) override;
 		virtual void SetFloat(const std::string& name, const float& value) override;
 		virtual void SetFloat2(const std::string& name, const glm::vec2& value) override;
 		virtual void SetFloat3(const std::string& name, const glm::vec3& value) override;
@@ -30,6 +31,7 @@ namespace Eis
 
 
 		void UploadUniformInt(const std::string& name, const int& value);
+		void UploadUniformIntArray(const std::string& name, const int* values, uint32_t count);
 		void UploadUniformFloat(const std::string& name, const float& value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);

@@ -8,6 +8,19 @@
 
 namespace Eis
 {
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
+	{
+		switch (Renderer2D::GetAPI())
+		{
+		case RendererAPI::API::None:
+			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
+			return nullptr;
+
+		case RendererAPI::API::OpenGL:
+			return CreateRef<OpenGLVertexBuffer>(size);
+		}
+	}
+
 	Ref<VertexBuffer> VertexBuffer::Create(float* verticies, uint32_t size)
 	{
 		switch (Renderer2D::GetAPI())
@@ -24,7 +37,9 @@ namespace Eis
 		return nullptr;
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indicies, uint32_t count)
+
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	{
 		switch (Renderer2D::GetAPI())
 		{
@@ -33,7 +48,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return CreateRef<OpenGLIndexBuffer>(indicies, count);
+			return CreateRef<OpenGLIndexBuffer>(indices, count);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");

@@ -128,4 +128,12 @@ namespace Eis
 
 		glBindTextureUnit(slot, 0);
 	}
+
+	bool OpenGLTexture2D::operator==(const Texture& other) const
+	{
+		auto* p = dynamic_cast<OpenGLTexture2D*>((Texture*)&other);
+		if (p == nullptr)
+			return false;
+		return m_RendererId == p->m_RendererId;
+	}
 }

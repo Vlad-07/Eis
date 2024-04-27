@@ -208,6 +208,13 @@ namespace Eis
 		UploadUniformInt(name, value);
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& name, const int* values, uint32_t count)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		UploadUniformIntArray(name, values, count);
+	}
+
 	void OpenGLShader::SetFloat(const std::string& name, const float& value)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -248,6 +255,12 @@ namespace Eis
 	{
 		int32_t location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniform1i(location, value);
+	}
+
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, const int* values, uint32_t count)
+	{
+		int32_t location = glGetUniformLocation(m_RendererId, name.c_str());
+		glUniform1iv(location, count, values);
 	}
 
 	void OpenGLShader::UploadUniformFloat(const std::string& name, const float& value)

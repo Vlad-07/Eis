@@ -9,12 +9,20 @@ namespace Eis
 	// Vertex Buffer -----------------------------------------------------------------------------------------------|
 	// -------------------------------------------------------------------------------------------------------------|
 
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		glCreateBuffers(1, &m_RendererId);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererId);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	}
+
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* verticies, uint32_t size)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glCreateBuffers(1, &m_RendererId);
-		// glGenBuffers(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererId);
 		glBufferData(GL_ARRAY_BUFFER, size, verticies, GL_STATIC_DRAW);
 	}
@@ -40,19 +48,26 @@ namespace Eis
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+	}
+
 
 	// Index Buffer ------------------------------------------------------------------------------------------------|
 	// -------------------------------------------------------------------------------------------------------------|
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indicies, uint32_t count)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
 		: m_Count(count)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glCreateBuffers(1, &m_RendererId);
-		// glGenBuffers(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererId);
-		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indicies, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
