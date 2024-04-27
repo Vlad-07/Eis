@@ -1,7 +1,7 @@
 #include "Eispch.h"
 #include "VertexArray.h"
 
-#include "Eis/Renderer/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 

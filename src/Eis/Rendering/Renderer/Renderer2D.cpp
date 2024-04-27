@@ -1,9 +1,9 @@
 #include "Eispch.h"
 #include "Renderer2D.h"
 
-#include "Eis/Renderer/Objects/VertexArray.h"
-#include "Eis/Renderer/Objects/Shader.h"
-#include "Eis/Renderer/Renderer/RenderCommands.h"
+#include "Eis/Rendering/Objects/VertexArray.h"
+#include "Eis/Rendering/Objects/Shader.h"
+#include "Eis/Rendering/Renderer/RenderCommands.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>

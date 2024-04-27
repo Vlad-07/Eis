@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Renderer/Renderer/RendererAPI.h"
+#include "Eis/Rendering/Renderer/RendererAPI.h"
 
 
 namespace Eis

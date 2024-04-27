@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "Eis/Renderer/Objects/Buffers.h"
+#include "Eis/Rendering/Objects/Buffers.h"
 
 
 namespace Eis

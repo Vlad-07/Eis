@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Eis/Renderer/Objects/VertexArray.h"
+#include "Eis/Rendering/Objects/VertexArray.h"
 
 
 namespace Eis

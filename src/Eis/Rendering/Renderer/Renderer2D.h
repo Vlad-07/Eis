@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Eis/Renderer/Renderer/RenderCommands.h"
+#include "Eis/Rendering/Renderer/RenderCommands.h"
 
-#include "Eis/Renderer/Objects/Shader.h"
-#include "Eis/Renderer/Objects/Texture.h"
-#include "Eis/Renderer/Objects/OrthographicCamera.h"
+#include "Eis/Rendering/Objects/Shader.h"
+#include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
 namespace Eis

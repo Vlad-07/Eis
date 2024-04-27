@@ -19,14 +19,14 @@
 #include "Eis/Input/MouseCodes.h"
 
 // Rendering
-#include "Eis/Renderer/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/Renderer2D.h"
 
-#include "Eis/Renderer/Objects/OrthoCameraController.h"
+#include "Eis/Rendering/Objects/OrthoCameraController.h"
 
 
-#include "Eis/Renderer/Objects/Shader.h"
-#include "Eis/Renderer/Objects/Buffers.h"
-#include "Eis/Renderer/Objects/Texture.h"
-#include "Eis/Renderer/Objects/VertexArray.h"
+#include "Eis/Rendering/Objects/Shader.h"
+#include "Eis/Rendering/Objects/Buffers.h"
+#include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Rendering/Objects/VertexArray.h"
 
-#include "Eis/Renderer/Objects/OrthographicCamera.h"
+#include "Eis/Rendering/Objects/OrthographicCamera.h"
