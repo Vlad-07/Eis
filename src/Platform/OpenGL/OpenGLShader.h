@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Eis/Renderer/Objects/Shader.h"
+#include "Eis/Rendering/Objects/Shader.h"
 
 
 typedef unsigned int GLenum;

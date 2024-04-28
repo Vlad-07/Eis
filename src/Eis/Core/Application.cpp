@@ -3,7 +3,7 @@
 
 #include "Eis/Core/Random.h"
 #include "Eis/Input/Input.h"
-#include "Eis/Renderer/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include <GLFW/glfw3.h>
 #include "imgui.h"

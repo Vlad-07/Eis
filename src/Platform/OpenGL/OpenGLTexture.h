@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Renderer/Objects/Texture.h"
+#include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Core/Image.h"
 
 
