@@ -37,7 +37,7 @@ namespace Eis
 
 	struct Renderer2DData
 	{
-		static const uint32_t MaxQuads        = 5000;
+		static const uint32_t MaxQuads        = 10000;
 		static const uint32_t MaxQuadVertices = MaxQuads * 4;
 		static const uint32_t MaxQuadIndices  = MaxQuads * 6;
 
@@ -199,14 +199,14 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
+
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
-
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}

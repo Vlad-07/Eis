@@ -19,9 +19,12 @@ namespace Eis
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLVertexBuffer>(size);
 		}
+
+		EIS_CORE_ASSERT(false, "Unknown API");
+		return nullptr;
 	}
 
-	Ref<VertexBuffer> VertexBuffer::Create(float* verticies, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
 		switch (Renderer2D::GetAPI())
 		{
@@ -30,7 +33,7 @@ namespace Eis
 			return nullptr;
 
 		case RendererAPI::API::OpenGL:
-			return CreateRef<OpenGLVertexBuffer>(verticies, size);
+			return CreateRef<OpenGLVertexBuffer>(vertices, size);
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown API");

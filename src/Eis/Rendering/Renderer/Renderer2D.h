@@ -69,8 +69,8 @@ namespace Eis
 			uint32_t CircleCount = 0;
 			uint32_t LineCount = 0;
 
-			uint32_t VerexCount() const { return (QuadCount + CircleCount) * 4.0f + LineCount * 2.0f; }
-			uint32_t IndexCount() const { return (QuadCount + CircleCount) * 6.0f + LineCount * 2.0f; }
+			uint32_t VertexCount() const { return (QuadCount + CircleCount) * 4 + LineCount * 2; }
+			uint32_t IndexCount() const { return (QuadCount + CircleCount) * 6 + LineCount * 2; }
 		};
 
 		static const Statistics& GetStats();
