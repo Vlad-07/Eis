@@ -56,7 +56,7 @@
 
 	#define EIS_ENABLE_ASSERTS
 	#define EIS_PROFILE
-	#define EIS_PROFILE_RENDERER
+//	#define EIS_PROFILE_RENDERER
 #else
 	#define EIS_DEBUGBREAK()
 #endif
