@@ -79,8 +79,7 @@ namespace Eis
 	{
 		if (zoom >= m_MinZoom && zoom <= m_MaxZoom)
 			m_ZoomLevel = zoom;
-		else
-			EIS_ASSERT(false, "Invalid zoom level!");
+
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
