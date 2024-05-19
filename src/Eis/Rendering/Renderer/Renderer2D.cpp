@@ -192,6 +192,10 @@ namespace Eis
 	void Renderer2D::Shutdown()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
+
+		delete[] s_Data.QuadVertexBufferBase;
+		delete[] s_Data.CircleVertexBufferBase;
+		delete[] s_Data.LineVertexBufferBase;
 	}
 
 
