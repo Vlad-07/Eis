@@ -8,8 +8,8 @@ IncludeDir["ImPlot"] = "vendor/implot"
 IncludeDir["glm"] = "vendor/glm"
 IncludeDir["spdlog"] = "vendor/spdlog/include"
 IncludeDir["stb_image"] = "vendor/stb_image"
-IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
 IncludeDir["stb_image_write"] = "vendor/stb_image_write"
+IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
 IncludeDir["GameNetworkingSockets"] = "vendor/GameNetworkingSockets/include"
 
 project "Eis"
@@ -36,7 +36,6 @@ project "Eis"
 		"vendor/stb_image_write/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl"
-
 	}
 
 	defines
@@ -65,9 +64,10 @@ project "Eis"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"ImPlot",
 		"opengl32.lib"
 	}
-	
+
 	filter "system:windows"
 		systemversion "latest"
 		defines "EIS_PLATFORM_WINDOWS"
