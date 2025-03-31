@@ -12,47 +12,41 @@ namespace Eis
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLTexture2D>(path);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLTexture2D>(width, height);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
 	Ref<Texture2D> Texture2D::Create(const Image& image)
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLTexture2D>(image);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 }

@@ -28,14 +28,14 @@ project "Eis"
 	{
 		"src/**.h",
 		"src/**.cpp",
+		"vendor/glm/glm/**.hpp",
+		"vendor/glm/glm/**.inl",
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
 		"vendor/stb_image_resize/**.h",
 		"vendor/stb_image_resize/**.cpp",
 		"vendor/stb_image_write/**.h",
-		"vendor/stb_image_write/**.cpp",
-		"vendor/glm/glm/**.hpp",
-		"vendor/glm/glm/**.inl"
+		"vendor/stb_image_write/**.cpp"
 	}
 
 	defines
@@ -70,7 +70,6 @@ project "Eis"
 
 	filter "system:windows"
 		systemversion "latest"
-		defines "EIS_PLATFORM_WINDOWS"
     	links { "Ws2_32.lib" }
 
 	filter { "system:windows", "configurations:Debug" }	
@@ -79,7 +78,7 @@ project "Eis"
 			"vendor/GameNetworkingSockets/.bin/Windows/Debug/GameNetworkingSockets.lib"
 		}
 
-	filter { "system:windows", "configurations:Release or configurations:Dist" }	
+	filter { "system:windows", "configurations:Release" }	
 		links
 		{
 			"vendor/GameNetworkingSockets/.bin/Windows/Release/GameNetworkingSockets.lib"
@@ -89,11 +88,6 @@ project "Eis"
 		defines "EIS_DEBUG"
 		runtime "Debug"
 		symbols "on"
-
-	filter "configurations:Distrib" 
-		defines "EIS_DISTRIB"
-		runtime "Release"
-		optimize "on"
 
 	filter "configurations:Release"
 		defines "EIS_RELEASE"

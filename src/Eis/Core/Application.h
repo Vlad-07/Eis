@@ -33,6 +33,7 @@ namespace Eis
 
 	private:
 		void Run();
+		static void RunLoop(); // HACK: ugly Get(). everywhere but emscripten needs func ptr
 
 		bool OnWindowResize(WindowResizeEvent e);
 		bool OnWindowClose(WindowCloseEvent e);
@@ -41,6 +42,7 @@ namespace Eis
 
 	private:
 		static Application* s_Instance;
+
 		Eis::Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;

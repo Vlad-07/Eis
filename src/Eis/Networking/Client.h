@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef EIS_NETWORKING_ENABLE
+
 #include <steam/steamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
 #ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
-#include <steam/steam_api.h>
+	#include <steam/steam_api.h>
 #endif
 
 #include <string>
@@ -84,3 +86,5 @@ namespace Eis
 		HSteamNetConnection m_Connection = k_HSteamNetConnection_Invalid;
 	};
 }
+
+#endif

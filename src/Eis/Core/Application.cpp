@@ -43,33 +43,42 @@ namespace Eis
 
 		while (m_Running)
 		{
-			EIS_PROFILE_SCOPE("RunLoop frame");
+			#ifndef EIS_PLATFORM_WEB
+			RunLoop();
+			#else
+			emscripten_set_main_loop(RunLoop, 0, true);
+			#endif
+		}
+	}
 
-			float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
-			TimeStep timeStep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
-			// TODO: fps limiter
-			if (!m_Minimized)
+	void Application::RunLoop()
+	{
+		EIS_PROFILE_SCOPE("RunLoop frame");
+
+		float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
+		const TimeStep timeStep = time - Get().m_LastFrameTime;
+		Get().m_LastFrameTime = time;
+		// TODO: fps limiter
+		if (!Get().m_Minimized)
+		{
 			{
-				{
-					EIS_PROFILE_SCOPE("LayerStack OnUpdate");
+				EIS_PROFILE_SCOPE("LayerStack OnUpdate");
 
-					for (Layer* layer : m_LayerStack)
-						layer->OnUpdate(timeStep);
-				}
-
-				m_ImGuiLayer->Begin();
-				{
-					EIS_PROFILE_SCOPE("LayerStack OnImGuiRender");
-
-					for (Layer* layer : m_LayerStack)
-						layer->OnImGuiRender();
-				}
-				m_ImGuiLayer->End();
+				for (Layer* layer : Get().m_LayerStack)
+					layer->OnUpdate(timeStep);
 			}
 
-			m_Window->OnUpdate();
+			Get().m_ImGuiLayer->Begin();
+			{
+				EIS_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+				for (Layer* layer : Get().m_LayerStack)
+					layer->OnImGuiRender();
+			}
+			Get().m_ImGuiLayer->End();
 		}
+
+		Get().m_Window->OnUpdate();
 	}
 
 	void Application::OnEvent(Event& e)

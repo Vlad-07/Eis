@@ -11,35 +11,31 @@ namespace Eis
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLShader>(filepath);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
-	
+
 
 	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
 	{
@@ -56,7 +52,7 @@ namespace Eis
 
 	Ref<Shader> ShaderLibrary::Load(const std::string& filePath)
 	{
-		auto& shader = Shader::Create(filePath);
+		auto shader = Shader::Create(filePath);
 		Add(shader);
 		return shader;
 	}

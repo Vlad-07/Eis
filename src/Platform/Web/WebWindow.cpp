@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "WindowsWindow.h"
+#include "WebWindow.h"
 
 #include "Eis/Events/KeyEvent.h"
 #include "Eis/Events/MouseEvent.h"
@@ -10,7 +10,7 @@
 
 namespace Eis
 {
-	WindowsWindow::WindowsWindow(const WindowProps& props)
+	WebWindow::WebWindow(const WindowProps& props)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -35,9 +35,9 @@ namespace Eis
 			});
 		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
@@ -49,8 +49,8 @@ namespace Eis
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 		
-
 		glfwSetWindowUserPointer(m_Window, &m_Data);
+
 		SetVSync(true);
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -94,7 +94,7 @@ namespace Eis
 					break;
 				}
 				default:
-					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:116");
+					EIS_CORE_ASSERT(false, "Invalid key action! (glfwSetKeyCallback)");
 			}
 		});
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
@@ -128,7 +128,7 @@ namespace Eis
 				break;
 			}
 			default:
-				EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:153");
+				EIS_CORE_ASSERT(false, "Invalid mouse action! (glfwSetMouseCallback)");
 			}
 		});
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)
@@ -139,7 +139,7 @@ namespace Eis
 		});
 	}
 
-	WindowsWindow::~WindowsWindow()
+	WebWindow::~WebWindow()
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -151,7 +151,7 @@ namespace Eis
 			glfwTerminate();
 	}
 
-	void WindowsWindow::OnUpdate()
+	void WebWindow::OnUpdate()
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -159,7 +159,7 @@ namespace Eis
 		m_Context->SwapBuffers();
 	}
 
-	void WindowsWindow::SetSize(uint32_t width, uint32_t height)
+	void WebWindow::SetSize(uint32_t width, uint32_t height)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -168,7 +168,7 @@ namespace Eis
 		m_Data.Height = height;
 	}
 
-	void WindowsWindow::SetVSync(bool enabled)
+	void WebWindow::SetVSync(bool enabled)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -179,8 +179,10 @@ namespace Eis
 		m_Data.VSync = enabled;
 	}
 
-	void Eis::WindowsWindow::SetTitle(const std::string& title)
+	void WebWindow::SetTitle(const std::string& title)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glfwSetWindowTitle(m_Window, title.c_str());
 		m_Data.Title = title;
 	}

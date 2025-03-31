@@ -2,8 +2,8 @@
 
 #include "Eis/Input/Input.h"
 
-#ifdef EIS_PLATFORM_WINDOWS
-    #include "Platform/Windows/WindowsInput.h"
+#if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
+    #include "Platform/OpenGL/GLFWInput.h"
 #endif
 
 
@@ -13,10 +13,10 @@ namespace Eis
 
     Scope<Input> Eis::Input::Create()
     {
-#ifdef EIS_PLATFORM_WINDOWS
-        return CreateScope<WindowsInput>();
+#if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
+        return CreateScope<GLFWInput>();
 #else
-        EIS_CORE_ASSERT(false, "Unknown platform!");
+        #error Unknown platform!
         return nullptr;
 #endif
     }

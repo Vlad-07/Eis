@@ -2,7 +2,13 @@
 
 #include <memory>
 
-// Platform detection using predefined macros
+
+// Configuration check
+#if !(defined(EIS_DEBUG) || defined(EIS_RELEASE))
+	#error Configuration not specified (EIS_DEBUG/EIS_RELEASE)
+#endif
+
+// Platform detection
 #ifdef _WIN32
 	/* Windows x64/x86 */
 	#ifdef _WIN64
@@ -40,23 +46,35 @@
 #elif defined(__linux__)
 	#define EIS_PLATFORM_LINUX
 	#error "Linux is not supported!"
+#elif defined(__EMSCRIPTEN__)
+	#define EIS_PLATFORM_WEB
+	#include <emscripten.h>
 #else
 	/* Unknown compiler/platform */
 	#error "Unknown platform!"
-#endif // End of platform detection
+#endif
 
+
+// Networking
+#ifdef EIS_PLATFORM_WINDOWS
+	#define EIS_NETWORKING_ENABLE
+#endif
 
 // Debugging tools
 #ifdef EIS_DEBUG
+	#define EIS_ENABLE_ASSERTS
+
 	#ifdef EIS_PLATFORM_WINDOWS
 		#define EIS_DEBUGBREAK() __debugbreak();
 	#else
-		#error "Platform doesn't support debugbreak yet!"
+		// Platform doesn't support debugbreak yet!
+		#define EIS_DEBUGBREAK()
 	#endif
 
-	#define EIS_ENABLE_ASSERTS
-	#define EIS_PROFILE
-//	#define EIS_PROFILE_RENDERER
+	#ifdef EIS_PLATFORM_WINDOWS
+		#define EIS_PROFILE
+//		#define EIS_PROFILE_RENDERER
+	#endif
 #else
 	#define EIS_DEBUGBREAK()
 #endif
@@ -76,6 +94,7 @@
 
 // Wrappers for smart pointers
 // Code looks nicer + can easily switch to an actual class in the future for an asset manager
+
 namespace Eis
 {
 	template<typename T>

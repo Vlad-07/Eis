@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef EIS_NETWORKING_ENABLE
+
 #include <steam/steamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
 #ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
-#include <steam/steam_api.h>
+	#include <steam/steam_api.h>
 #endif
 
 #include <map>
@@ -100,3 +102,5 @@ namespace Eis
 		HSteamNetPollGroup m_PollGroup = k_HSteamNetPollGroup_Invalid;
 	};
 }
+
+#endif

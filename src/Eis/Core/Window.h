@@ -37,5 +37,8 @@ namespace Eis
 		virtual void* GetNativeWindow() const = 0;
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
+
+	protected:
+		inline static uint8_t s_WindowCount = 0; // Assuming only one context
 	};
 }

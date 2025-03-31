@@ -12,32 +12,28 @@ namespace Eis
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLVertexBuffer>(size);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
 	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "RendererAPI::None not currently suported");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLVertexBuffer>(vertices, size);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 
 
@@ -46,15 +42,13 @@ namespace Eis
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "'None' API not currently suported");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLIndexBuffer>(indices, count);
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 }

@@ -6,7 +6,7 @@
 
 namespace Eis
 {
-	class WindowsInput : public Input
+	class GLFWInput : public Input
 	{
 	protected:
 		virtual bool IsKeyPressedImpl(KeyCode keycode) override;

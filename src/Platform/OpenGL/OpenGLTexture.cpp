@@ -12,8 +12,8 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		if (path.find("C:/") != std::string::npos)
-			EIS_CORE_WARN("Absolute path is not going to work on other computers!");
+		if (path.find(':') != std::string::npos || path[0] == '\\')
+			EIS_CORE_WARN("Absolute path detected!");
 
 		int width = 0, height = 0, channels = 0;
 
@@ -23,7 +23,12 @@ namespace Eis
 			EIS_PROFILE_RENDERER_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string& path)");
 			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
-		EIS_CORE_ASSERT(data, "Failed to load image!");
+
+		if (!data)
+		{
+			EIS_CORE_ERROR("Failed to load image!");
+			return;
+		}
 
 		m_Width = width;
 		m_Height = height;

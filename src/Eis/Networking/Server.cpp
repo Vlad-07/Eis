@@ -1,6 +1,8 @@
 #include <Eispch.h>
 #include "Server.h"
 
+#ifdef EIS_NETWORKING_ENABLE
+
 #include <chrono>
 
 
@@ -259,3 +261,5 @@ namespace Eis
 		m_Running = false;
 	}
 }
+
+#endif

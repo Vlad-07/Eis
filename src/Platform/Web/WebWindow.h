@@ -8,11 +8,11 @@
 
 namespace Eis
 {
-	class WindowsWindow : public Window
+	class WebWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowProps& props);
-		virtual ~WindowsWindow();
+		WebWindow(const WindowProps& props);
+		virtual ~WebWindow();
 
 		virtual void OnUpdate() override;
 
@@ -34,8 +34,8 @@ namespace Eis
 		struct WindowData
 		{
 			std::string Title;
-			uint32_t Width = 0, Height = 0;
-			bool VSync = true;
+			uint32_t Width, Height;
+			bool VSync;
 
 			EventCallbackFn EventCallback;
 		} m_Data;

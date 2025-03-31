@@ -12,15 +12,13 @@ namespace Eis
 	{
 		switch (Renderer2D::GetAPI())
 		{
-		case RendererAPI::API::None:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: None");
-			return nullptr;
-
 		case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLVertexArray>();
-		}
 
-		EIS_CORE_ASSERT(false, "Unknown graphics API");
-		return nullptr;
+		default:
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			return nullptr;
+		}
 	}
 }

@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "WindowsInput.h"
+#include "GLFWInput.h"
 
 #include "Eis/Core/Application.h"
 
@@ -8,7 +8,7 @@
 
 namespace Eis
 {
-	bool WindowsInput::IsKeyPressedImpl(KeyCode keycode)
+	bool GLFWInput::IsKeyPressedImpl(KeyCode keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
@@ -16,7 +16,7 @@ namespace Eis
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(MouseCode button)
+	bool GLFWInput::IsMouseButtonPressedImpl(MouseCode button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
@@ -24,7 +24,7 @@ namespace Eis
 		return state == GLFW_PRESS;
 	}
 
-	glm::vec2 WindowsInput::GetMousePosImpl()
+	glm::vec2 GLFWInput::GetMousePosImpl()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xPos, yPos;
@@ -33,11 +33,11 @@ namespace Eis
 		return glm::vec2((float)xPos, (float)yPos);
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float GLFWInput::GetMouseXImpl()
 	{
 		return GetMousePosImpl().x;
 	}
-	float WindowsInput::GetMouseYImpl()
+	float GLFWInput::GetMouseYImpl()
 	{
 		return GetMousePosImpl().y;
 	}

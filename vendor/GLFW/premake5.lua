@@ -49,7 +49,7 @@ project "GLFW"
 	filter "system:linux"
 		pic "On"
 		systemversion "latest"
-		
+
 		files
 		{
 			"src/x11_init.c",
