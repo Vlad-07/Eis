@@ -7,13 +7,13 @@ struct GLFWwindow;
 
 namespace Eis
 {
-	class OpenGLESContext : public GraphicsContext
+	class OpenGLES2Context : public GraphicsContext
 	{
 	public:
-		OpenGLESContext(GLFWwindow* windowHandle);
+		OpenGLES2Context(GLFWwindow* windowHandle);
 
 		virtual void Init() override;
-		virtual void SwapBuffers() override;
+		virtual void SwapBuffers() override {}
 
 	private:
 		GLFWwindow* m_WindowHandle;

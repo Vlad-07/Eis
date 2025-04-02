@@ -19,8 +19,9 @@ namespace Eis
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
+		m_Data.VSync = true;
 
-		EIS_CORE_INFO("Initialized '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
+		EIS_CORE_INFO("Initializing '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 		
 		if (s_WindowCount == 0)
 		{
@@ -63,12 +64,13 @@ namespace Eis
 			data.Height = height;
 			data.EventCallback(event);
 		});
-		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
+		// Not implemented in OpenGL ES?
+	/*	glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
 			data.EventCallback(event);
-		});
+		});*/
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);

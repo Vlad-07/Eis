@@ -67,8 +67,7 @@
 	#ifdef EIS_PLATFORM_WINDOWS
 		#define EIS_DEBUGBREAK() __debugbreak();
 	#else
-		// Platform doesn't support debugbreak yet!
-		#define EIS_DEBUGBREAK()
+		#define EIS_DEBUGBREAK() // Platform doesn't support debugbreak yet!
 	#endif
 
 	#ifdef EIS_PLATFORM_WINDOWS

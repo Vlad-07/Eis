@@ -24,8 +24,5 @@ namespace Eis
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", s_API);
 			return nullptr;
 		}
-
-		EIS_CORE_ASSERT(false, "Unknown graphics API!");
-		return nullptr;
 	}
 }

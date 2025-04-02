@@ -23,10 +23,6 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		std::string source = ReadFile(filePath);
-		auto shaderSources = PreProcess(source);
-		Compile(shaderSources);
-
 		// Extract name
 		// From "assets/shaders/Example.glsl"
 		// we get "Example"
@@ -34,8 +30,13 @@ namespace Eis
 		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
 		auto lastDot = filePath.rfind('.');
 		auto count = lastDot == std::string::npos ? filePath.size() - lastSlash : lastDot - lastSlash;
-
 		m_Name = filePath.substr(lastSlash, count);
+
+		EIS_CORE_INFO("Compiling shader: {0}", m_Name);
+
+		std::string source = ReadFile(filePath);
+		auto shaderSources = PreProcess(source);
+		Compile(shaderSources);
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)

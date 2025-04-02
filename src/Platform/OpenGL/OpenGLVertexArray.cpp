@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 
+
 namespace Eis
 {
 	static GLenum ShaderDataTypeToOpenGLType(ShaderDataType type)
@@ -30,8 +31,7 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		glCreateVertexArrays(1, &m_RendererId);
-		// glGenVertexArrays(1, &m_RendererId);  // Use if OpenGL version is smaller than 4.5
+		glGenVertexArrays(1, &m_RendererId);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()

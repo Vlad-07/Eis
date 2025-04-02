@@ -1,0 +1,148 @@
+#include "Eispch.h"
+#include "OpenGLES2Texture.h"
+
+#include <glad/glad.h>
+#include <stb_image.h>
+
+
+namespace Eis
+{
+	OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)
+		: m_Path(path)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		if (path.find(':') != std::string::npos || path[0] == '\\')
+			EIS_CORE_WARN("Absolute path detected!");
+
+		int width = 0, height = 0, channels = 0;
+
+		stbi_set_flip_vertically_on_load(1);
+		stbi_uc* data = nullptr;
+		{
+			EIS_PROFILE_RENDERER_SCOPE("stbi_load - OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)");
+			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		}
+
+		if (!data)
+		{
+			EIS_CORE_ERROR("Failed to load image!");
+			return;
+		}
+
+		m_Width = width;
+		m_Height = height;
+
+		GLenum internalFormat = 0, dataFormat = 0;
+		if (channels == 4)
+		{
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+		else if (channels == 3)
+		{
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+
+		EIS_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+
+		m_InternalFormat = internalFormat;
+		m_DataFormat = dataFormat;
+
+		glGenTextures(1, &m_RendererId);
+		glBindTexture(GL_TEXTURE_2D, m_RendererId);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+
+		stbi_image_free(data);
+	}
+
+	OpenGLES2Texture2D::OpenGLES2Texture2D(uint32_t width, uint32_t height)
+		:m_Width(width), m_Height(height)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+
+		glGenTextures(1, &m_RendererId);
+		glBindTexture(GL_TEXTURE_2D, m_RendererId);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
+	}
+
+	OpenGLES2Texture2D::OpenGLES2Texture2D(const Image& image) : m_Width(image.GetWidth()), m_Height(image.GetHeight())
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		if (image.GetChannels() != 3 && image.GetChannels() != 4)
+			EIS_CORE_ERROR("Only RGB and RGBA image formats are supported!");
+
+		m_InternalFormat = image.GetChannels() == 4 ? GL_RGBA8 : GL_RGB8;
+		m_DataFormat = image.GetChannels() == 4 ? GL_RGBA : GL_RGB;
+
+		glGenTextures(1, &m_RendererId);
+		glBindTexture(GL_TEXTURE_2D, m_RendererId);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexSubImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, image.GetData());
+	}
+
+	OpenGLES2Texture2D::~OpenGLES2Texture2D()
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		glDeleteTextures(1, &m_RendererId);
+	}
+
+	void OpenGLES2Texture2D::SetData(void* data, uint32_t size)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		EIS_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must cover entire texture!");
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	}
+
+	void OpenGLES2Texture2D::Bind(uint32_t slot) const
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_RendererId);
+	}
+
+	void OpenGLES2Texture2D::Unbind(uint32_t slot) const
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	bool OpenGLES2Texture2D::operator==(const Texture& other) const
+	{
+		auto* p = dynamic_cast<OpenGLES2Texture2D*>((Texture*)&other);
+		if (p == nullptr)
+			return false;
+		return m_RendererId == p->m_RendererId;
+	}
+}

@@ -48,7 +48,11 @@ namespace Eis
 		static const uint32_t MaxLines        = 1000;
 		static const uint32_t MaxLineVertices = MaxLines * 2;
 
+	#ifndef EIS_PLATFORM_WEB // HACK: check at runtime
 		static const uint32_t MaxTextureSlots = 32;
+	#else
+		static const uint32_t MaxTextureSlots = 16;
+	#endif
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;

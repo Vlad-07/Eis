@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "OpenGLESContext.h"
+#include "OpenGLES2Context.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -7,12 +7,12 @@
 
 namespace Eis
 {
-	OpenGLESContext::OpenGLESContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
+	OpenGLES2Context::OpenGLES2Context(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
 	{
 		EIS_CORE_ASSERT(windowHandle, "Window handle is null!!")
 	}
 
-	void OpenGLESContext::Init()
+	void OpenGLES2Context::Init()
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -34,14 +34,7 @@ namespace Eis
 		glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 		glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
-		EIS_CORE_ASSERT(versionMajor == 2 && versionMinor == 0, "OpenGL ES version 2.0 or newer is required!");
+		EIS_CORE_ASSERT(versionMajor >= 3 && versionMinor >= 0, "OpenGL ES version 3.0 or newer is required!");
 #endif
-	}
-
-	void OpenGLESContext::SwapBuffers()
-	{
-		EIS_PROFILE_FUNCTION();
-
-		glfwSwapBuffers(m_WindowHandle);
 	}
 }
