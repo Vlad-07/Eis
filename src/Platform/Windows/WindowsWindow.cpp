@@ -16,23 +16,22 @@ namespace Eis
 
 		// Init
 
-		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
-		m_Data.VSync = true;
+		m_Data.Title  = props.Title;
+		m_Data.Width  = props.Width  != 0 ? props.Width  : WindowProps::DefaultWidth;
+		m_Data.Height = props.Height != 0 ? props.Height : WindowProps::DefaultHeight;
+		m_Data.VSync  = true;
 
-		EIS_CORE_INFO("Initialized '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
-		
 		if (s_WindowCount == 0)
 		{
 			EIS_PROFILE_SCOPE("glfwInit");
+			EIS_INFO("Initializing GLFW...");
 
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
 
 			glfwSetErrorCallback([](int error_code, const char* description)
 			{
-				EIS_CORE_CRITICAL("OpenGL Error: {0} ({1})", error_code, description);
+				EIS_CORE_ERROR("OpenGL Error: {0} ({1})", error_code, description);
 			});
 		}
 
@@ -44,12 +43,15 @@ namespace Eis
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
 
 			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
+
+			EIS_CORE_ASSERT(m_Window, "Failed to create {0} window!", m_Data.Title);
+
 			s_WindowCount++;
 		}
 
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
-		
+
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -59,7 +61,7 @@ namespace Eis
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			WindowResizeEvent event(width, height);
-			
+
 			data.Width = width;
 			data.Height = height;
 			data.EventCallback(event);
@@ -95,7 +97,7 @@ namespace Eis
 					break;
 				}
 				default:
-					EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:116");
+					EIS_CORE_ASSERT(false, "Invalid key action! (glfwSetKeyCallback)");
 			}
 		});
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
@@ -129,7 +131,7 @@ namespace Eis
 				break;
 			}
 			default:
-				EIS_CORE_ASSERT(false, "HOW DID THIS HAPPEN!!! WindowsWindow.cpp:153");
+				EIS_CORE_ASSERT(false, "Invalid mouse action! (glfwSetMouseCallback)");
 			}
 		});
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)

@@ -46,7 +46,7 @@ namespace Eis
 		Eis::Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;
-		ImGuiLayer* m_ImGuiLayer;
+		Eis::Scope<ImGuiLayer> m_ImGuiLayer;
 
 		bool m_Running;
 		bool m_Minimized;

@@ -5,7 +5,10 @@
 #include "Eis/Events/MouseEvent.h"
 #include "Eis/Events/ApplicationEvent.h"
 
-#include "Platform/OpenGL/OpenGLContext.h"
+#ifdef EIS_PLATFORM_WEB
+
+#include <emscripten.h>
+#include <emscripten/html5.h>
 
 
 namespace Eis
@@ -17,8 +20,8 @@ namespace Eis
 		// Init
 
 		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
+		m_Data.Width = props.Width != 0 ? props.Width : EM_ASM_INT({ return window.innerWidth; });
+		m_Data.Height = props.Height != 0 ? props.Height : EM_ASM_INT({ return window.innerHeight; });
 		m_Data.VSync = true;
 
 		EIS_CORE_INFO("Initializing '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
@@ -32,7 +35,7 @@ namespace Eis
 
 			glfwSetErrorCallback([](int error_code, const char* description)
 			{
-				EIS_CORE_CRITICAL("OpenGL Error: {0} ({1})", error_code, description);
+				EIS_CORE_ERROR("OpenGL Error: {0} ({1})", error_code, description);
 			});
 		}
 
@@ -52,25 +55,17 @@ namespace Eis
 		
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		SetVSync(true);
-
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			WindowResizeEvent event(width, height);
-			
 			data.Width = width;
 			data.Height = height;
+			
+			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
 		});
-		// Not implemented in OpenGL ES?
-	/*	glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			WindowCloseEvent event;
-			data.EventCallback(event);
-		});*/
+		//glfwSetWindowCloseCallback(); // See emscripten_set_beforeunload_callback below
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -139,6 +134,26 @@ namespace Eis
 			MouseScrolledEvent event((float)xoffset, (float)yoffset);
 			data.EventCallback(event);
 		});
+
+		emscripten_set_beforeunload_callback((void*) &m_Data, [](int eventType, const void*, void* userData) -> const char*
+		{
+			WindowData& data = *(WindowData*)userData;
+			WindowCloseEvent e;
+			data.EventCallback(e);
+			return "";
+		});
+		emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, (void*)&m_Data, true, [](int eventType, const EmscriptenUiEvent* uiEvent, void* userData) -> bool
+		{
+			WindowData& data = *(WindowData*)userData;
+
+			data.Width = uiEvent->windowInnerWidth;
+			data.Height = uiEvent->windowInnerHeight;
+
+			WindowResizeEvent event(uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
+			data.EventCallback(event);
+
+			return false;
+		});
 	}
 
 	WebWindow::~WebWindow()
@@ -189,3 +204,5 @@ namespace Eis
 		m_Data.Title = title;
 	}
 }
+
+#endif

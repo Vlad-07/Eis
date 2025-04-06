@@ -8,6 +8,7 @@ namespace Eis
 	class OrthographicCamera
 	{	
 	public:
+		OrthographicCamera() = default;
 		OrthographicCamera(float left, float right, float bottom, float top);
 		~OrthographicCamera() = default;
 
@@ -23,6 +24,17 @@ namespace Eis
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+
+		const OrthographicCamera& operator=(const OrthographicCamera& other)
+		{
+			m_ProjectionMatrix = other.m_ProjectionMatrix;
+			m_ViewMatrix = other.m_ViewMatrix;
+			m_ViewProjectionMatrix = other.m_ViewProjectionMatrix;
+			m_Position = other.m_Position;
+			m_Rotation = other.m_Rotation;
+
+			return *this;
+		}
 
 	private:
 		void RecalculateViewMatrix();

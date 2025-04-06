@@ -17,9 +17,8 @@
 			#define EIS_PLATFORM_WINDOWS
 		#endif
 	#else
-		/* Windows x86 */
 		#error "x86 Builds are not supported!"
-#endif
+	#endif
 #elif defined(__APPLE__) || defined(__MACH__)
 	#include <TargetConditionals.h>
 	/* TARGET_OS_MAC exists on all the platforms
@@ -50,15 +49,9 @@
 	#define EIS_PLATFORM_WEB
 	#include <emscripten.h>
 #else
-	/* Unknown compiler/platform */
 	#error "Unknown platform!"
 #endif
 
-
-// Networking
-#ifdef EIS_PLATFORM_WINDOWS
-	#define EIS_NETWORKING_ENABLE
-#endif
 
 // Debugging tools
 #ifdef EIS_DEBUG
@@ -66,13 +59,10 @@
 
 	#ifdef EIS_PLATFORM_WINDOWS
 		#define EIS_DEBUGBREAK() __debugbreak();
-	#else
-		#define EIS_DEBUGBREAK() // Platform doesn't support debugbreak yet!
-	#endif
-
-	#ifdef EIS_PLATFORM_WINDOWS
 		#define EIS_PROFILE
 //		#define EIS_PROFILE_RENDERER
+	#else
+		#define EIS_DEBUGBREAK()
 	#endif
 #else
 	#define EIS_DEBUGBREAK()
@@ -86,9 +76,28 @@
 	#define EIS_CORE_ASSERT(x, ...)
 #endif
 
+
+// Logging
+#ifndef __FUNCSIG__
+	#define __FUNCSIG__ __PRETTY_FUNCTION__
+#endif
+
+#ifdef EIS_PLATFORM_WINDOWS
+	#define EIS_LOG_FULL
+#elif defined(EIS_PLATFORM_WEB)
+	#define EIS_LOG_NOFILE
+#endif
+
+
+// Networking
+#ifdef EIS_PLATFORM_WINDOWS
+	#define EIS_NETWORKING_ENABLE
+#endif
+
 #define BIT(x) (1 << x) // Used for event categories
 
 #define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1) // Used for event functions
+
 
 
 // Wrappers for smart pointers

@@ -1,12 +1,12 @@
 #include "Eispch.h"
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
+#include <imgui.h>
+
 #include "Eis/Core/Random.h"
 #include "Eis/Input/Input.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
-
-#include <GLFW/glfw3.h>
-#include "imgui.h"
 
 
 namespace Eis
@@ -26,8 +26,8 @@ namespace Eis
 		Renderer2D::Init();
 		Random::Init();
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		m_ImGuiLayer = CreateScope<ImGuiLayer>();
+		PushOverlay(m_ImGuiLayer.get());
 	}
 
 	Application::~Application()
@@ -43,6 +43,7 @@ namespace Eis
 
 		while (m_Running)
 		{
+			// TODO: fps limiter
 			#ifndef EIS_PLATFORM_WEB
 			RunLoop();
 			#else
@@ -53,12 +54,12 @@ namespace Eis
 
 	void Application::RunLoop()
 	{
-		EIS_PROFILE_SCOPE("RunLoop frame");
+		EIS_PROFILE_FUNCTION();
 
 		float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
 		const TimeStep timeStep = time - Get().m_LastFrameTime;
 		Get().m_LastFrameTime = time;
-		// TODO: fps limiter
+
 		if (!Get().m_Minimized)
 		{
 			{

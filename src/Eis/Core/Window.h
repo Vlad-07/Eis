@@ -4,6 +4,7 @@
 #include "Eis/Core/Core.h"
 #include "Eis/Events/Event.h"
 
+
 namespace Eis
 {
 	struct WindowProps
@@ -12,7 +13,10 @@ namespace Eis
 		uint32_t Width;
 		uint32_t Height;
 
-		WindowProps(const std::string& title = "Default Window", uint32_t width = 1280, uint32_t height = 720) : Title(title), Width(width), Height(height) {}
+		WindowProps(const std::string& title = "Default Window", uint32_t width = 0, uint32_t height = 0) : Title(title), Width(width), Height(height) {}
+
+		inline static uint32_t DefaultWidth = 1280;
+		inline static uint32_t DefaultHeight= 720;
 	};
 
 

@@ -13,7 +13,9 @@ namespace Eis
 	class OrthoCameraController
 	{
 	public:
-		OrthoCameraController(float aspectRatio);
+		// TODO: fixed aspect ratio
+		// Specify a fixed aspect ratio or 0 for free aspect ratio
+		OrthoCameraController(float aspectRatio = 0.0f);
 		~OrthoCameraController() = default;
 
 		void OnUpdate(TimeStep ts);

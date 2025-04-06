@@ -8,8 +8,13 @@
 namespace Eis
 {
 	OrthoCameraController::OrthoCameraController(float aspectRatio)
-		: m_AspectRatio(aspectRatio), m_PoseLock(false), m_ZoomLock(false), m_RotationLock(true), m_ZoomSpeedEffect(true),
-		m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel) {}
+		: m_PoseLock(false), m_ZoomLock(false), m_RotationLock(true), m_ZoomSpeedEffect(true)
+	{
+		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
+
+		m_AspectRatio = (float)Eis::Application::Get().GetWindow().GetWidth() / Eis::Application::Get().GetWindow().GetHeight();
+		m_Camera = OrthographicCamera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	}
 
 	void OrthoCameraController::OnUpdate(TimeStep ts)
 	{
@@ -121,7 +126,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
+		m_AspectRatio = (float)e.GetWidth() / e.GetHeight();
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}

@@ -2,6 +2,7 @@
 
 #include "Eis/Core/Core.h"
 
+
 #if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
 
 extern Eis::Application* Eis::CreateApplication();

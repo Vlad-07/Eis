@@ -130,10 +130,6 @@ namespace Eis
 
 
 #ifdef EIS_PROFILE
-	#ifndef __FUNCSIG__
-		#define __FUNCSIG__ __PRETTY_FUNCTION__
-	#endif
-
 	#define EIS_PROFILE_BEGIN_SESSION(name, filepath) ::Eis::Instrumentor::Get().BeginSession(name, filepath);
 	#define EIS_PROFILE_END_SESSION() ::Eis::Instrumentor::Get().EndSession();
 	#define EIS_PROFILE_SCOPE(name) ::Eis::InstrumentationTimer timer##__LINE__(name);
