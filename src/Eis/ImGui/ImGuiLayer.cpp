@@ -11,31 +11,38 @@
 
 #include "Eis/Core/Application.h"
 
+#ifdef EIS_PLATFORM_WEB
+	#include <fstream>
+#endif
+
+
 namespace Eis
 {
 	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
 	void ImGuiLayer::OnAttach()
 	{
-		EIS_PROFILE_FUNCTION();
-
-		// From ImGui Example
+		EIS_PROFILE_FUNCTION();		
 
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImPlot::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//io.ConfigViewportsNoAutoMerge = true;
-		//io.ConfigViewportsNoTaskBarIcon = true;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	#ifdef EIS_IMGUI_VIEWPORTS
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigViewportsNoTaskBarIcon = true;
+	#endif
+
+	#ifdef EIS_PLATFORM_WEB
+		io.IniFilename = "assets/imgui.ini";
+	#endif
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();

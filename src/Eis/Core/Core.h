@@ -94,6 +94,13 @@
 	#define EIS_NETWORKING_ENABLE
 #endif
 
+
+// Other properties
+#ifdef EIS_PLATFORM_WINDOWS
+	#define EIS_IMGUI_VIEWPORTS
+#endif
+
+
 #define BIT(x) (1 << x) // Used for event categories
 
 #define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1) // Used for event functions
