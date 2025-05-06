@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 #include <string>
 #include <chrono>
 #include <thread>
@@ -34,16 +35,22 @@ namespace Eis
 
 		void BeginSession(const std::string& name, const std::string& filePath = "results.json")
 		{
-			m_OutputStream.open(filePath);
-			WriteHeader();
-			m_CurrentSession = std::make_shared<InstrumentationSession>(InstrumentationSession{ name });
+			m_OutputStream.open(filePath, std::ios::out | std::ios::trunc);
+
+			if (m_OutputStream.good())
+			{
+				WriteHeader();
+				m_CurrentSession = std::make_shared<InstrumentationSession>(InstrumentationSession{ name });
+			}
+			else if (Log::GetCoreLogger())
+				EIS_CORE_ERROR("Instrumentor could not open results file '{0}'!", filePath);
 		}
 		void EndSession()
 		{
 			WriteFooter();
+			m_ProfileCount = 0;
 			m_OutputStream.close();
 			m_CurrentSession.reset();
-			m_ProfileCount = 0;
 		}
 
 
@@ -55,23 +62,22 @@ namespace Eis
 			std::string name = result.Name;
 			std::replace(name.begin(), name.end(), '"', '\'');
 
-			m_OutputStream << '{';
-			m_OutputStream << "\"cat\":\"function\",";
-			m_OutputStream << "\"dur\":" << (result.ElapsedTime.count()) << ',';
-			m_OutputStream << "\"name\":\"" << name << "\",";
-			m_OutputStream << "\"ph\":\"X\",";
-			m_OutputStream << "\"pid\":0,";
-			m_OutputStream << "\"tid\":" << result.ThreadID << ',';
-			m_OutputStream << "\"ts\":" << result.Start.count();
-			m_OutputStream << '}';
-
+			m_OutputStream << '{'
+							<< "\"cat\":\"function\","
+							<< "\"dur\":" << (result.ElapsedTime.count()) << ','
+							<< "\"name\":\"" << name << "\","
+							<< "\"ph\":\"X\","
+							<< "\"pid\":0,"
+							<< "\"tid\":" << result.ThreadID << ','
+							<< "\"ts\":" << result.Start.count()
+							<< '}';
 			m_OutputStream.flush();
 		}
 
 
 		void WriteHeader()
 		{
-			m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
+			m_OutputStream << std::fixed << "{\"otherData\": {},\"traceEvents\":[";
 			m_OutputStream.flush();
 		}
 		void WriteFooter()
@@ -89,7 +95,7 @@ namespace Eis
 	private:
 		Ref<InstrumentationSession> m_CurrentSession;
 		std::ofstream m_OutputStream;
-		int m_ProfileCount;
+		uint32_t m_ProfileCount;
 	};
 
 	class InstrumentationTimer
@@ -109,11 +115,10 @@ namespace Eis
 
 		void Stop()
 		{
-			auto endTimepoint = std::chrono::steady_clock::now();
-
-			auto highResStart = FloatingPointMicroseconds{ m_StartTimepoint.time_since_epoch() };
-			auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch()
-				-std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
+			const auto endTimepoint = std::chrono::steady_clock::now();
+			const auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch()
+									- std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
+			const auto highResStart = FloatingPointMicroseconds{ m_StartTimepoint.time_since_epoch() };
 
 			Instrumentor::Get().WriteProfile({ m_Name, highResStart, elapsedTime, std::this_thread::get_id() });
 

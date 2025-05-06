@@ -21,7 +21,7 @@ namespace Eis
 		virtual ~Application();
 
 
-		void OnEvent(Event& event);		
+		void OnEvent(Event& event);
 		
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
@@ -46,7 +46,7 @@ namespace Eis
 		Eis::Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;
-		Eis::Scope<ImGuiLayer> m_ImGuiLayer;
+		ImGuiLayer* m_ImGuiLayer;
 
 		bool m_Running;
 		bool m_Minimized;

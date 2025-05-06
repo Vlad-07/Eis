@@ -24,6 +24,7 @@ namespace Eis
 		OrthographicCamera& GetCamera() { return m_Camera; }
 		const OrthographicCamera& GetCamera() const { return m_Camera; }
 
+		void SetPosition(const glm::vec2& pos) { SetPosition(glm::vec3(pos, 0.0f)); }
 		void SetPosition(const glm::vec3& pos) { m_CameraPosition = pos; m_Camera.SetPosition(pos); }
 
 		float GetCameraSpeed() const { return m_CameraSpeed; }

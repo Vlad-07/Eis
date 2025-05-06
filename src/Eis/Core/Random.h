@@ -22,6 +22,13 @@ namespace Eis
 			s_RandomEngine.seed(seed);
 		}
 
+		static bool Bool()
+		{
+			EIS_PROFILE_FUNCTION();
+
+			return s_Distribution(s_RandomEngine) % 2;
+		}
+
 		static uint32_t UInt()
 		{
 			EIS_PROFILE_FUNCTION();

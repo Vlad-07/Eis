@@ -26,8 +26,8 @@ namespace Eis
 		Renderer2D::Init();
 		Random::Init();
 
-		m_ImGuiLayer = CreateScope<ImGuiLayer>();
-		PushOverlay(m_ImGuiLayer.get());
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
