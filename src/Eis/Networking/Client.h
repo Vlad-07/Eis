@@ -25,7 +25,7 @@ namespace Eis
 			Disconnected = 0, Connecting, Connected, ConnectionFailed
 		};
 
-		using DataReceivedCallback = std::function<void(Buffer&)>;
+		using DataReceivedCallback = std::function<void(const Buffer&)>;
 		using ServerConnectedCallback = std::function<void()>;
 		using ServerDisconnectedCallback = std::function<void()>;
 

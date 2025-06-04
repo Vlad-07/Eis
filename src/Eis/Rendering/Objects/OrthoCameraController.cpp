@@ -1,4 +1,4 @@
-#include "Eispch.h"
+#include <Eispch.h>
 #include "OrthoCameraController.h"
 
 #include "Eis/Core/Application.h"
@@ -8,7 +8,6 @@
 namespace Eis
 {
 	OrthoCameraController::OrthoCameraController(float aspectRatio)
-		: m_PoseLock(false), m_ZoomLock(false), m_RotationLock(true), m_ZoomSpeedEffect(true)
 	{
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
@@ -22,24 +21,24 @@ namespace Eis
 
 		if (m_PoseLock) return; // you kinda never use rotation, even less without position
 
-		glm::fvec2 delta(0.0f);
-		float sinRot = sin(glm::radians(m_CameraRotation)), cosRot = cos(glm::radians(m_CameraRotation));
-		if (Input::IsKeyPressed(EIS_KEY_UP) || Input::IsKeyPressed(EIS_KEY_W))
+		glm::vec2 delta(0.0f);
+		const float sinRot = sin(glm::radians(m_Camera.GetRotation())), cosRot = cos(glm::radians(m_Camera.GetRotation()));
+		if (Input::IsKeyPressed(EIS_KEY_W) || Input::IsKeyPressed(EIS_KEY_UP))
 		{
 			delta.x += -sinRot;
 			delta.y +=  cosRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_DOWN) || Input::IsKeyPressed(EIS_KEY_S))
+		if (Input::IsKeyPressed(EIS_KEY_S) || Input::IsKeyPressed(EIS_KEY_DOWN))
 		{
 			delta.x -= -sinRot;
 			delta.y -=  cosRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_LEFT) || Input::IsKeyPressed(EIS_KEY_A))
+		if (Input::IsKeyPressed(EIS_KEY_A) || Input::IsKeyPressed(EIS_KEY_LEFT))
 		{
 			delta.x -=  cosRot;
 			delta.y -=  sinRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_RIGHT) || Input::IsKeyPressed(EIS_KEY_D))
+		if (Input::IsKeyPressed(EIS_KEY_D) || Input::IsKeyPressed(EIS_KEY_RIGHT))
 		{
 			delta.x +=  cosRot;
 			delta.y +=  sinRot;
@@ -52,23 +51,15 @@ namespace Eis
 		if (m_ZoomSpeedEffect)
 			delta *= m_ZoomLevel; // HACK: find better way to influence speed according to zoom
 
-		m_CameraPosition += glm::vec3(delta * (ts.GetSeconds() * m_CameraSpeed), 0.0f);
-		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.AddPosition(delta * (ts * m_CameraSpeed));
 
 
 		if (m_RotationLock) return;
 
 		if (Input::IsKeyPressed(EIS_KEY_Q))
-			m_CameraRotation += m_CameraRotationSpeed * ts;
+			m_Camera.AddRotation(m_CameraRotationSpeed * ts);
 		if (Input::IsKeyPressed(EIS_KEY_E))
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
-
-		if (m_CameraRotation > 180.0f)
-			m_CameraRotation -= 360.0f;
-		else if (m_CameraRotation <= -180.0f)
-			m_CameraRotation += 360.0f;
-		
-		m_Camera.SetRotation(m_CameraRotation);
+			m_Camera.AddRotation(-m_CameraRotationSpeed * ts);
 	}
 
 	void OrthoCameraController::OnEvent(Event& e)
@@ -82,13 +73,13 @@ namespace Eis
 
 	void OrthoCameraController::SetZoom(float zoom)
 	{
-		if (zoom >= m_MinZoom && zoom <= m_MaxZoom)
-			m_ZoomLevel = zoom;
+		if (zoom < m_MinZoom || zoom > m_MaxZoom) return;
 
+		m_ZoomLevel = zoom;
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
-	glm::vec2 OrthoCameraController::CalculateMouseWorldPos()
+	glm::vec2 OrthoCameraController::CalculateMouseWorldPos() const
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -98,10 +89,10 @@ namespace Eis
 		mousePos = mousePos * 2.0f - glm::vec2(1.0f);
 		mousePos.y *= -1.0f;
 
-		glm::mat4 inverseProjectionMatrix = glm::inverse(m_Camera.GetProjectionMatrix());
-		glm::mat4 inverseViewMatrix = glm::inverse(m_Camera.GetViewMatrix());
+		const glm::mat4 inverseProjectionMatrix = glm::inverse(m_Camera.GetProjectionMatrix());
+		const glm::mat4 inverseViewMatrix = glm::inverse(m_Camera.GetViewMatrix());
 
-		glm::vec4 worldPos = inverseViewMatrix * inverseProjectionMatrix * glm::vec4(mousePos.x, mousePos.y, 0.0f, 1.0f);
+		const glm::vec4 worldPos = inverseViewMatrix * inverseProjectionMatrix * glm::vec4(mousePos.x, mousePos.y, 0.0f, 1.0f);
 
 		return glm::vec2(worldPos.x, worldPos.y);
 	}
@@ -112,7 +103,7 @@ namespace Eis
 
 		if (m_ZoomLock) return false;
 
-		m_ZoomLevel -= e.GetYOffset() / m_ZoomSensitivity;
+		m_ZoomLevel *= glm::pow(1.0f + m_ZoomSensitivity, -e.GetYOffset());
 
 		if (m_ZoomLevel < m_MinZoom)
 			m_ZoomLevel = m_MinZoom;

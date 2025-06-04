@@ -10,7 +10,7 @@ namespace Eis
 		float GetSeconds() const { return m_Time; }
 		float GetMilliseconds() const { return m_Time * 1000.0f; }
 
-		operator float() { return GetSeconds(); }
+		inline operator float() const { return GetSeconds(); }
 
 	private:
 		float m_Time;

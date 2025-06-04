@@ -23,6 +23,7 @@ namespace Eis
 		virtual bool operator==(const Texture& other) const = 0;
 	};
 
+	// TODO: more texture customizability
 	class Texture2D : public Texture
 	{
 	public:

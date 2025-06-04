@@ -29,7 +29,7 @@ namespace Eis
 	class Server
 	{
 	public:
-		using DataReceivedCallback = std::function<void(const ClientInfo&, Buffer&)>;
+		using DataReceivedCallback = std::function<void(const ClientInfo&, const Buffer&)>;
 		using ClientConnectedCallback = std::function<void(const ClientInfo&)>;
 		using ClientDisconnectedCallback = std::function<void(const ClientInfo&)>;
 

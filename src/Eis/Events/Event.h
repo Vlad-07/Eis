@@ -4,6 +4,7 @@
 #include <ostream>
 #include "Eis/Core/Core.h"
 
+
 namespace Eis
 {
 	enum class EventType // The actual type

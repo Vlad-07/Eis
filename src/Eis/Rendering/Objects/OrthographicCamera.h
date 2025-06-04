@@ -15,10 +15,18 @@ namespace Eis
 		void SetProjection(float left, float right, float bottom, float top);
 
 		glm::vec3 GetPosition() const { return m_Position; }
-		float GetRotation() const { return m_Rotation; }
-
 		void SetPosition(const glm::vec3& pos) { m_Position = pos; RecalculateViewMatrix(); }
-		void SetRotation(const float& rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
+		void AddPosition(const glm::vec2& pos) { m_Position.x += pos.x; m_Position.y += pos.y; RecalculateViewMatrix(); }
+
+		float GetRotation() const { return m_Rotation; }
+		void SetRotation(float rot) { m_Rotation = rot; RecalculateViewMatrix(); }
+		void AddRotation(float rot)
+		{
+			m_Rotation += rot;
+			if (m_Rotation > 360.0f) m_Rotation -= 360.0f;
+			else if (m_Rotation < -360.0f) m_Rotation += 360.0f;
+			RecalculateViewMatrix();
+		}
 
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
@@ -44,7 +52,7 @@ namespace Eis
 		glm::mat4 m_ViewMatrix{};
 		glm::mat4 m_ViewProjectionMatrix{};
 
-		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
-		float m_Rotation = 0.0f;
+		glm::vec3 m_Position = glm::vec3(0.0f);
+		float m_Rotation = 0.0f; // Degrees, anti-clockwise
 	};
 }
