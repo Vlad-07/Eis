@@ -57,6 +57,20 @@ namespace Eis
 			return min + ((float)s_Distribution(s_RandomEngine) / (float)std::numeric_limits<uint32_t>::max()) * (max - min);
 		}
 
+		static glm::vec2 Vec2()
+		{
+			EIS_PROFILE_FUNCTION();
+
+			return glm::vec2(Float(), Float());
+		}
+
+		static glm::vec2 Vec2(float min, float max)
+		{
+			EIS_PROFILE_FUNCTION();
+
+			return glm::vec2(Float(min, max), Float(min, max));
+		}
+
 		static glm::vec3 Vec3()
 		{
 			EIS_PROFILE_FUNCTION();

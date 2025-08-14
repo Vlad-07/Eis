@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace Eis
 {
 	class TimeStep
@@ -10,7 +11,7 @@ namespace Eis
 		float GetSeconds() const { return m_Time; }
 		float GetMilliseconds() const { return m_Time * 1000.0f; }
 
-		inline operator float() const { return GetSeconds(); }
+		operator float() const { return GetSeconds(); }
 
 	private:
 		float m_Time;

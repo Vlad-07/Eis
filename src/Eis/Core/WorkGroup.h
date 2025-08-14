@@ -6,6 +6,7 @@
 
 namespace Eis
 {
+	// TOOD: NOT FINISHED, probably not working
 	class WorkGroup
 	{
 	public:
