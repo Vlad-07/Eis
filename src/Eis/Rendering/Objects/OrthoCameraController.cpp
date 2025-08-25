@@ -22,7 +22,8 @@ namespace Eis
 		if (m_PoseLock) return; // you kinda never use rotation, even less without position
 
 		glm::vec2 delta(0.0f);
-		const float sinRot = sin(glm::radians(m_Camera.GetRotation())), cosRot = cos(glm::radians(m_Camera.GetRotation()));
+		const float sinRot = sin(glm::radians(m_Camera.GetRotation())),
+					cosRot = cos(glm::radians(m_Camera.GetRotation()));
 		if (Input::IsKeyPressed(EIS_KEY_W) || Input::IsKeyPressed(EIS_KEY_UP))
 		{
 			delta.x += -sinRot;
@@ -44,9 +45,8 @@ namespace Eis
 			delta.y +=  sinRot;
 		}
 
-		// limit diagonal movement
-		if (glm::length(delta) > 1.0f)
-			delta /= 1.4142f; // sqrtf(2)
+		if (glm::length(delta) > 1.0f) // TODO: expensive call
+			delta /= sqrt(2.0f);
 
 		if (m_ZoomSpeedEffect)
 			delta *= m_ZoomLevel; // HACK: find better way to influence speed according to zoom

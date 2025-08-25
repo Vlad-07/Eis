@@ -8,7 +8,7 @@ namespace Eis
 	Buffer::Buffer(const void* data, uint64_t size) noexcept : m_Data(nullptr), m_Size(size)
 	{
 		if (m_Size == 0) return;
-		EIS_ASSERT(data, "Invalid data provided!");
+		EIS_CORE_ASSERT(data, "Invalid data provided!");
 		Allocate(m_Size);
 		Write(data, m_Size);
 	}

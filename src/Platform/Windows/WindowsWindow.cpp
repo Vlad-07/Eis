@@ -184,6 +184,8 @@ namespace Eis
 
 	void Eis::WindowsWindow::SetTitle(const std::string& title)
 	{
+		EIS_PROFILE_FUNCTION();
+
 		glfwSetWindowTitle(m_Window, title.c_str());
 		m_Data.Title = title;
 	}

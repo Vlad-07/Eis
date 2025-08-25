@@ -28,7 +28,7 @@ namespace Eis
 		case Eis::ShaderDataType::Mat4:		return 4 * 4 * 4;
 		}
 
-		EIS_ASSERT(false, "Unknown ShaderDataType!");
+		EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
 
@@ -61,7 +61,7 @@ namespace Eis
 			case Eis::ShaderDataType::Mat4:		return 4 * 4;
 			}
 
-			EIS_ASSERT(false, "Unknown ShaderDataType!");
+			EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			return 0;
 		}
 	};

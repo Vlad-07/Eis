@@ -14,7 +14,7 @@ Eis::Image::Image(const std::string path, int flipVertically) : m_IsValid(false)
 	uint8_t* data = (uint8_t*)stbi_load(path.c_str(), &width, &height, &channels, channels);
 	if (!data)
 	{
-		EIS_ERROR("Invalid image path: {0}\n\n", path);
+		EIS_CORE_ERROR("Invalid image path: {0}\n\n", path);
 		m_Data = 0;
 		m_Width = 0;
 		m_Height = 0;
@@ -71,7 +71,7 @@ glm::vec3 Eis::Image::GetPixel(uint32_t x, uint32_t y) const
 {
 	if (x > m_Width || y > m_Height)
 	{
-		EIS_ERROR("Invalid pixel requested!");
+		EIS_CORE_ERROR("Invalid pixel requested!");
 		return glm::vec3(1.0f, 0.0f, 1.0f);
 	}
 
@@ -109,7 +109,7 @@ void Eis::Image::SaveToDisk(const std::string name) const
 	else if (type == ".tga")
 		stbi_write_tga(name.c_str(), m_Width, m_Height, m_Channels, m_Data);
 	else
-		EIS_ERROR("Invalid file type given for: '{0}'!\n", name)
+		EIS_CORE_ERROR("Invalid file type given for: '{0}'!\n", name)
 }
 
 uint8_t Eis::Image::operator[](int i)

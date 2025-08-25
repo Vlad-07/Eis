@@ -83,7 +83,7 @@
 #endif
 
 #ifdef EIS_PLATFORM_WINDOWS
-	#define EIS_LOG_FULL
+	#define EIS_LOG_FILE
 #elif defined(EIS_PLATFORM_WEB)
 	#define EIS_LOG_NOFILE
 #endif

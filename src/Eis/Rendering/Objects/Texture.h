@@ -4,6 +4,7 @@
 #include "Eis/Core/Core.h"
 #include "Eis/Core/Image.h"
 
+
 namespace Eis
 {
 	class Texture
