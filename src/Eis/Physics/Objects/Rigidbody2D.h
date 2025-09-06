@@ -5,6 +5,11 @@
 #include <Eis/Core/TimeStep.h>
 
 
+// TODO: better manager interface
+// TODO: separate collider
+// TODO: ecs (transform, renderers, etc.)
+
+
 namespace Eis
 {
 	enum class ColliderType2D : uint8_t
@@ -94,7 +99,7 @@ namespace Eis
 		const AlignedBoundingBox2D& GetBoundingBox() const;
 
 
-		void Draw(const glm::vec4& color) const;
+		void Draw(const glm::vec4& color, bool drawCircleLine = false) const;
 		void Draw(Ref<Texture2D>& tex) const;
 
 		void DrawBoundingBox() const;

@@ -32,8 +32,6 @@ namespace Eis
 		static uint32_t GetBodyCount() { return s_Instance->m_Bodies.size(); }
 		static void ClearBodies() { s_Instance->m_Bodies.clear(); }
 
-		static void DrawContactPoints();
-
 	private:
 		void UpdateInternal(uint8_t iterations, const Eis::TimeStep ts);
 		void UpdateBodies(const Eis::TimeStep ts);

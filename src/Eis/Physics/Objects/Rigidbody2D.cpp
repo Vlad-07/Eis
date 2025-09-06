@@ -138,13 +138,14 @@ namespace Eis
 	}
 
 
-	void Rigidbody2D::Draw(const glm::vec4& color) const
+	void Rigidbody2D::Draw(const glm::vec4& color, bool line) const
 	{
 		switch (m_Properties.Type)
 		{
 		case ColliderType2D::CIRCLE:
 			Renderer2D::DrawCircle(m_Position, glm::vec2(m_Properties.Radius * 2.0f), color);
-			Renderer2D::DrawLine(m_Position, glm::degrees(m_Rotation), m_Properties.Radius, glm::vec4(0, 0, 0, 1));
+			if (line)
+				Renderer2D::DrawLine(m_Position, glm::degrees(m_Rotation), m_Properties.Radius, glm::vec4(0, 0, 0, 1)); // Rotation visualiser
 			break;
 
 		case ColliderType2D::POLYGON:

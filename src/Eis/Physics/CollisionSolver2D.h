@@ -59,7 +59,7 @@ namespace Eis
 			EIS_INFO("{0}, {1}", (impulse * b2.GetInvMass()).x, (impulse * b2.GetInvMass()).y);
 		}
 
-
+		/*
 		static void SolveCollisionRotation(const CollisionManifold2D& manifold)
 		{
 			// HACK: for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
@@ -116,7 +116,7 @@ namespace Eis
 				b2.AddLinearVel(impulse * b2.GetInvMass());
 				b2.AddAngularVel((r2List[i].x * impulse.y - r2List[i].y * impulse.x) * b2.GetInvAngInertia());
 			}
-		}
+		}//*/
 
 
 		static void SolveCollisionRotationFriction(const CollisionManifold2D& manifold)
@@ -135,7 +135,7 @@ namespace Eis
 			const float e = glm::min(b1.GetProperties().Restitution, b2.GetProperties().Restitution);
 			const float sf = (b1.GetProperties().StaticFriction + b2.GetProperties().StaticFriction) * 0.5f;
 			const float df = (b1.GetProperties().DynamicFriction + b2.GetProperties().DynamicFriction) * 0.5f;
-			
+
 			// Rotation
 			for (uint8_t i = 0; i < manifold.ContactCount; i++)
 			{
