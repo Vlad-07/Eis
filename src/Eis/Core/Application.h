@@ -34,7 +34,7 @@ namespace Eis
 
 	private:
 		void Run();
-		static void RunLoop(); // HACK: ugly Get(). everywhere but emscripten needs func ptr
+		static void RunLoop(); // HACK: ugly s_Instance-> everywhere but emscripten needs func ptr
 
 		bool OnWindowResize(WindowResizeEvent e);
 		bool OnWindowClose(WindowCloseEvent e);

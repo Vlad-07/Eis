@@ -76,6 +76,14 @@
 	#define EIS_CORE_ASSERT(x, ...)
 #endif
 
+// Rendering
+#ifdef EIS_PLATFORM_WINDOWS
+	#define EIS_IMGUI_VIEWPORTS
+	#define EIS_GLSL_VERSION "#version 450" // TODO: match this version with shader files
+#elif defined(EIS_PLATFORM_WEB)
+	#define EIS_GLSL_VERSION "#version 300 es"
+#endif
+
 
 // Logging
 #ifndef __FUNCSIG__
@@ -94,11 +102,6 @@
 	#define EIS_NETWORKING_ENABLE
 #endif
 
-
-// Other properties
-#ifdef EIS_PLATFORM_WINDOWS
-	#define EIS_IMGUI_VIEWPORTS
-#endif
 
 
 #define BIT(x) (1 << x) // Used for event categories

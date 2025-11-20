@@ -14,8 +14,8 @@ namespace Eis
 		ImGuiLayer();
 		~ImGuiLayer() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
+		virtual void Attach() override;
+		virtual void Detach() override;
 
 		void Begin();
 		void End();

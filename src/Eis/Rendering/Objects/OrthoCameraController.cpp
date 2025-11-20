@@ -15,7 +15,7 @@ namespace Eis
 		m_Camera = OrthographicCamera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
-	void OrthoCameraController::OnUpdate(TimeStep ts)
+	void OrthoCameraController::Update(TimeStep ts)
 	{
 		EIS_PROFILE_FUNCTION();
 

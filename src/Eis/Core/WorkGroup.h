@@ -7,6 +7,7 @@
 namespace Eis
 {
 	// TOOD: NOT FINISHED, probably not working
+	// helper and TODO: compatibility with web
 	class WorkGroup
 	{
 	public:

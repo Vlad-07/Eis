@@ -29,7 +29,7 @@ namespace Eis
 
 		static Rigidbody2D& GetBody(uint32_t id);
 		static auto& GetBodies() { return s_Instance->m_Bodies; }
-		static uint32_t GetBodyCount() { return s_Instance->m_Bodies.size(); }
+		static uint32_t GetBodyCount() { return (uint32_t)s_Instance->m_Bodies.size(); }
 		static void ClearBodies() { s_Instance->m_Bodies.clear(); }
 
 	private:

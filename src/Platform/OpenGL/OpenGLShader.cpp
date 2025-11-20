@@ -91,7 +91,7 @@ namespace Eis
 
 		std::unordered_map<GLenum, std::string> shaderSources;
 
-		const char* typeToken = "#type";
+		const char* typeToken = "//type";
 		size_t typeTokenLength = strlen(typeToken);
 		size_t pos = source.find(typeToken, 0); //Start of shader type declaration line
 		while (pos != std::string::npos)

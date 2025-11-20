@@ -18,7 +18,7 @@ namespace Eis
 		OrthoCameraController(float aspectRatio = 0.0f);
 		~OrthoCameraController() = default;
 
-		void OnUpdate(TimeStep ts);
+		void Update(TimeStep ts);
 		void OnEvent(Event& e);
 
 		OrthographicCamera& GetCamera() { return m_Camera; }

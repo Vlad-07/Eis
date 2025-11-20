@@ -59,7 +59,7 @@ namespace Eis
 	// Collision detection and resolution
 	void PhysicsManager2D::NarrowPhase()
 	{
-		for (auto [b1, b2] : m_Contacts)
+		for (auto& [b1, b2] : m_Contacts)
 		{
 			Rigidbody2D& body1 = m_Bodies[b1];
 			Rigidbody2D& body2 = m_Bodies[b2];
@@ -87,7 +87,7 @@ namespace Eis
 		if (id >= s_Instance->m_Bodies.size())
 		{
 			EIS_CORE_ERROR("Invalid body id requested: {0}!", id);
-			Rigidbody2D b({}, 0, 0, 0);
+			static Rigidbody2D b({}, 0, 0, 0);
 			return b;
 		}
 

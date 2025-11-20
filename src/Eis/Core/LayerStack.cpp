@@ -8,7 +8,7 @@ namespace Eis
 	{
 		for (Layer* layer : m_Layers)
 		{
-			layer->OnDetach();
+			layer->Detach();
 			delete layer;
 		}
 	}
@@ -29,7 +29,7 @@ namespace Eis
 		auto it = std::find(m_Layers.begin(), m_Layers.begin() + m_LayerInsertIndex, layer);
 		if (it != m_Layers.begin() + m_LayerInsertIndex)
 		{
-			layer->OnDetach();
+			layer->Detach();
 			m_Layers.erase(it);
 			m_LayerInsertIndex--;
 		}
@@ -40,7 +40,7 @@ namespace Eis
 		auto it = std::find(m_Layers.begin() + m_LayerInsertIndex, m_Layers.end(), overlay);
 		if (it != m_Layers.end())
 		{
-			overlay->OnDetach();
+			overlay->Detach();
 			m_Layers.erase(it);
 		}
 	}

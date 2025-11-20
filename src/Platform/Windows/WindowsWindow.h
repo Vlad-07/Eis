@@ -14,7 +14,7 @@ namespace Eis
 		WindowsWindow(const WindowProps& props);
 		virtual ~WindowsWindow();
 
-		virtual void OnUpdate() override;
+		virtual void Update() override;
 
 
 		virtual uint32_t GetWidth() const override { return m_Data.Width; }

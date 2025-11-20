@@ -154,7 +154,7 @@ namespace Eis
 			glfwTerminate();
 	}
 
-	void WindowsWindow::OnUpdate()
+	void WindowsWindow::Update()
 	{
 		EIS_PROFILE_FUNCTION();
 

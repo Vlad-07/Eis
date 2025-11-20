@@ -57,29 +57,37 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
-		const TimeStep timeStep = time - Get().m_LastFrameTime;
-		Get().m_LastFrameTime = time;
+		const TimeStep timeStep = time - s_Instance->m_LastFrameTime;
+		s_Instance->m_LastFrameTime = time;
 
-		if (!Get().m_Minimized)
+
 		{
-			{
-				EIS_PROFILE_SCOPE("LayerStack OnUpdate");
+			EIS_PROFILE_SCOPE("LayerStack Update");
 
-				for (Layer* layer : Get().m_LayerStack)
-					layer->OnUpdate(timeStep);
-			}
-
-			Get().m_ImGuiLayer->Begin();
-			{
-				EIS_PROFILE_SCOPE("LayerStack OnImGuiRender");
-
-				for (Layer* layer : Get().m_LayerStack)
-					layer->OnImGuiRender();
-			}
-			Get().m_ImGuiLayer->End();
+			for (Layer* layer : s_Instance->m_LayerStack)
+				layer->Update(timeStep);
 		}
 
-		Get().m_Window->OnUpdate();
+		if (!s_Instance->m_Minimized)
+		{
+			{
+				EIS_PROFILE_SCOPE("LayerStack Render");
+
+				for (Layer* layer : s_Instance->m_LayerStack)
+					layer->Render();
+			}
+
+			s_Instance->m_ImGuiLayer->Begin();
+			{
+				EIS_PROFILE_SCOPE("LayerStack ImGuiRender");
+
+				for (Layer* layer : s_Instance->m_LayerStack)
+					layer->ImGuiRender();
+			}
+			s_Instance->m_ImGuiLayer->End();
+		}
+
+		s_Instance->m_Window->Update();
 	}
 
 	void Application::OnEvent(Event& e)
@@ -93,7 +101,7 @@ namespace Eis
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
 			(*it)->OnEvent(e);
-			if (e.m_Handled)
+			if (e.Handled)
 				break;
 		}
 	}
@@ -103,7 +111,7 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		m_LayerStack.PushLayer(layer);
-		layer->OnAttach();
+		layer->Attach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
@@ -111,7 +119,7 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		m_LayerStack.PushOverlay(overlay);
-		overlay->OnAttach();
+		overlay->Attach();
 	}
 
 	bool Application::OnWindowResize(WindowResizeEvent e)

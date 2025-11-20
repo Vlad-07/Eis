@@ -4,6 +4,7 @@
 #include "Eis/Core/TimeStep.h"
 #include "Eis/Events/Event.h"
 
+
 namespace Eis
 {
 	class Layer
@@ -12,10 +13,11 @@ namespace Eis
 		Layer(const std::string& debugName = "Layer") : m_DebugName(debugName) {}
 		virtual ~Layer() = default;
 
-		virtual void OnAttach() {}
-		virtual void OnDetach() {}
-		virtual void OnUpdate(TimeStep ts) {}
-		virtual void OnImGuiRender() {}
+		virtual void Attach() {}
+		virtual void Detach() {}
+		virtual void Update(TimeStep ts) {}
+		virtual void Render() {}
+		virtual void ImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
 		const std::string& GetName() const { return m_DebugName; }

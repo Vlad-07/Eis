@@ -80,6 +80,7 @@ namespace Eis
 		static float GetLineWidth();
 		static void  SetLineWidth(float width);
 
+		static void SetClearColor(const glm::vec3& col) { SetClearColor(glm::vec4(col, 1.0f)); }
 		static void SetClearColor(const glm::vec4& col) { RenderCommands::SetClearColor(col); }
 		static void Clear() { RenderCommands::Clear(); }
 		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }

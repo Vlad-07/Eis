@@ -20,7 +20,7 @@ namespace Eis
 {
 	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
-	void ImGuiLayer::OnAttach()
+	void ImGuiLayer::Attach()
 	{
 		EIS_PROFILE_FUNCTION();		
 
@@ -56,10 +56,10 @@ namespace Eis
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init(); // Set "#version XXX" if needed
+		ImGui_ImplOpenGL3_Init(EIS_GLSL_VERSION);
 	}
 
-	void ImGuiLayer::OnDetach()
+	void ImGuiLayer::Detach()
 	{
 		EIS_PROFILE_FUNCTION();
 
