@@ -1,6 +1,6 @@
 ![Alt](./doc/manual/logo-mini.png "GLM Logo")
 
-# GLM 0.9.9 Manual
+# GLM 1.0.0 Manual
 
 ![Alt](./doc/manual/g-truc.png "G-Truc Logo")
 
@@ -361,19 +361,18 @@ The following subsections describe each configurations and defines.
 
 ### <a name="section2_6"></a> 2.6. GLM\_FORCE\_CXX**: C++ language detection
 
-GLM will automatically take advantage of compilers’ language extensions when enabled. To increase cross platform compatibility and to avoid compiler extensions, a programmer can define `GLM_FORCE_CXX98` before
-any inclusion of `<glm/glm.hpp>` to restrict the language feature set C++98:
+GLM will automatically take advantage of compilers’ language extensions when enabled. To increase cross platform compatibility and to avoid compiler extensions, a programmer can define `GLM_FORCE_CXX17` before
+any inclusion of `<glm/glm.hpp>` to restrict the language feature set C++17:
 
 ```cpp
-#define GLM_FORCE_CXX98
+#define GLM_FORCE_CXX17
 #include <glm/glm.hpp>
 ```
 
-For C++11, C++14, and C++17 equivalent defines are available:
+For C++17 and C++20 equivalent defines are available:
 
-* `GLM_FORCE_CXX11`
-* `GLM_FORCE_CXX14`
 * `GLM_FORCE_CXX17`
+* `GLM_FORCE_CXX20`
 
 ```cpp
 #define GLM_FORCE_CXX11
@@ -515,7 +514,7 @@ static_assert(glm::vec4::length() == 4, "Using GLM C++ 14 constexpr support for 
 #define GLM_FORCE_SIMD_AVX2
 #include <glm/glm.hpp>
 
-// If the compiler doesn’t support AVX2 instrinsics, compiler errors will happen.
+// If the compiler doesn’t support AVX2 intrinsics, compiler errors will happen.
 ```
 
 Additionally, GLM provides a low level SIMD API in glm/simd directory for users who are really interested in writing fast algorithms.
@@ -1903,7 +1902,7 @@ A good place is [stackoverflow](http://stackoverflow.com/search?q=GLM) using the
 
 ### <a name="section7_6"></a> 7.6. Where can I find the documentation of extensions?
 
-The Doxygen generated documentation includes a complete list of all extensions available. Explore this [*API documentation*](http://glm.g-truc.net/html/index.html) to get a complete
+The Doxygen generated documentation includes a complete list of all extensions available. Explore this [*API documentation*](http://glm.g-truc.net/0.9.9/api/modules.html) to get a complete
 view of all GLM capabilities!
 
 ### <a name="section7_7"></a> 7.7. Should I use ‘using namespace glm;’?
@@ -1943,7 +1942,7 @@ To workaround the incompatibility with these macros, GLM will systematically und
 ### <a name="section7_13"></a> 7.13. Constant expressions support
 
 GLM has some C++ [constant expressions](http://en.cppreference.com/w/cpp/language/constexpr) support. However, GLM automatically detects the use of SIMD instruction sets through compiler arguments to populate its implementation with SIMD intrinsics.
-Unfortunately, GCC and Clang doesn't support SIMD instrinsics as constant expressions. To allow constant expressions on all vectors and matrices types, define `GLM_FORCE_PURE` before including GLM headers.
+Unfortunately, GCC and Clang don't support SIMD intrinsics as constant expressions. To allow constant expressions on all vectors and matrices types, define `GLM_FORCE_PURE` before including GLM headers.
 
 ---
 <div style="page-break-after: always;"> </div>
@@ -2133,7 +2132,7 @@ We need to download a copy of our fork to our local machine. In the terminal, ty
 
 This will clone our fork repository into the current folder.
 
-We can find our repository git url on the Github reposotory page. The url looks like this: `https://github.com/<our-username>/<repository-name>.git`
+We can find our repository git url on the Github repository page. The url looks like this: `https://github.com/<our-username>/<repository-name>.git`
 
 #### Step 2: Synchronizing our fork
 

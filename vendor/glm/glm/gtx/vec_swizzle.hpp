@@ -14,12 +14,10 @@
 
 #include "../glm.hpp"
 
-#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
-#	ifndef GLM_ENABLE_EXPERIMENTAL
-#		pragma message("GLM: GLM_GTX_vec_swizzle is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it.")
-#	else
-#		pragma message("GLM: GLM_GTX_vec_swizzle extension included")
-#	endif
+#ifndef GLM_ENABLE_EXPERIMENTAL
+#	error "GLM: GLM_GTX_vec_swizzle is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it."
+#elif GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
+#	pragma message("GLM: GLM_GTX_vec_swizzle extension included")
 #endif
 
 namespace glm {
@@ -281,11 +279,6 @@ namespace glm {
 	// xyz
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER glm::vec<3, T, Q> xyz(const glm::vec<3, T, Q> &v) {
-		return glm::vec<3, T, Q>(v.x, v.y, v.z);
-	}
-
-	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER glm::vec<3, T, Q> xyz(const glm::vec<4, T, Q> &v) {
 		return glm::vec<3, T, Q>(v.x, v.y, v.z);
 	}
 
@@ -1042,16 +1035,6 @@ namespace glm {
 		return glm::vec<4, T, Q>(v.x, v.y, v.z, v.y);
 	}
 
-	// xyzz
-	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER glm::vec<4, T, Q> xyzz(const glm::vec<3, T, Q> &v) {
-		return glm::vec<4, T, Q>(v.x, v.y, v.z, v.z);
-	}
-
-	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER glm::vec<4, T, Q> xyzz(const glm::vec<4, T, Q> &v) {
-		return glm::vec<4, T, Q>(v.x, v.y, v.z, v.z);
-	}
 
 	// xyzw
 	template<typename T, qualifier Q>

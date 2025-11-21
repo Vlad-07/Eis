@@ -1,6 +1,6 @@
 ![glm](/doc/manual/logo-mini.png)
 
-[OpenGL Mathematics](http://glm.g-truc.net/) (*GLM*) is a header only C++ mathematics library for graphics software based on the [OpenGL Shading Language (GLSL) specifications](https://www.opengl.org/registry/doc/GLSLangSpec.4.50.diff.pdf).
+[OpenGL Mathematics](http://glm.g-truc.net/) (*GLM*) is a header only C++ mathematics library for graphics software based on the [OpenGL Shading Language (GLSL) specifications](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf).
 
 *GLM* provides classes and functions designed and implemented with the same naming conventions and functionality than *GLSL* so that anyone who knows *GLSL*, can use *GLM* as well in C++.
 
@@ -8,14 +8,13 @@ This project isn't limited to *GLSL* features. An extension system, based on the
 
 This library works perfectly with *[OpenGL](https://www.opengl.org)* but it also ensures interoperability with other third party libraries and SDK. It is a good candidate for software rendering (raytracing / rasterisation), image processing, physics simulations and any development context that requires a simple and convenient mathematics library.
 
-*GLM* is written in C++98 but can take advantage of C++11 when supported by the compiler. It is a platform independent library with no dependence and it officially supports the following compilers:
-- [*GCC*](http://gcc.gnu.org/) 4.7 and higher
-- [*Intel C++ Compose*](https://software.intel.com/en-us/intel-compilers) XE 2013 and higher
-- [*Clang*](http://llvm.org/) 3.4 and higher
+*GLM* requires a C++ 17 compiler. For older C++ support, GLM 1.0 branch can be used. It is a platform independent library with no dependence and it officially supports the following compilers:
+- [*GCC*](http://gcc.gnu.org/) 8 and higher
+- [*Clang*](http://llvm.org/) 6 and higher
 - [*Apple Clang 6.0*](https://developer.apple.com/library/mac/documentation/CompilerTools/Conceptual/LLVMCompilerOverview/index.html) and higher
-- [*Visual C++*](http://www.visualstudio.com/) 2013 and higher
+- [*Visual C++*](http://www.visualstudio.com/) 2019 and higher
 - [*CUDA*](https://developer.nvidia.com/about-cuda) 9.0 and higher (experimental)
-- Any C++11 compiler
+- Any C++17 compiler
 
 For more information about *GLM*, please have a look at the [manual](manual.md) and the [API reference documentation](http://glm.g-truc.net/0.9.9/api/modules.html).
 The source code and the documentation are licensed under either the [Happy Bunny License (Modified MIT) or the MIT License](manual.md#section0).
@@ -41,7 +40,7 @@ glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 }
 ```
 
-## [Lastest release](https://github.com/g-truc/glm/releases/latest)
+## [Latest release](https://github.com/g-truc/glm/releases/latest)
 
 ## Project Health
 
@@ -70,7 +69,7 @@ find_package(glm CONFIG REQUIRED)
 target_link_libraries(main PRIVATE glm::glm)
 ```
 
-If your perfer to use header-only version of GLM
+If your prefer to use header-only version of GLM
 
 ```cmake
 find_package(glm CONFIG REQUIRED)
@@ -83,9 +82,72 @@ target_link_libraries(main PRIVATE glm::glm-header-only)
 vcpkg install glm
 ```
 
+## CMake using FetchContent
+You can add glm to your CMake project to be built together.
+
+Add to the `CMakeLists.txt` file:
+```cmake
+cmake_minimum_required(VERSION 3.11) # FetchContent is new in version 3.11.
+
+include(FetchContent)
+
+FetchContent_Declare(
+	glm
+	GIT_REPOSITORY	https://github.com/g-truc/glm.git
+	GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
+)
+
+FetchContent_MakeAvailable(glm)
+
+target_link_libraries(main PRIVATE glm::glm)
+```
+
 ## Release notes
 
-### [GLM 0.9.9.9](https://github.com/g-truc/glm/releases/tag/0.9.9.9) - 2024-01-XX
+### [GLM 1.0.3](https://github.com/g-truc/glm/1.0) - 2025-XX-XX
+
+#### Fixes:
+- Fixed Quaternion `rotate` direction (reverted)
+- Fixed vec4 to vec3 conversion #1398
+
+### [GLM 1.0.2](https://github.com/g-truc/glm/releases/tag/1.0.2) - 2025-10-15
+
+#### Features:
+- Added packed/aligned quat types #1353
+- Added `GLM_GTX_structured_bindings` extension
+- Added `GLM_GTX_iteration` extension
+
+#### Improvements:
+- Added `infinitePerspectiveRH` and `infinitePerspectiveLH`
+- Improved SIMD support #1278
+- Unit tests are not build by default, `GLM_BUILD_TESTS` set to `ON` required.
+
+#### Fixes:
+- Fixed `usubBorrow` #1394
+- Fixed inconsistent '#include' #1368
+- Fixed Quaternion `rotate` direction #960 #1297 
+- Fixed various NEON support issues
+- Fixed various warnings
+
+#### Deprecation:
+- From version 1.1, C++ 17 support will be required. Branch 1.0 could be used for older C++ version
+
+### [GLM 1.0.1](https://github.com/g-truc/glm/releases/tag/1.0.1) - 2024-02-26
+
+#### Features:
+- Added C++17 [[nodiscard]] support
+
+#### Improvements:
+- Enables only warnings as errors while building unit tests
+- Added aligned_*vec3 simd support #1245
+
+#### Fixes:
+- Fixed C++ language auto detection build, disable C++98 warnings with Clang #1235, #1231
+- Fixed `GTX_color_space` missing <glm/ext/scalar_constants.hpp> include #1233 #1238
+- Fixed `EXT_matrix_transform` `shear` implementation #1140 #1182
+- Fixed `smoothstep` SIMD implementation #1222
+
+### [GLM 1.0.0](https://github.com/g-truc/glm/releases/tag/1.0.0) - 2024-01-24
 #### Features:
 - Added *GLM_EXT_scalar_reciprocal* with tests
 - Added *GLM_EXT_vector_reciprocal* with tests
@@ -115,7 +177,7 @@ vcpkg install glm
 - Added *GLM_EXT_matrix_intX* and *GLM_EXT_matrix_uintX* extensions
 
 #### Improvements:
-- Added `glm::clamp`, `glm::repeat`, `glm::mirrorClamp` and `glm::mirrorRepeat` function to `GLM_EXT_scalar_commond` and `GLM_EXT_vector_commond` extensions with tests
+- Added `glm::clamp`, `glm::repeat`, `glm::mirrorClamp` and `glm::mirrorRepeat` function to `GLM_EXT_scalar_common` and `GLM_EXT_vector_common` extensions with tests
 
 #### Fixes:
 - Fixed unnecessary warnings from `matrix_projection.inl` #995
@@ -158,7 +220,7 @@ vcpkg install glm
 - Fixed `glm::ldexp` and `glm::frexp` declaration #895
 - Fixed missing const to quaternion conversion operators #890
 - Fixed *GLM_EXT_scalar_ulp* and *GLM_EXT_vector_ulp* API coding style
-- Fixed quaternion componant order: `w, {x, y, z}` #916
+- Fixed quaternion component order: `w, {x, y, z}` #916
 - Fixed `GLM_HAS_CXX11_STL` broken on Clang with Linux #926
 - Fixed *Clang* or *GCC* build due to wrong `GLM_HAS_IF_CONSTEXPR` definition #907
 - Fixed *CUDA* 9 build #910
@@ -227,8 +289,8 @@ vcpkg install glm
 - Redesigned constexpr support which excludes both SIMD and `constexpr` #783
 - Added detection of *Visual C++ 2017* toolsets
 - Added identity functions #765
-- Splitted headers into EXT extensions to improve compilation time #670
-- Added separated performance tests
+- Split headers into EXT extensions to improve compilation time #670
+- Added separate performance tests
 - Clarified refract valid range of the indices of refraction, between -1 and 1 inclusively #806
 
 #### Fixes:
@@ -259,7 +321,7 @@ vcpkg install glm
 - Added *GLM_EXT_vector_relational*: `glm::openBounded` and `glm::closeBounded`
 - Added *GLM_EXT_vec1*: `*vec1` types
 - Added *GLM_GTX_texture*: `levels` function
-- Added spearate functions to use both nagative one and zero near clip plans #680
+- Added separate functions to use both negative one and zero near clip plans #680
 - Added `GLM_FORCE_SINGLE_ONLY` to use *GLM* on platforms that don't support double #627
 - Added *GLM_GTX_easing* for interpolation functions #761
 
@@ -296,7 +358,7 @@ vcpkg install glm
 - Fixed `glm::axisAngle` NaN #638
 - Fixed integer pow from *GLM_GTX_integer* with null exponent #658
 - Fixed `quat` `normalize` build error #656
-- Fixed *Visual C++ 2017.2* warning regarding `__has_feature` definision #655
+- Fixed *Visual C++ 2017.2* warning regarding `__has_feature` definition #655
 - Fixed documentation warnings
 - Fixed `GLM_HAS_OPENMP` when *OpenMP* is not enabled
 - Fixed Better follow GLSL `min` and `max` specification #372
@@ -464,7 +526,7 @@ vcpkg install glm
 #### Fixes:
 - Fixed asinh and atanh warning with C++98 STL #484
 - Fixed polar coordinates function latitude #485
-- Fixed outerProduct defintions and operator signatures for mat2x4 and vec4 #475
+- Fixed outerProduct definitions and operator signatures for mat2x4 and vec4 #475
 - Fixed eulerAngles precision error, returns NaN  #451
 - Fixed undefined reference errors #489
 - Fixed missing GLM_PLATFORM_CYGWIN declaration #495
@@ -635,8 +697,8 @@ vcpkg install glm
 - Optimized bitfieldReverse and bitCount functions
 - Optimized findLSB and findMSB functions.
 - Optimized matrix-vector multiple performance with Cuda #257, #258
-- Reduced integer type redifinitions #233
-- Rewrited of GTX_fast_trigonometry #264 #265
+- Reduced integer type redefinitions #233
+- Rewrote GTX_fast_trigonometry #264 #265
 - Made types trivially copyable #263
 - Removed <iostream> in GLM tests
 - Used std features within GLM without redeclaring
@@ -918,7 +980,7 @@ generation distribution
 - Added GLM_GTX_constants: provides useful constants
 - Added extension versioning
 - Removed many unused namespaces
-- Fixed half based type contructors
+- Fixed half based type constructors
 - Added GLSL core noise functions
 
 ---
@@ -1155,7 +1217,7 @@ generation distribution
 
 ---
 ### GLM 0.7.6 final - 2008-08-08
-- Improved C++ standard comformance
+- Improved C++ standard conformance
 - Added Static assert for types checking
 
 ---
@@ -1216,7 +1278,7 @@ generation distribution
 
 ---
 ### GLM 0.5.0 - 2007-01-06
-- Upgrated to GLSL 1.2
+- Upgraded to GLSL 1.2
 - Added swizzle operators
 - Added setup settings
 

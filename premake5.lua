@@ -41,6 +41,7 @@ project "Eis"
 	defines
 	{
 		"_CRT_SECURE_NO_WARNINGS",
+		"GLM_ENABLE_EXPERIMENTAL",
 		"GLFW_INCLUDE_NONE"
 	}
 
