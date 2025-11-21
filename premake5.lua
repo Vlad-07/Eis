@@ -69,9 +69,12 @@ project "Eis"
 		"opengl32.lib"
 	}
 
+	filter "toolset:msc*"
+		buildoptions { "/utf-8" }
+
 	filter "system:windows"
 		systemversion "latest"
-    	links { "Ws2_32.lib" }
+		links { "Ws2_32.lib" }
 
 	filter { "system:windows", "configurations:Debug" }	
 		links

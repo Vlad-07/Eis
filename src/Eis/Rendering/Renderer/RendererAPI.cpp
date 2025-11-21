@@ -21,7 +21,7 @@ namespace Eis
 			return CreateScope<OpenGLRendererAPI>();
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", s_API);
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)s_API);
 			return nullptr;
 		}
 	}

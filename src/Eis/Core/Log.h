@@ -7,6 +7,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/ostr.h>
 
+// TODO: use compiled spdlog, not header only
 
 // Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 

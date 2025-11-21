@@ -17,7 +17,7 @@ namespace Eis
 			return CreateRef<OpenGLVertexArray>();
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
 			return nullptr;
 		}
 	}

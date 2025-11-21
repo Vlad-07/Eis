@@ -10,6 +10,7 @@ namespace Eis
 	class RendererAPI
 	{
 	public:
+		// TODO: maybe a fmt formater
 		enum class API : uint8_t
 		{
 			None = 0, OpenGL, OpenGLES2
