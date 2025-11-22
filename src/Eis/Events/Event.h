@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	enum class EventType // The actual type
+	enum class EventType : uint8_t
 	{
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -16,7 +16,7 @@ namespace Eis
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
-	enum EventCategory // Filter for certain categories (ex. log only mouse events)
+	enum EventCategory : uint8_t // Filter for certain categories (ex. log only mouse events)
 	{
 		None = 0,
 		EventCategoryApplication	= BIT(1),
@@ -33,7 +33,7 @@ namespace Eis
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	
+
 	class Event
 	{
 	public:
@@ -44,9 +44,14 @@ namespace Eis
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
-		bool IsInCategory(EventCategory category)
+		bool IsInCategory(EventCategory category) const
 		{
 			return GetCategoryFlags() & category; // category flags == category
+		}
+
+		bool IsType(EventType type) const
+		{
+			return GetEventType() == type;
 		}
 
 	private:

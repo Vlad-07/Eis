@@ -60,6 +60,7 @@ namespace Eis
 		const TimeStep timeStep = time - s_Instance->m_LastFrameTime;
 		s_Instance->m_LastFrameTime = time;
 
+		// TODO: FixedUpdate
 
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
