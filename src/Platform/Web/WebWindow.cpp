@@ -41,7 +41,7 @@ namespace Eis
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
@@ -52,11 +52,11 @@ namespace Eis
 
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
-		
-		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-		{
+		glfwSetWindowUserPointer(m_Window, &m_Data);
+		/*
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) // // See emscripten_set_resize_callback below
+		 {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			data.Width = width;
@@ -64,7 +64,7 @@ namespace Eis
 			
 			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
-		});
+		});//*/
 		//glfwSetWindowCloseCallback(); // See emscripten_set_beforeunload_callback below
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
@@ -138,8 +138,8 @@ namespace Eis
 		emscripten_set_beforeunload_callback((void*) &m_Data, [](int eventType, const void*, void* userData) -> const char*
 		{
 			WindowData& data = *(WindowData*)userData;
-			WindowCloseEvent e;
-			data.EventCallback(e);
+			WindowCloseEvent event;
+			data.EventCallback(event);
 			return "";
 		});
 		emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, (void*)&m_Data, true, [](int eventType, const EmscriptenUiEvent* uiEvent, void* userData) -> bool

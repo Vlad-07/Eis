@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "OpenGLES2Context.h"
+#include "OpenGLESContext.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -7,12 +7,12 @@
 
 namespace Eis
 {
-	OpenGLES2Context::OpenGLES2Context(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
+	OpenGLESContext::OpenGLESContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
 	{
 		EIS_CORE_ASSERT(windowHandle, "Window handle is null!")
 	}
 
-	void OpenGLES2Context::Init()
+	void OpenGLESContext::Init()
 	{
 		EIS_PROFILE_FUNCTION();
 
