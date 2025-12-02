@@ -24,7 +24,7 @@ namespace Eis
 		if (s_WindowCount == 0)
 		{
 			EIS_PROFILE_SCOPE("glfwInit");
-			EIS_INFO("Initializing GLFW...");
+			EIS_CORE_INFO("Initializing GLFW...");
 
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");

@@ -581,4 +581,9 @@ namespace Eis
 	{
 		memset(&s_Data.Stats, 0, sizeof(s_Data.Stats));
 	}
+
+	Ref<Shader> Renderer2D::GetQuadShader()
+	{
+		return s_Data.QuadShader;
+	}
 }

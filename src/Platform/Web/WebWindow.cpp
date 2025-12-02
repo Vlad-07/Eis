@@ -29,6 +29,7 @@ namespace Eis
 		if (s_WindowCount == 0)
 		{
 			EIS_PROFILE_SCOPE("glfwInit");
+			EIS_CORE_INFO("Initializing GLFW...");
 
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
@@ -40,13 +41,16 @@ namespace Eis
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
 
 			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
+
+			EIS_CORE_ASSERT(m_Window, "Failed to create {0} window!", m_Data.Title);
+
 			s_WindowCount++;
 		}
 
