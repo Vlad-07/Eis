@@ -4,6 +4,7 @@
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLVertexArray.h"
+#include "Platform/OpenGLES2/OpenGLES2VertexArray.h"
 
 
 namespace Eis
@@ -13,8 +14,10 @@ namespace Eis
 		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::OpenGLES2:
 			return CreateRef<OpenGLVertexArray>();
+
+		case RendererAPI::API::OpenGLES2:
+			return CreateRef<OpenGLES2VertexArray>();
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());

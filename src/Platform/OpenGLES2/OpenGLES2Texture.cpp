@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "OpenGLESTexture.h"
+#include "OpenGLES2Texture.h"
 
 #include <glad/glad.h>
 #include <stb_image.h>
@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	OpenGLESTexture2D::OpenGLESTexture2D(const std::string& path)
+	OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)
 		: m_Path(path)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -20,7 +20,7 @@ namespace Eis
 		stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data = nullptr;
 		{
-			EIS_PROFILE_RENDERER_SCOPE("stbi_load - OpenGLESTexture2D::OpenGLESTexture2D(const std::string& path)");
+			EIS_PROFILE_RENDERER_SCOPE("stbi_load - OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)");
 			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
 
@@ -64,7 +64,7 @@ namespace Eis
 		stbi_image_free(data);
 	}
 
-	OpenGLESTexture2D::OpenGLESTexture2D(uint32_t width, uint32_t height)
+	OpenGLES2Texture2D::OpenGLES2Texture2D(uint32_t width, uint32_t height)
 		:m_Width(width), m_Height(height)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -84,7 +84,7 @@ namespace Eis
 		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
 	}
 
-	OpenGLESTexture2D::OpenGLESTexture2D(const Image& image) : m_Width(image.GetWidth()), m_Height(image.GetHeight())
+	OpenGLES2Texture2D::OpenGLES2Texture2D(const Image& image) : m_Width(image.GetWidth()), m_Height(image.GetHeight())
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -103,17 +103,17 @@ namespace Eis
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		glTexSubImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, image.GetData());
+		glTexImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, image.GetData());
 	}
 
-	OpenGLESTexture2D::~OpenGLESTexture2D()
+	OpenGLES2Texture2D::~OpenGLES2Texture2D()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glDeleteTextures(1, &m_RendererId);
 	}
 
-	void OpenGLESTexture2D::SetData(void* data, uint32_t size)
+	void OpenGLES2Texture2D::SetData(void* data, uint32_t size)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -122,7 +122,7 @@ namespace Eis
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLESTexture2D::Bind(uint32_t slot) const
+	void OpenGLES2Texture2D::Bind(uint32_t slot) const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -130,7 +130,7 @@ namespace Eis
 		glBindTexture(GL_TEXTURE_2D, m_RendererId);
 	}
 
-	void OpenGLESTexture2D::Unbind(uint32_t slot) const
+	void OpenGLES2Texture2D::Unbind(uint32_t slot) const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -138,9 +138,9 @@ namespace Eis
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	bool OpenGLESTexture2D::operator==(const Texture& other) const
+	bool OpenGLES2Texture2D::operator==(const Texture& other) const
 	{
-		auto* p = dynamic_cast<OpenGLESTexture2D*>((Texture*)&other);
+		auto* p = dynamic_cast<OpenGLES2Texture2D*>((Texture*)&other);
 		if (p == nullptr)
 			return false;
 		return m_RendererId == p->m_RendererId;

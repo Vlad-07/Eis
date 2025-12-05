@@ -4,7 +4,7 @@
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLTexture.h"
-#include "Platform/OpenGLES/OpenGLESTexture.h"
+#include "Platform/OpenGLES2/OpenGLES2Texture.h"
 
 
 namespace Eis
@@ -17,7 +17,7 @@ namespace Eis
 			return CreateRef<OpenGLTexture2D>(path);
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLESTexture2D>(path);
+			return CreateRef<OpenGLES2Texture2D>(path);
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
@@ -33,7 +33,7 @@ namespace Eis
 			return CreateRef<OpenGLTexture2D>(width, height);
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLESTexture2D>(width, height);
+			return CreateRef<OpenGLES2Texture2D>(width, height);
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
@@ -49,7 +49,7 @@ namespace Eis
 			return CreateRef<OpenGLTexture2D>(image);
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLESTexture2D>(image);
+			return CreateRef<OpenGLES2Texture2D>(image);
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());

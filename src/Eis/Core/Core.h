@@ -79,9 +79,6 @@
 // Rendering
 #ifdef EIS_PLATFORM_WINDOWS
 	#define EIS_IMGUI_VIEWPORTS
-	#define EIS_GLSL_VERSION "#version 450" // TODO: match this version with shader files
-#elif defined(EIS_PLATFORM_WEB)
-	#define EIS_GLSL_VERSION "#version 300 es"
 #endif
 
 

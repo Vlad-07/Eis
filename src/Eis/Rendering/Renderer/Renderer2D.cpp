@@ -144,7 +144,7 @@ namespace Eis
 
 		s_Data.CircleVertexArray = VertexArray::Create();
 		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
-		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // reuse quadIb
+		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // HACK: reuse quadIb
 
 		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxCircleVertices];
 

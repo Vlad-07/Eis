@@ -56,7 +56,7 @@ namespace Eis
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init(EIS_GLSL_VERSION);
+		ImGui_ImplOpenGL3_Init();
 	}
 
 	void ImGuiLayer::Detach()

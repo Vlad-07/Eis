@@ -8,13 +8,13 @@ typedef unsigned int GLenum;
 
 namespace Eis
 {
-	class OpenGLESTexture2D : public Texture2D
+	class OpenGLES2Texture2D : public Texture2D
 	{
 	public:
-		OpenGLESTexture2D(const std::string& path);
-		OpenGLESTexture2D(uint32_t width, uint32_t height);
-		OpenGLESTexture2D(const Image& image);
-		virtual ~OpenGLESTexture2D();
+		OpenGLES2Texture2D(const std::string& path);
+		OpenGLES2Texture2D(uint32_t width, uint32_t height);
+		OpenGLES2Texture2D(const Image& image);
+		virtual ~OpenGLES2Texture2D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }

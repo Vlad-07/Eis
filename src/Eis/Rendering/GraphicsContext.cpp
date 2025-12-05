@@ -4,7 +4,7 @@
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLContext.h"
-#include "Platform/OpenGLES/OpenGLESContext.h"
+#include "Platform/OpenGLES2/OpenGLES2Context.h"
 
 
 namespace Eis
@@ -17,7 +17,7 @@ namespace Eis
 			return CreateScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateScope<OpenGLESContext>(static_cast<GLFWwindow*>(window));
+			return CreateScope<OpenGLES2Context>(static_cast<GLFWwindow*>(window));
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
