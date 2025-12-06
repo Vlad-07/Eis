@@ -17,7 +17,7 @@ namespace Eis
 			return CreateRef<OpenGLVertexArray>();
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLES2VertexArray>();
+			return CreateRef<OpenGLES2VertexArray>(); // TODO: check vao extension
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());

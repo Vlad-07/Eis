@@ -63,7 +63,8 @@ namespace Eis
 			}
 		}
 
-		m_IndexBuffer->Bind();
+		if (m_IndexBuffer)
+			m_IndexBuffer->Bind();
 	}
 
 	void OpenGLES2VertexArray::Unbind() const
