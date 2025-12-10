@@ -47,6 +47,7 @@ namespace Eis
 		void SetZoomSpeedEffect(bool use) { m_ZoomSpeedEffect = use; }
 
 		// glm::vec2 CalcutalePointWorldPos(glm::vec2 pos) const
+
 		glm::vec2 CalculateMouseWorldPos() const;
 
 	private:

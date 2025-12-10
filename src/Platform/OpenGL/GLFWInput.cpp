@@ -30,7 +30,7 @@ namespace Eis
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
 
-		return glm::vec2((float)xPos, (float)yPos);
+		return glm::vec2((float)xPos, (float)yPos) * Application::Get().GetWindow().GetScale();
 	}
 
 	float GLFWInput::GetMouseXImpl()

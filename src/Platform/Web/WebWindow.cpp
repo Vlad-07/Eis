@@ -10,6 +10,8 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
+#include <GLFW/emscripten_glfw3.h>
+
 
 namespace Eis
 {
@@ -44,6 +46,8 @@ namespace Eis
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
+		emscripten::glfw3::SetNextWindowCanvasSelector("#canvas1");
+
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
 
@@ -54,12 +58,19 @@ namespace Eis
 			s_WindowCount++;
 		}
 
+		emscripten::glfw3::MakeCanvasResizable(m_Window, "window", nullptr);
+
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 
+		SetVSync(true);
+		glfwGetFramebufferSize(m_Window, (int*)&m_Data.Width, (int*)&m_Data.Height); // Ensure correct size on high dpi displays
+		glfwGetWindowContentScale(m_Window, &m_Data.Scale.x, &m_Data.Scale.y);
+
+		EIS_CORE_INFO("Scale: {0}, {1}", m_Data.Scale.x, m_Data.Scale.y);
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		/*
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) // // See emscripten_set_resize_callback below
+		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		 {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -68,7 +79,14 @@ namespace Eis
 			
 			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
-		});//*/
+		});
+		glfwSetWindowContentScaleCallback(m_Window, [](GLFWwindow* window, float xScale, float yScale)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			data.Scale.x = xScale;
+			data.Scale.y = yScale;
+		});
 		//glfwSetWindowCloseCallback(); // See emscripten_set_beforeunload_callback below
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
@@ -107,7 +125,7 @@ namespace Eis
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			MouseMovedEvent event((float)xpos, (float)ypos);
+			MouseMovedEvent event((float)xpos * data.Scale.x, (float)ypos * data.Scale.y);
 			data.EventCallback(event);
 		});
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
@@ -139,24 +157,20 @@ namespace Eis
 			data.EventCallback(event);
 		});
 
+
+
+		// Allow the F12 key to bubble up to the browser (open developer tools):
+		emscripten::glfw3::AddBrowserKeyCallback([](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			return mods == 0 && action == GLFW_PRESS && key == GLFW_KEY_F12;
+		});
+
 		emscripten_set_beforeunload_callback((void*) &m_Data, [](int eventType, const void*, void* userData) -> const char*
 		{
 			WindowData& data = *(WindowData*)userData;
 			WindowCloseEvent event;
 			data.EventCallback(event);
 			return "";
-		});
-		emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, (void*)&m_Data, true, [](int eventType, const EmscriptenUiEvent* uiEvent, void* userData) -> bool
-		{
-			WindowData& data = *(WindowData*)userData;
-
-			data.Width = uiEvent->windowInnerWidth;
-			data.Height = uiEvent->windowInnerHeight;
-
-			WindowResizeEvent event(uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
-			data.EventCallback(event);
-
-			return false;
 		});
 	}
 
@@ -172,11 +186,26 @@ namespace Eis
 			glfwTerminate();
 	}
 
+	/*
 	void WebWindow::Update()
 	{
 		EIS_PROFILE_FUNCTION();
 
 		glfwPollEvents();
+		m_Context->SwapBuffers();
+	}*/
+
+	void WebWindow::PollEvents()
+	{
+		EIS_PROFILE_FUNCTION();
+
+		glfwPollEvents();
+	}
+
+	void WebWindow::SwapBuffers()
+	{
+		EIS_PROFILE_FUNCTION();
+
 		m_Context->SwapBuffers();
 	}
 

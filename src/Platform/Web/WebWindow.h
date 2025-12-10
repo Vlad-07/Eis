@@ -14,11 +14,14 @@ namespace Eis
 		WebWindow(const WindowProps& props);
 		virtual ~WebWindow();
 
-		virtual void Update() override;
+//		virtual void Update() override;
 
+		virtual void PollEvents() override;
+		virtual void SwapBuffers() override;
 
 		virtual uint32_t GetWidth() const override { return m_Data.Width; }
 		virtual uint32_t GetHeight() const override { return m_Data.Height; }
+		virtual glm::fvec2 GetScale() const override { return m_Data.Scale; }
 		virtual void SetSize(uint32_t width, uint32_t height) override;
 		virtual bool IsVSync() const override { return m_Data.VSync; }
 		virtual void SetVSync(bool enabled) override;
@@ -31,13 +34,6 @@ namespace Eis
 		GLFWwindow* m_Window = nullptr;
 		Scope<GraphicsContext> m_Context;
 
-		struct WindowData
-		{
-			std::string Title;
-			uint32_t Width, Height;
-			bool VSync;
-
-			EventCallbackFn EventCallback;
-		} m_Data;
+		WindowData m_Data;
 	};
 }

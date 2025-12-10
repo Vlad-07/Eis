@@ -53,10 +53,12 @@ namespace Eis
 		m_Context->Init();
 
 		SetVSync(true);
+		glfwGetFramebufferSize(m_Window, (int*)&m_Data.Width, (int*)&m_Data.Height); // Ensure correct size on high dpi displays
+		glfwGetWindowContentScale(m_Window, &m_Data.Scale.x, &m_Data.Scale.y);
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -65,6 +67,13 @@ namespace Eis
 			data.Width = width;
 			data.Height = height;
 			data.EventCallback(event);
+		});
+		glfwSetWindowContentScaleCallback(m_Window, [](GLFWwindow* window, float xScale, float yScale)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			data.Scale.x = xScale;
+			data.Scale.y = yScale;
 		});
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
@@ -154,11 +163,26 @@ namespace Eis
 			glfwTerminate();
 	}
 
+	/*
 	void WindowsWindow::Update()
 	{
 		EIS_PROFILE_FUNCTION();
 
 		glfwPollEvents();
+		m_Context->SwapBuffers();
+	}*/
+
+	void WindowsWindow::PollEvents()
+	{
+		EIS_PROFILE_FUNCTION();
+
+		glfwPollEvents();
+	}
+
+	void WindowsWindow::SwapBuffers()
+	{
+		EIS_PROFILE_FUNCTION();
+
 		m_Context->SwapBuffers();
 	}
 

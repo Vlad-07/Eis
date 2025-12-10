@@ -37,4 +37,12 @@ namespace Eis
 		EIS_CORE_ASSERT(versionMajor >= 2 && versionMinor >= 0, "OpenGL ES version 2.0 or newer is required!");
 #endif
 	}
+
+	void OpenGLES2Context::SwapBuffers()
+	{
+		EIS_PROFILE_FUNCTION();
+
+		// not necessary for web
+		glfwSwapBuffers(m_WindowHandle);
+	}
 }

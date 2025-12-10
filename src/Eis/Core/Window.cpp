@@ -1,6 +1,7 @@
 #include "Eispch.h"
 #include "Window.h"
 
+// TODO: something similar to the rendering api selection instead of ifdefs
 #ifdef EIS_PLATFORM_WINDOWS
 	#include "Platform/Windows/WindowsWindow.h"
 #elif defined(EIS_PLATFORM_WEB)

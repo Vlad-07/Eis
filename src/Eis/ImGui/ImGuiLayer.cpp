@@ -37,6 +37,9 @@ namespace Eis
 		io.ConfigViewportsNoTaskBarIcon = true;
 	#endif
 
+		io.ConfigDpiScaleFonts = true;
+		io.ConfigDpiScaleViewports = true;
+
 	#ifdef EIS_PLATFORM_WEB
 		io.IniFilename = "assets/imgui.ini";
 	#endif

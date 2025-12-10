@@ -9,6 +9,8 @@ namespace Eis
 {
 	OrthoCameraController::OrthoCameraController(float aspectRatio)
 	{
+		// TODO: fixed aspect ratio
+		// might be best handled by the window sistem and keep this as is (free aspect)
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
 		m_AspectRatio = (float)Eis::Application::Get().GetWindow().GetWidth() / Eis::Application::Get().GetWindow().GetHeight();

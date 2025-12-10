@@ -41,26 +41,28 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
+		#ifndef EIS_PLATFORM_WEB
 		while (m_Running)
 		{
 			// TODO: fps limiter
-			#ifndef EIS_PLATFORM_WEB
 			RunLoop();
-			#else
-			emscripten_set_main_loop(RunLoop, 0, true);
-			#endif
 		}
+		#else
+		emscripten_set_main_loop(RunLoop, 0, true);
+		#endif
 	}
 
 	void Application::RunLoop()
 	{
 		EIS_PROFILE_FUNCTION();
 
-		float time = (float)glfwGetTime(); // TODO: frametime should be in platform specific
+		float time = (float)glfwGetTime(); // TODO: frametime should be platform specific
 		const TimeStep timeStep = time - s_Instance->m_LastFrameTime;
 		s_Instance->m_LastFrameTime = time;
 
 		// TODO: FixedUpdate
+
+		s_Instance->m_Window->PollEvents();
 
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
@@ -88,7 +90,9 @@ namespace Eis
 			s_Instance->m_ImGuiLayer->End();
 		}
 
-		s_Instance->m_Window->Update();
+		s_Instance->m_Window->SwapBuffers();
+
+//		s_Instance->m_Window->Update();
 	}
 
 	void Application::OnEvent(Event& e)
@@ -129,7 +133,7 @@ namespace Eis
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
-			m_Minimized = true;
+			m_Minimized = true;  // TODO: better minimization detection
 			return false;
 		}
 
