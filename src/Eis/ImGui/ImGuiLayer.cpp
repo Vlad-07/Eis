@@ -37,6 +37,8 @@ namespace Eis
 		io.ConfigViewportsNoTaskBarIcon = true;
 	#endif
 
+		// HACK: these options actually require viewports
+		// might cause problems with new imgui versions but work fine-ish for now
 		io.ConfigDpiScaleFonts = true;
 		io.ConfigDpiScaleViewports = true;
 

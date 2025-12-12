@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <glm/glm.hpp>
 #include "Eis/Events/Event.h"
 
 
@@ -9,16 +10,15 @@ namespace Eis
 	class WindowResizeEvent : public Event
 	{
 	public:
-		WindowResizeEvent(uint32_t width, uint32_t height)
-			: m_Width(width), m_Height(height) {}
+		WindowResizeEvent(int width, int height)
+			: m_Size(width, height) {}
 
-		uint32_t GetWidth() const { return m_Width; }
-		uint32_t GetHeight() const { return m_Height; }
+		glm::ivec2 GetSize() const { return m_Size; }
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
+			ss << "WindowResizeEvent: " << m_Size.x << ", " << m_Size.y;
 			return ss.str();
 		}
 
@@ -26,8 +26,91 @@ namespace Eis
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 	private:
-		uint32_t m_Width, m_Height;
+		glm::ivec2 m_Size;
 	};
+
+	class WindowRescaleEvent : public Event
+	{
+	public:
+		WindowRescaleEvent(float xScale, float yScale)
+			: m_Scale(xScale, yScale) {}
+
+		glm::vec2 GetScale() const { return m_Scale; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "WindowRescaleEvent: " << m_Scale.x << ", " << m_Scale.y;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(WindowRescale)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+	private:
+		glm::vec2 m_Scale;
+	};
+
+	class WindowMovedEvent : public Event
+	{
+	public:
+		WindowMovedEvent(int xpos, int ypos)
+			: m_Pos(xpos, ypos) {}
+
+		glm::ivec2 GetPos() const { return m_Pos; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "WindowMovedEvent: " << m_Pos.x << ", " << m_Pos.y;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(WindowMoved)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+
+	private:
+		glm::ivec2 m_Pos;
+	};
+
+
+	class WindowIconifiedEvent : public Event
+	{
+	public:
+		WindowIconifiedEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowIconified)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class WindowDeiconifiedEvent : public Event
+	{
+	public:
+		WindowDeiconifiedEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowDeiconified)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+
+	class WindowFocusedEvent : public Event
+	{
+	public:
+		WindowFocusedEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowFocused)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class WindowLostFocusEvent : public Event
+	{
+	public:
+		WindowLostFocusEvent() = default;
+
+		EVENT_CLASS_TYPE(WindowLostFocus)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
 
 	class WindowCloseEvent : public Event
 	{
@@ -38,6 +121,7 @@ namespace Eis
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
+	/*
 	class AppTickEvent : public Event
 	{
 	public:
@@ -63,5 +147,5 @@ namespace Eis
 
 		EVENT_CLASS_TYPE(AppRender)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
+	};//*/
 }

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Eis/Core/Core.h"
 #include "Eis/Input/Keycodes.h"
 #include "Eis/Input/MouseCodes.h"
-#include <glm/glm.hpp>
 
 
 namespace Eis

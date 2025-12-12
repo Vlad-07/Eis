@@ -23,7 +23,7 @@ namespace Eis
 
 
 		void OnEvent(Event& event);
-		
+
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
@@ -36,8 +36,8 @@ namespace Eis
 		void Run();
 		static void RunLoop(); // HACK: ugly s_Instance-> everywhere but emscripten needs func ptr
 
-		bool OnWindowResize(WindowResizeEvent e);
-		bool OnWindowClose(WindowCloseEvent e);
+		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnWindowClose(WindowCloseEvent& e);
 
 		friend int ::main(int argc, char** args);
 
@@ -50,7 +50,6 @@ namespace Eis
 		ImGuiLayer* m_ImGuiLayer;
 
 		bool m_Running;
-		bool m_Minimized;
 		float m_LastFrameTime;
 	};
 

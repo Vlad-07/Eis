@@ -43,6 +43,7 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		// not necessary for web
+		// See EmscriptenWebGLContextAttributes.explicitSwapControl
 		glfwSwapBuffers(m_WindowHandle);
 	}
 }

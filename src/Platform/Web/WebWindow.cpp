@@ -19,15 +19,8 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		// Init
+		// Init GLFW
 
-		m_Data.Title = props.Title;
-		m_Data.Width = props.Width != 0 ? props.Width : EM_ASM_INT({ return window.innerWidth; });
-		m_Data.Height = props.Height != 0 ? props.Height : EM_ASM_INT({ return window.innerHeight; });
-		m_Data.VSync = true;
-
-		EIS_CORE_INFO("Initializing '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
-		
 		if (s_WindowCount == 0)
 		{
 			EIS_PROFILE_SCOPE("glfwInit");
@@ -41,6 +34,17 @@ namespace Eis
 				EIS_CORE_ERROR("OpenGL Error: {0} ({1})", error_code, description);
 			});
 		}
+
+		// Init Window
+
+		m_Data.Title = props.Title;
+		m_Data.Width = props.Width != 0 ? props.Width : EM_ASM_INT({ return window.innerWidth; }); // TODO: should get framebuffer size instead
+		m_Data.Height = props.Height != 0 ? props.Height : EM_ASM_INT({ return window.innerHeight; });
+		m_Data.Focused = true;
+		m_Data.Iconified = false;
+		m_Data.VSync = true;
+
+		EIS_CORE_INFO("Initializing '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
@@ -58,120 +62,175 @@ namespace Eis
 			s_WindowCount++;
 		}
 
-		emscripten::glfw3::MakeCanvasResizable(m_Window, "window", nullptr);
+		// Init context
 
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 
-		SetVSync(true);
-		glfwGetFramebufferSize(m_Window, (int*)&m_Data.Width, (int*)&m_Data.Height); // Ensure correct size on high dpi displays
-		glfwGetWindowContentScale(m_Window, &m_Data.Scale.x, &m_Data.Scale.y);
 
-		EIS_CORE_INFO("Scale: {0}, {1}", m_Data.Scale.x, m_Data.Scale.y);
+		// Set window settings
+
+		emscripten::glfw3::MakeCanvasResizable(m_Window, "window", nullptr);
+
+		SetVSync(true);
+		glfwGetFramebufferSize(m_Window, (int*)&m_Data.Width, (int*)&m_Data.Height); // Ensure correct size on high dpi displays. See todo above
+		glfwGetWindowContentScale(m_Window, &m_Data.Scale.x, &m_Data.Scale.y);
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-		 {
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			data.Width = width;
-			data.Height = height;
-			
-			WindowResizeEvent event(width, height);
-			data.EventCallback(event);
-		});
+				data.Width = width;
+				data.Height = height;
+
+				WindowResizeEvent event(width, height);
+				data.EventCallback(event);
+			});
 		glfwSetWindowContentScaleCallback(m_Window, [](GLFWwindow* window, float xScale, float yScale)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			data.Scale.x = xScale;
-			data.Scale.y = yScale;
-		});
-		//glfwSetWindowCloseCallback(); // See emscripten_set_beforeunload_callback below
+				data.Scale.x = xScale;
+				data.Scale.y = yScale;
+
+				WindowRescaleEvent event(xScale, yScale);
+				data.EventCallback(event);
+			});
+		// position is inside the webpage (always 0,0 unless custom html) and might cause confusion
+		/*glfwSetWindowPosCallback(m_Window, [](GLFWwindow* window, int xpos, int ypos)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				WindowMovedEvent event(xpos, ypos);
+				data.EventCallback(event);
+			});//*/
+		glfwSetWindowFocusCallback(m_Window, [](GLFWwindow* window, int focused)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				data.Focused = static_cast<bool>(focused);
+
+				if (data.Focused)
+				{
+					WindowFocusedEvent event;
+					data.EventCallback(event);
+				}
+				else
+				{
+					WindowLostFocusEvent event;
+					data.EventCallback(event);
+				}
+			});
+		// glfwSetWindowIconifyCallback();
+		emscripten_set_visibilitychange_callback((void*)&m_Data, false, [](int eventType, const EmscriptenVisibilityChangeEvent* visibilityChangeEvent, void* userData) -> bool
+			{
+				WindowData& data = *(WindowData*)userData;
+
+				data.Iconified = visibilityChangeEvent->hidden;
+
+				if (visibilityChangeEvent->hidden)
+				{
+					WindowIconifiedEvent event;
+					data.EventCallback(event);
+				}
+				else
+				{
+					WindowDeiconifiedEvent event;
+					data.EventCallback(event);
+				}
+
+				return false; // should it be consumed?
+			});
+		// glfwSetWindowCloseCallback();
+		emscripten_set_beforeunload_callback((void*)&m_Data, [](int eventType, const void*, void* userData) -> const char*
+			{
+				WindowData& data = *(WindowData*)userData;
+
+				WindowCloseEvent event;
+				data.EventCallback(event);
+				return "";
+			});
+
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-			switch (action)
 			{
-				case GLFW_PRESS:
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				switch (action)
 				{
-					KeyPressedEvent event(static_cast<KeyCode>(key), 0);
-					data.EventCallback(event);
-					break;
+					case GLFW_PRESS:
+					{
+						KeyPressedEvent event(static_cast<KeyCode>(key), 0);
+						data.EventCallback(event);
+						return;
+					}
+					case GLFW_RELEASE:
+					{
+						KeyReleasedEvent event(static_cast<KeyCode>(key));
+						data.EventCallback(event);
+						return;
+					}
+					case GLFW_REPEAT:
+					{
+						KeyPressedEvent event(static_cast<KeyCode>(key), 1); // GLFW does not provide a way to get the repeat count. It is possible to extract it but I have lazy
+						data.EventCallback(event);
+						return;
+					}
+					default:
+						EIS_CORE_ASSERT(false, "Invalid key action! (glfwSetKeyCallback)");
 				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent event(static_cast<KeyCode>(key));
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_REPEAT:
-				{
-					KeyPressedEvent event(static_cast<KeyCode>(key), 1); // GLFW does not provide a way to get the repeat count. It is possible to extract it but I have lazy
-					data.EventCallback(event);
-					break;
-				}
-				default:
-					EIS_CORE_ASSERT(false, "Invalid key action! (glfwSetKeyCallback)");
-			}
-		});
+			});
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			KeyTypedEvent event(static_cast<KeyCode>(keycode));
-			data.EventCallback(event);
-		});
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				KeyTypedEvent event(static_cast<KeyCode>(keycode));
+				data.EventCallback(event);
+			});
+
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			MouseMovedEvent event((float)xpos * data.Scale.x, (float)ypos * data.Scale.y);
-			data.EventCallback(event);
-		});
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				MouseMovedEvent event(static_cast<float>(xpos)* data.Scale.x, static_cast<float>(xpos)* data.Scale.y);
+				data.EventCallback(event);
+			});
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			switch (action)
-			{
-			case GLFW_PRESS:
-			{
-				MouseButtonPressedEvent event(static_cast<MouseCode>(button));
-				data.EventCallback(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
-				data.EventCallback(event);
-				break;
-			}
-			default:
-				EIS_CORE_ASSERT(false, "Invalid mouse action! (glfwSetMouseCallback)");
-			}
-		});
+				switch (action)
+				{
+					case GLFW_PRESS:
+					{
+						MouseButtonPressedEvent event(static_cast<MouseCode>(button));
+						data.EventCallback(event);
+						return;
+					}
+					case GLFW_RELEASE:
+					{
+						MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
+						data.EventCallback(event);
+						return;
+					}
+					default:
+						EIS_CORE_ASSERT(false, "Invalid mouse action! (glfwSetMouseCallback)");
+				}
+			});
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			MouseScrolledEvent event((float)xoffset, (float)yoffset);
-			data.EventCallback(event);
-		});
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
+				MouseScrolledEvent event(static_cast<float>(xoffset), static_cast<float>(yoffset));
+				data.EventCallback(event);
+			});
 
 
 		// Allow the F12 key to bubble up to the browser (open developer tools):
 		emscripten::glfw3::AddBrowserKeyCallback([](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			return mods == 0 && action == GLFW_PRESS && key == GLFW_KEY_F12;
-		});
-
-		emscripten_set_beforeunload_callback((void*) &m_Data, [](int eventType, const void*, void* userData) -> const char*
-		{
-			WindowData& data = *(WindowData*)userData;
-			WindowCloseEvent event;
-			data.EventCallback(event);
-			return "";
-		});
+			{
+				return mods == 0 && action == GLFW_PRESS && key == GLFW_KEY_F12;
+			});
 	}
 
 	WebWindow::~WebWindow()
@@ -185,15 +244,6 @@ namespace Eis
 		if (s_WindowCount == 0)
 			glfwTerminate();
 	}
-
-	/*
-	void WebWindow::Update()
-	{
-		EIS_PROFILE_FUNCTION();
-
-		glfwPollEvents();
-		m_Context->SwapBuffers();
-	}*/
 
 	void WebWindow::PollEvents()
 	{

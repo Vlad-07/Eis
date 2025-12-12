@@ -10,13 +10,18 @@ namespace Eis
 	enum class EventType : uint8_t
 	{
 		None = 0,
-		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
-		AppTick, AppUpdate, AppRender,
+		WindowClose, WindowIconified, WindowDeiconified, WindowFocused, WindowLostFocus,
+		WindowResize, WindowRescale, WindowMoved,
+
+//		AppTick, AppUpdate, AppRender,
+
 		KeyPressed, KeyReleased, KeyTyped,
+
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
-	enum EventCategory : uint8_t // Filter for certain categories (ex. log only mouse events)
+	// Filter for certain categories (ex. log only mouse events)
+	enum EventCategory : uint8_t
 	{
 		None = 0,
 		EventCategoryApplication	= BIT(1),

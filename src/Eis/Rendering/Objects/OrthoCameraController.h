@@ -13,6 +13,7 @@ namespace Eis
 	class OrthoCameraController
 	{
 	public:
+		// TODO: mouse panning
 		// TODO: fixed aspect ratio
 		// Specify a fixed aspect ratio or 0 for free aspect ratio
 		OrthoCameraController(float aspectRatio = 0.0f);

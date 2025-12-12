@@ -1,7 +1,8 @@
 #include "Eispch.h"
 #include "Application.h"
 
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h> // must NOT be here
+
 #include <imgui.h>
 
 #include "Eis/Core/Random.h"
@@ -13,7 +14,7 @@ namespace Eis
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(WindowProps props) : m_Running(true), m_Minimized(false), m_LastFrameTime(0.0f)
+	Application::Application(WindowProps props) : m_Running(true), m_LastFrameTime(0.0f)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -44,7 +45,6 @@ namespace Eis
 		#ifndef EIS_PLATFORM_WEB
 		while (m_Running)
 		{
-			// TODO: fps limiter
 			RunLoop();
 		}
 		#else
@@ -63,7 +63,8 @@ namespace Eis
 		// TODO: FixedUpdate
 
 		s_Instance->m_Window->PollEvents();
-
+		// TODO: fps limiter
+		// TODO: limit fps on focus lost
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
 
@@ -71,7 +72,7 @@ namespace Eis
 				layer->Update(timeStep);
 		}
 
-		if (!s_Instance->m_Minimized)
+		if (!s_Instance->m_Window->IsIconified())
 		{
 			{
 				EIS_PROFILE_SCOPE("LayerStack Render");
@@ -91,8 +92,6 @@ namespace Eis
 		}
 
 		s_Instance->m_Window->SwapBuffers();
-
-//		s_Instance->m_Window->Update();
 	}
 
 	void Application::OnEvent(Event& e)
@@ -127,24 +126,16 @@ namespace Eis
 		overlay->Attach();
 	}
 
-	bool Application::OnWindowResize(WindowResizeEvent e)
+	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		if (e.GetWidth() == 0 || e.GetHeight() == 0)
-		{
-			m_Minimized = true;  // TODO: better minimization detection
-			return false;
-		}
+		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
 
-		m_Minimized = false;
-
-		Renderer2D::OnWindowResized(e.GetWidth(), e.GetHeight());
-		
 		return false;
 	}
 
-	bool Application::OnWindowClose(WindowCloseEvent e)
+	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
 		return true;

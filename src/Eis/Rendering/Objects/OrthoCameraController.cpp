@@ -119,7 +119,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_AspectRatio = (float)e.GetWidth() / e.GetHeight();
+		m_AspectRatio = (float)e.GetSize().x / e.GetSize().y;
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}
