@@ -3,6 +3,7 @@
 
 #include "Eis/Core/Application.h"
 #include "Eis/Input/Input.h"
+#include "Eis/Core/Time.h"
 
 
 namespace Eis
@@ -17,7 +18,7 @@ namespace Eis
 		m_Camera = OrthographicCamera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
-	void OrthoCameraController::Update(TimeStep ts)
+	void OrthoCameraController::Update()
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -53,15 +54,15 @@ namespace Eis
 		if (m_ZoomSpeedEffect)
 			delta *= m_ZoomLevel; // HACK: find better way to influence speed according to zoom
 
-		m_Camera.AddPosition(delta * (ts * m_CameraSpeed));
+		m_Camera.AddPosition(delta * ((float)Time::GetDeltaTime() * m_CameraSpeed));
 
 
 		if (m_RotationLock) return;
 
 		if (Input::IsKeyPressed(EIS_KEY_Q))
-			m_Camera.AddRotation(m_CameraRotationSpeed * ts);
+			m_Camera.AddRotation(m_CameraRotationSpeed * Time::GetDeltaTime());
 		if (Input::IsKeyPressed(EIS_KEY_E))
-			m_Camera.AddRotation(-m_CameraRotationSpeed * ts);
+			m_Camera.AddRotation(-m_CameraRotationSpeed * Time::GetDeltaTime());
 	}
 
 	void OrthoCameraController::OnEvent(Event& e)

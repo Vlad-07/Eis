@@ -14,27 +14,27 @@ namespace Eis
 		EIS_CORE_ASSERT(!s_Instance, "PhysicsManager2D instance already exists!");
 	}
 
-	void PhysicsManager2D::UpdateInternal(uint8_t iterations, const Eis::TimeStep ts)
+	void PhysicsManager2D::UpdateInternal(uint8_t iterations)
 	{
 		EIS_PROFILE_FUNCTION();
 
 		iterations = glm::clamp<uint8_t>(iterations, 1, c_MaxIterations);
-		const Eis::TimeStep t(ts / (float)iterations);
+		const float timeScale = 1.0f / (float)iterations;
 
 		for (uint8_t it = 0; it < iterations; it++)
 		{
 			m_Contacts.clear();
 
-			UpdateBodies(t);
+			UpdateBodies(timeScale);
 			BroadPhase();
 			NarrowPhase();
 		}
 	}
 
-	void PhysicsManager2D::UpdateBodies(const Eis::TimeStep ts)
+	void PhysicsManager2D::UpdateBodies(float timeScale)
 	{
 		for (Rigidbody2D& b : m_Bodies)
-			b.Update(ts, c_Gravity);
+			b.Update(timeScale, c_Gravity);
 	}
 
 	// Possible collision detection

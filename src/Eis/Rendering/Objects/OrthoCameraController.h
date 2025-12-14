@@ -2,8 +2,6 @@
 
 #include "OrthographicCamera.h"
 
-#include "Eis/Core/TimeStep.h"
-
 #include "Eis/Events/ApplicationEvent.h"
 #include "Eis/Events/MouseEvent.h"
 
@@ -19,7 +17,7 @@ namespace Eis
 		OrthoCameraController(float aspectRatio = 0.0f);
 		~OrthoCameraController() = default;
 
-		void Update(TimeStep ts);
+		void Update();
 		void OnEvent(Event& e);
 
 		OrthographicCamera& GetCamera() { return m_Camera; }

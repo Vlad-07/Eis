@@ -1,10 +1,10 @@
 #include "Eispch.h"
 #include "Application.h"
 
-#include <GLFW/glfw3.h> // must NOT be here
-
 #include <imgui.h>
 
+#include "Eis/Core/Core.h"
+#include "Eis/Core/Time.h"
 #include "Eis/Core/Random.h"
 #include "Eis/Input/Input.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
@@ -14,12 +14,14 @@ namespace Eis
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(WindowProps props) : m_Running(true), m_LastFrameTime(0.0f)
+	Application::Application(WindowProps props)
 	{
 		EIS_PROFILE_FUNCTION();
 
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+
+		Time::Init();
 
 		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
@@ -56,20 +58,26 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		float time = (float)glfwGetTime(); // TODO: frametime should be platform specific
-		const TimeStep timeStep = time - s_Instance->m_LastFrameTime;
-		s_Instance->m_LastFrameTime = time;
-
-		// TODO: FixedUpdate
-
 		s_Instance->m_Window->PollEvents();
+
+		Time::FrameStart();
+
 		// TODO: fps limiter
 		// TODO: limit fps on focus lost
+
+		while (Time::ShouldRunFixedUpdate())
+		{
+			EIS_PROFILE_SCOPE("LayerStack FixedUpdate");
+
+			for (Layer* layer : s_Instance->m_LayerStack)
+				layer->FixedUpdate();
+		}
+
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
 
 			for (Layer* layer : s_Instance->m_LayerStack)
-				layer->Update(timeStep);
+				layer->Update();
 		}
 
 		if (!s_Instance->m_Window->IsIconified())

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Eis/Core/Core.h"
 #include "Eis/Core/Window.h"
 #include "Eis/Core/LayerStack.h"
-#include "Eis/Core/TimeStep.h"
 
 #include "Eis/Events/Event.h"
 #include "Eis/Events/ApplicationEvent.h"
@@ -44,13 +42,12 @@ namespace Eis
 	private:
 		static Application* s_Instance;
 
-		Eis::Scope<Window> m_Window;
+		Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
 
-		bool m_Running;
-		float m_LastFrameTime;
+		bool m_Running = true;
 	};
 
 	// Is defined in CLIENT

@@ -18,7 +18,7 @@ namespace Eis
 		static PhysicsManager2D& Get() { return *s_Instance; }
 
 
-		static void Update(uint8_t iterations, const Eis::TimeStep ts) { s_Instance->UpdateInternal(iterations, ts); }
+		static void Update(uint8_t iterations) { s_Instance->UpdateInternal(iterations); }
 
 
 		static void AddBody(const Rigidbody2D& body) { s_Instance->m_Bodies.push_back(body); }
@@ -33,8 +33,8 @@ namespace Eis
 		static void ClearBodies() { s_Instance->m_Bodies.clear(); }
 
 	private:
-		void UpdateInternal(uint8_t iterations, const Eis::TimeStep ts);
-		void UpdateBodies(const Eis::TimeStep ts);
+		void UpdateInternal(uint8_t iterations);
+		void UpdateBodies(float timeScale);
 		void BroadPhase();
 		void NarrowPhase();
 

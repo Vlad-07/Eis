@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core.h"
-#include "Eis/Core/TimeStep.h"
 #include "Eis/Events/Event.h"
 
 
@@ -15,9 +14,13 @@ namespace Eis
 
 		virtual void Attach() {}
 		virtual void Detach() {}
-		virtual void Update(TimeStep ts) {}
+
+		virtual void Update() {}
+		virtual void FixedUpdate() {}
+
 		virtual void Render() {}
 		virtual void ImGuiRender() {}
+
 		virtual void OnEvent(Event& event) {}
 
 		const std::string& GetName() const { return m_DebugName; }

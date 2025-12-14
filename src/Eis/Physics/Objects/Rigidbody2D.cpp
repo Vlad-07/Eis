@@ -54,17 +54,19 @@ namespace Eis
 	}
 
 
-	void Rigidbody2D::Update(const TimeStep& ts, const glm::vec2 gravity)
+	void Rigidbody2D::Update(float timeScale, const glm::vec2 gravity)
 	{
 		// Euler method
 
+		float ts = Time::GetFixedDeltaTime() * timeScale;
+
 		if (m_Properties.Static) return;
 
-		m_LinearVelocity += ((m_Force * m_Properties.InvMass) + m_Acceleration + gravity) * (float)ts + m_LinearVelAdd;
+		m_LinearVelocity += ((m_Force * m_Properties.InvMass) + m_Acceleration + gravity) * ts + m_LinearVelAdd;
 		m_AngularVelocity += m_AngVelAdd;
 
-		m_Position += m_LinearVelocity * (float)ts;
-		m_Rotation += m_AngularVelocity * (float)ts;
+		m_Position += m_LinearVelocity * ts;
+		m_Rotation += m_AngularVelocity * ts;
 
 		m_Force = glm::vec2();
 		m_Acceleration = glm::vec2();

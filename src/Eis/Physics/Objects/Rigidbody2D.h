@@ -1,8 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <Eis/Rendering/Objects/Texture.h>
-#include <Eis/Core/TimeStep.h>
+#include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Core/Time.h"
 
 
 // TODO: better manager interface
@@ -58,7 +58,7 @@ namespace Eis
 		virtual ~Rigidbody2D() = default;
 
 
-		void Update(const Eis::TimeStep& ts, const glm::vec2 gravity);
+		void Update(float timeScale, const glm::vec2 gravity);
 
 
 		void Move(glm::vec2 pos) { m_Position += pos; m_UpdateTrVert = true; m_UpdateBB = true; }
