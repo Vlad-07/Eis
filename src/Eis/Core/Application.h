@@ -3,6 +3,7 @@
 #include "Eis/Core/Window.h"
 #include "Eis/Core/LayerStack.h"
 
+#include "Eis/Core/Time.h"
 #include "Eis/Events/Event.h"
 #include "Eis/Events/ApplicationEvent.h"
 
@@ -26,7 +27,7 @@ namespace Eis
 		void PushOverlay(Layer* overlay);
 
 		static Application& Get() { return *s_Instance; }
-		Window& GetWindow() { return *m_Window; }
+		static Window& GetWindow() { return *s_Instance->m_Window; }
 
 		static void ShouldClose() { s_Instance->m_Running = false; }
 
@@ -34,7 +35,14 @@ namespace Eis
 		void Run();
 		static void RunLoop(); // HACK: ugly s_Instance-> everywhere but emscripten needs func ptr
 
+		// Limited to a way lower value than is actually set due to oversleeping
+		// Used only for limiting fps on focus lost
+		static void SetTargetFps(int fps) { s_Instance->m_TargetFrametime = Duration::FromHz((float)fps); }
+		void WaitFPSLimit() const;
+
 		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnWindowFocused(WindowFocusedEvent& e);
+		bool OnWindowLostFocus(WindowLostFocusEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		friend int ::main(int argc, char** args);
@@ -48,6 +56,7 @@ namespace Eis
 		ImGuiLayer* m_ImGuiLayer;
 
 		bool m_Running = true;
+		Duration m_TargetFrametime;
 	};
 
 	// Is defined in CLIENT

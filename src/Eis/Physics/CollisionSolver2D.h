@@ -55,8 +55,6 @@ namespace Eis
 
 			b1.AddLinearVel(-impulse * b1.GetProperties().InvMass);
 			b2.AddLinearVel( impulse * b2.GetProperties().InvMass);
-
-			EIS_INFO("{0}, {1}", (impulse * b2.GetInvMass()).x, (impulse * b2.GetInvMass()).y);
 		}
 
 		/*

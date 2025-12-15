@@ -23,7 +23,7 @@ namespace Eis
 		case ShaderDataType::Mat4:		return GL_FLOAT;
 		}
 
-		EIS_ASSERT(false, "Unknown ShaderDataType!");
+		EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
 

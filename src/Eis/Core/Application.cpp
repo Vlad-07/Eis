@@ -4,7 +4,6 @@
 #include <imgui.h>
 
 #include "Eis/Core/Core.h"
-#include "Eis/Core/Time.h"
 #include "Eis/Core/Random.h"
 #include "Eis/Input/Input.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
@@ -62,9 +61,6 @@ namespace Eis
 
 		Time::FrameStart();
 
-		// TODO: fps limiter
-		// TODO: limit fps on focus lost
-
 		while (Time::ShouldRunFixedUpdate())
 		{
 			EIS_PROFILE_SCOPE("LayerStack FixedUpdate");
@@ -100,6 +96,29 @@ namespace Eis
 		}
 
 		s_Instance->m_Window->SwapBuffers();
+
+		s_Instance->WaitFPSLimit();
+	}
+
+	void Application::WaitFPSLimit() const
+	{
+		// Prioritise vsync except in background
+		if (m_Window->IsVSync() && m_Window->IsFocused())
+			return;
+
+		while (true)
+		{
+			Duration remaining = ChronoDuration(Time::Now() - Time::GetFrameStart());
+			if (remaining >= m_TargetFrametime)
+				break;
+
+			// TODO: find a way to sleep more precise
+
+			if (remaining > Duration::FromMs(2.0))
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			else if (remaining > Duration::FromMs(1.0))
+				std::this_thread::yield();
+		}
 	}
 
 	void Application::OnEvent(Event& e)
@@ -109,6 +128,8 @@ namespace Eis
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<WindowFocusedEvent>(EIS_BIND_EVENT_FN(Application::OnWindowFocused));
+		dispatcher.Dispatch<WindowLostFocusEvent>(EIS_BIND_EVENT_FN(Application::OnWindowLostFocus));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
@@ -140,6 +161,18 @@ namespace Eis
 
 		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
 
+		return false;
+	}
+
+	bool Application::OnWindowFocused(WindowFocusedEvent& e)
+	{
+		m_TargetFrametime = Duration::FromMs(0.0);
+		return false;
+	}
+
+	bool Application::OnWindowLostFocus(WindowLostFocusEvent& e)
+	{
+		m_TargetFrametime = Duration::FromMs(30.0);
 		return false;
 	}
 

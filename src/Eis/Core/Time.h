@@ -6,44 +6,54 @@
 
 namespace Eis
 {
-	namespace TimeTypes
-	{
-		using Clock = std::chrono::steady_clock;
-		using TimePoint = std::chrono::time_point<Clock>;
-		using ChronoDuration = std::chrono::duration<float>;
-	}
+	// Feels shady mixing usings with a class
+
+	using Clock = std::chrono::steady_clock;
+	using TimePoint = std::chrono::time_point<Clock>;
+	using ChronoDuration = std::chrono::nanoseconds;
+	using ChronoDurationDouble = std::chrono::duration<double>;
+
 
 	class Duration
 	{
 	public:
-		static Duration FromSec(float sec) { return Duration(sec); }
-		static Duration FromMs(float ms) { return Duration(ms * 0.001f); }
-		static Duration FromHz(float hz) { return Duration(hz != 0.0f ? 1.0f / hz : 0.0f); } // From FPS
+		static Duration FromSec(double sec) { return Duration(sec); }
+		static Duration FromMs(double ms) { return Duration(std::chrono::duration_cast<ChronoDuration>(std::chrono::duration<double, std::milli>(ms))); }
+		static Duration FromHz(double hz) { return Duration(hz != 0.0 ? 1.0 / hz : 0.0); } // From FPS
 
 	public:
-		Duration(TimeTypes::ChronoDuration d) : m_Duration(d) {}
-		Duration(float sec = 0.0f) : m_Duration(sec) {}
+		Duration(ChronoDuration d) : m_Duration(d) {}
+		Duration(double sec = 0.0) : m_Duration(CastSec(sec)) {}
 
-		float GetSeconds() const { return m_Duration.count(); }
-		float GetMilliseconds() const { return m_Duration.count() * 1000.0f; }
+		double GetSeconds() const { return ToDoubleSec(m_Duration).count(); }
+		double GetMilliseconds() const { return std::chrono::duration<double, std::milli>(m_Duration).count(); }
 
-		operator float() const { return GetSeconds(); }
-		void operator=(TimeTypes::ChronoDuration other) { m_Duration = other; }
-		void operator=(Duration other) { m_Duration = other.m_Duration; }
+		operator double() const { return GetSeconds(); }
+
+		Duration& operator=(const ChronoDuration& other) { m_Duration = other; return *this; }
+		Duration& operator=(const Duration& other) { m_Duration = other.m_Duration; return *this; }
 
 		// will implement operators as needed
 
-		Duration operator*(float d) { return Duration(m_Duration * d); }
+		Duration operator-(const Duration& other) const { return Duration(m_Duration - other.m_Duration); }
 
 		void operator+=(const Duration& other) { m_Duration += other.m_Duration; }
 		void operator-=(const Duration& other) { m_Duration -= other.m_Duration; }
+		
+		bool operator<(const Duration& other) const { return m_Duration < other.m_Duration; }
+		bool operator>=(const Duration& other) const { return m_Duration >= other.m_Duration; }
 
-		bool operator>=(const Duration& other) { return m_Duration >= other.m_Duration; }
-
-		TimeTypes::ChronoDuration GetChronoDuration() const { return m_Duration; }
+		ChronoDuration GetChronoDuration() const { return m_Duration; }
 
 	private:
-		TimeTypes::ChronoDuration m_Duration; // sec
+		static ChronoDuration CastSec(double sec)
+		{ return std::chrono::duration_cast<ChronoDuration>(ChronoDurationDouble(sec)); }
+
+		static ChronoDurationDouble ToDoubleSec(ChronoDuration d)
+		{ return std::chrono::duration_cast<ChronoDurationDouble>(d); }
+
+	private:
+		ChronoDuration m_Duration; // sec
 	};
 
 
@@ -55,8 +65,8 @@ namespace Eis
 		Time& operator=(const Time&) = delete;
 		~Time() = default;
 
-		static TimeTypes::TimePoint Now() { return TimeTypes::Clock::now(); }
-		static TimeTypes::TimePoint GetLastTimePoint() { return s_FrameStart; }
+		static TimePoint Now() { return Clock::now(); }
+		static TimePoint GetFrameStart() { return s_FrameStart; }
 
 		static Duration GetDeltaTime() { return s_DeltaTime; }
 		static Duration GetFixedDeltaTime() { return s_FixedDeltaTime; }
@@ -64,7 +74,7 @@ namespace Eis
 		static Duration GetMaxDeltaTime() { return s_MaxDeltaTime; }
 
 		static void SetFixedDeltaTime(Duration d) { s_FixedDeltaTime = d; }
-		static void SetMaxDeltaTime(Duration d) { EIS_ASSERT(d > s_FixedDeltaTime, "MaxDeltaTime must be larger than FixedDeltaTime!"); s_MaxDeltaTime = d; }
+		static void SetMaxDeltaTime(Duration d) { EIS_CORE_ASSERT(d > s_FixedDeltaTime, "MaxDeltaTime must be larger than FixedDeltaTime!"); s_MaxDeltaTime = d; }
 
 	private:
 		static void Init();
@@ -78,7 +88,7 @@ namespace Eis
 		static Duration s_FixedDeltaTime;
 		static Duration s_MaxDeltaTime;
 
-		static TimeTypes::TimePoint s_FrameStart;
+		static TimePoint s_FrameStart;
 
 		static Duration s_FixedUpdateAccumulator;
 	};

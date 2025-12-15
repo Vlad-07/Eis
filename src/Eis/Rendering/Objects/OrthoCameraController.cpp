@@ -14,7 +14,7 @@ namespace Eis
 		// might be best handled by the window sistem and keep this as is (free aspect)
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
-		m_AspectRatio = (float)Eis::Application::Get().GetWindow().GetWidth() / Eis::Application::Get().GetWindow().GetHeight();
+		m_AspectRatio = (float)Eis::Application::GetWindow().GetWidth() / Eis::Application::GetWindow().GetHeight();
 		m_Camera = OrthographicCamera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
@@ -60,9 +60,9 @@ namespace Eis
 		if (m_RotationLock) return;
 
 		if (Input::IsKeyPressed(EIS_KEY_Q))
-			m_Camera.AddRotation(m_CameraRotationSpeed * Time::GetDeltaTime());
+			m_Camera.AddRotation(m_CameraRotationSpeed * (float)Time::GetDeltaTime());
 		if (Input::IsKeyPressed(EIS_KEY_E))
-			m_Camera.AddRotation(-m_CameraRotationSpeed * Time::GetDeltaTime());
+			m_Camera.AddRotation(-m_CameraRotationSpeed * (float)Time::GetDeltaTime());
 	}
 
 	void OrthoCameraController::OnEvent(Event& e)

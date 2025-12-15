@@ -8,6 +8,7 @@
 #include <spdlog/fmt/ostr.h>
 
 // TODO: use compiled spdlog, not header only
+// TODO: make core logging and assertions inaccesible to client
 
 // Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 

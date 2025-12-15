@@ -58,7 +58,7 @@ namespace Eis
 	{
 		// Euler method
 
-		float ts = Time::GetFixedDeltaTime() * timeScale;
+		float ts = (float)Time::GetFixedDeltaTime() * timeScale;
 
 		if (m_Properties.Static) return;
 

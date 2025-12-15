@@ -23,7 +23,7 @@ namespace Eis
 		case ShaderDataType::Mat4:		return GL_FLOAT;
 		}
 
-		EIS_ASSERT(false, "Unknown ShaderDataType!");
+		EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
 
@@ -44,7 +44,7 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		uint8_t vbIndex = 0;
+		GLuint vbIndex = 0;
 		for (const auto& vb : m_VertexBuffers)
 		{
 			vb->Bind();

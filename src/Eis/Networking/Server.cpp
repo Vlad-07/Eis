@@ -122,7 +122,7 @@ namespace Eis
 		case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
 		{
 			auto clientIt = m_ConnectedClients.find(info->m_hConn);
-			// EIS_ASSERT(cielntIt != m_ConnectedClients.end(), "...")
+			// EIS_CORE_ASSERT(cielntIt != m_ConnectedClients.end(), "...")
 			m_ClientDisconnectedCallback(clientIt->second); // TODO: should communicate ClosedByPeer or ProblemDetectedLocally
 
 			if (info->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
