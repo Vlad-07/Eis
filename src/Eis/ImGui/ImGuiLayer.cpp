@@ -18,8 +18,6 @@
 
 namespace Eis
 {
-	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
-
 	void ImGuiLayer::Attach()
 	{
 		EIS_PROFILE_FUNCTION();		
@@ -74,6 +72,7 @@ namespace Eis
 		ImGui::DestroyContext();
 	}
 
+
 	void ImGuiLayer::Begin()
 	{
 		EIS_PROFILE_FUNCTION();
@@ -88,7 +87,7 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		Application& app = Application::Get();
+		const Application& app = Application::Get();
 		io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow().GetWidth()), static_cast<float>(app.GetWindow().GetHeight()));
 
 		// Rendering

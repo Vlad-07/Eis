@@ -32,12 +32,12 @@ namespace Eis
 		virtual void PollEvents() = 0;
 		virtual void SwapBuffers() = 0;
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
-		virtual glm::fvec2 GetScale() const = 0;
-		virtual bool IsVSync() const = 0;
-		virtual bool IsFocused() const = 0;
-		virtual bool IsIconified() const = 0;
+		uint32_t GetWidth() const { return m_Data.Width; }
+		uint32_t GetHeight() const { return m_Data.Height; }
+		glm::fvec2 GetScale() const { return m_Data.Scale; }
+		bool IsVSync() const { return m_Data.VSync; }
+		bool IsFocused() const { return m_Data.Focused; }
+		bool IsIconified() const { return m_Data.Iconified; }
 
 		virtual void SetSize(uint32_t width, uint32_t height) = 0;
 		virtual void SetVSync(bool enabled) = 0;
@@ -58,7 +58,7 @@ namespace Eis
 			bool VSync;
 
 			EventCallbackFn EventCallback;
-		};
+		} m_Data;
 
 	protected:
 		inline static uint8_t s_WindowCount = 0; // Assuming only one context

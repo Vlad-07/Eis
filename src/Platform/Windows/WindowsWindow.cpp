@@ -7,6 +7,8 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#include <GLFW/glfw3.h>
+
 
 namespace Eis
 {
@@ -55,6 +57,8 @@ namespace Eis
 
 		// Init context
 
+		glfwMakeContextCurrent(m_Window);
+
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 
@@ -102,7 +106,7 @@ namespace Eis
 
 				if (data.Focused)
 				{
-					WindowFocusedEvent event;
+					WindowFocusEvent event;
 					data.EventCallback(event);
 				}
 				else
@@ -119,12 +123,12 @@ namespace Eis
 
 				if (data.Iconified)
 				{
-					WindowIconifiedEvent event;
+					WindowIconifyEvent event;
 					data.EventCallback(event);
 				}
 				else
 				{
-					WindowDeiconifiedEvent event;
+					WindowDeiconifyEvent event;
 					data.EventCallback(event);
 				}
 			});

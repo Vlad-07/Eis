@@ -26,7 +26,11 @@ namespace Eis
 		{
 			EIS_PROFILE_FUNCTION();
 
-			return s_Distribution(s_RandomEngine) % 2;
+			s_BoolBits >>= 1;
+			if (s_BoolBits == 1)
+				s_BoolBits = s_Distribution(s_RandomEngine) | s_SentinelBit;
+
+			return s_BoolBits & 1;
 		}
 
 		static uint32_t UInt()
@@ -88,5 +92,8 @@ namespace Eis
 	private:
 		static std::mt19937 s_RandomEngine;
 		static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
+
+		inline static uint32_t s_BoolBits = 2;
+		static constexpr uint32_t s_SentinelBit = (1 << (sizeof(s_BoolBits) * 8 - 1));
 	};
 }

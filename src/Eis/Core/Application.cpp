@@ -128,7 +128,7 @@ namespace Eis
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(Application::OnWindowResize));
-		dispatcher.Dispatch<WindowFocusedEvent>(EIS_BIND_EVENT_FN(Application::OnWindowFocused));
+		dispatcher.Dispatch<WindowFocusEvent>(EIS_BIND_EVENT_FN(Application::OnWindowFocused));
 		dispatcher.Dispatch<WindowLostFocusEvent>(EIS_BIND_EVENT_FN(Application::OnWindowLostFocus));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
@@ -164,7 +164,7 @@ namespace Eis
 		return false;
 	}
 
-	bool Application::OnWindowFocused(WindowFocusedEvent& e)
+	bool Application::OnWindowFocused(WindowFocusEvent& e)
 	{
 		m_TargetFrametime = Duration::FromMs(0.0);
 		return false;

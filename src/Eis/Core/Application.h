@@ -41,7 +41,7 @@ namespace Eis
 		void WaitFPSLimit() const;
 
 		bool OnWindowResize(WindowResizeEvent& e);
-		bool OnWindowFocused(WindowFocusedEvent& e);
+		bool OnWindowFocused(WindowFocusEvent& e);
 		bool OnWindowLostFocus(WindowLostFocusEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
 

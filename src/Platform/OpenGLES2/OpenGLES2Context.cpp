@@ -16,7 +16,6 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		glfwMakeContextCurrent(m_WindowHandle);
 		if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
 		{
 			EIS_CORE_CRITICAL("Failed to initialize Glad!");

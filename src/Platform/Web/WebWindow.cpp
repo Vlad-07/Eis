@@ -9,7 +9,6 @@
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
-
 #include <GLFW/emscripten_glfw3.h>
 
 
@@ -64,6 +63,8 @@ namespace Eis
 
 		// Init context
 
+		glfwMakeContextCurrent(m_Window);
+
 		m_Context = GraphicsContext::Create(m_Window);
 		m_Context->Init();
 
@@ -113,7 +114,7 @@ namespace Eis
 
 				if (data.Focused)
 				{
-					WindowFocusedEvent event;
+					WindowFocusEvent event;
 					data.EventCallback(event);
 				}
 				else
@@ -131,12 +132,12 @@ namespace Eis
 
 				if (visibilityChangeEvent->hidden)
 				{
-					WindowIconifiedEvent event;
+					WindowIconifyEvent event;
 					data.EventCallback(event);
 				}
 				else
 				{
-					WindowDeiconifiedEvent event;
+					WindowDeiconifyEvent event;
 					data.EventCallback(event);
 				}
 

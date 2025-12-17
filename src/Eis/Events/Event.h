@@ -10,7 +10,7 @@ namespace Eis
 	enum class EventType : uint8_t
 	{
 		None = 0,
-		WindowClose, WindowIconified, WindowDeiconified, WindowFocused, WindowLostFocus,
+		WindowClose, WindowIconify, WindowDeiconify, WindowFocus, WindowLostFocus,
 		WindowResize, WindowRescale, WindowMoved,
 
 //		AppTick, AppUpdate, AppRender,

@@ -35,13 +35,16 @@ namespace Eis
 
 		// will implement operators as needed
 
+		Duration operator+(const Duration& other) const { return Duration(m_Duration + other.m_Duration); }
 		Duration operator-(const Duration& other) const { return Duration(m_Duration - other.m_Duration); }
 
 		void operator+=(const Duration& other) { m_Duration += other.m_Duration; }
 		void operator-=(const Duration& other) { m_Duration -= other.m_Duration; }
-		
+
+		bool operator>(const Duration& other) const { return m_Duration > other.m_Duration; }
 		bool operator<(const Duration& other) const { return m_Duration < other.m_Duration; }
 		bool operator>=(const Duration& other) const { return m_Duration >= other.m_Duration; }
+		bool operator<=(const Duration& other) const { return m_Duration <= other.m_Duration; }
 
 		ChronoDuration GetChronoDuration() const { return m_Duration; }
 
@@ -69,6 +72,7 @@ namespace Eis
 		static TimePoint GetFrameStart() { return s_FrameStart; }
 
 		static Duration GetDeltaTime() { return s_DeltaTime; }
+		static Duration GetUncappedDeltaTime() { return s_UncappedDeltaTime; }
 		static Duration GetFixedDeltaTime() { return s_FixedDeltaTime; }
 
 		static Duration GetMaxDeltaTime() { return s_MaxDeltaTime; }
@@ -85,6 +89,7 @@ namespace Eis
 
 	private:
 		static Duration s_DeltaTime;
+		static Duration s_UncappedDeltaTime;
 		static Duration s_FixedDeltaTime;
 		static Duration s_MaxDeltaTime;
 

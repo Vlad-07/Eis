@@ -74,31 +74,31 @@ namespace Eis
 	};
 
 
-	class WindowIconifiedEvent : public Event
+	class WindowIconifyEvent : public Event
 	{
 	public:
-		WindowIconifiedEvent() = default;
+		WindowIconifyEvent() = default;
 
-		EVENT_CLASS_TYPE(WindowIconified)
+		EVENT_CLASS_TYPE(WindowIconify)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class WindowDeiconifiedEvent : public Event
+	class WindowDeiconifyEvent : public Event
 	{
 	public:
-		WindowDeiconifiedEvent() = default;
+		WindowDeiconifyEvent() = default;
 
-		EVENT_CLASS_TYPE(WindowDeiconified)
+		EVENT_CLASS_TYPE(WindowDeiconify)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
 
-	class WindowFocusedEvent : public Event
+	class WindowFocusEvent : public Event
 	{
 	public:
-		WindowFocusedEvent() = default;
+		WindowFocusEvent() = default;
 
-		EVENT_CLASS_TYPE(WindowFocused)
+		EVENT_CLASS_TYPE(WindowFocus)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 

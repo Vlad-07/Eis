@@ -4,7 +4,8 @@
 
 namespace Eis
 {
-	Duration Time::s_DeltaTime = Duration::FromHz(60); // smooth the first frame
+	Duration Time::s_DeltaTime{};
+	Duration Time::s_UncappedDeltaTime{};
 	Duration Time::s_FixedDeltaTime = Duration::FromHz(50); // Default FixedUpdate is 50hz
 	Duration Time::s_MaxDeltaTime = Time::s_FixedDeltaTime * 5.0; // Limit to 5 fixed updates
 
@@ -14,18 +15,17 @@ namespace Eis
 
 	void Time::Init()
 	{
-		s_FrameStart = Clock::now();
+		s_FrameStart = Clock::now(); // smooth the first frame
 	}
 
 	void Time::FrameStart()
 	{
 		const TimePoint now = Clock::now();
-		s_DeltaTime = now - s_FrameStart;
+		s_UncappedDeltaTime = now - s_FrameStart;
 		s_FrameStart = now;
 
 		// TODO: warn when falling behind. ideally in a perf system
-		if (s_DeltaTime > s_MaxDeltaTime)
-			s_DeltaTime = s_MaxDeltaTime;
+		s_DeltaTime = std::min(s_UncappedDeltaTime, s_MaxDeltaTime);
 
 		s_FixedUpdateAccumulator += s_DeltaTime;
 	}

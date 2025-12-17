@@ -3,8 +3,6 @@
 
 #ifdef EIS_NETWORKING_ENABLE
 
-#include <chrono>
-
 
 namespace Eis
 {
@@ -82,12 +80,15 @@ namespace Eis
 
 		m_Running = true;
 
+		// Run loop
 		while (m_Running)
 		{
 			PollIncomingMessages();
 			PollConnectionStateChanges();
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
+
+		// Cleanup
 
 		m_Interface->CloseConnection(m_Connection, 0, nullptr, false);
 		m_ConnectionStatus = Disconnected;

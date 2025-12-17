@@ -100,7 +100,7 @@ namespace Eis
 		return glm::vec2(worldPos.x, worldPos.y);
 	}
 
-	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent e)
+	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
 		EIS_PROFILE_FUNCTION();
 
@@ -116,7 +116,7 @@ namespace Eis
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}
-	bool OrthoCameraController::OnWindowResized(WindowResizeEvent e)
+	bool OrthoCameraController::OnWindowResized(WindowResizeEvent& e)
 	{
 		EIS_PROFILE_FUNCTION();
 

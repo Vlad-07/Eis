@@ -50,8 +50,8 @@ namespace Eis
 		glm::vec2 CalculateMouseWorldPos() const;
 
 	private:
-		bool OnMouseScrolled(MouseScrolledEvent e);
-		bool OnWindowResized(WindowResizeEvent e);
+		bool OnMouseScrolled(MouseScrolledEvent& e);
+		bool OnWindowResized(WindowResizeEvent& e);
 
 	private:
 		// Camera

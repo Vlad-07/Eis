@@ -3,8 +3,6 @@
 
 #ifdef EIS_NETWORKING_ENABLE
 
-#include <chrono>
-
 
 namespace Eis
 {
@@ -43,7 +41,6 @@ namespace Eis
 	void Server::NetworkThreadFunc()
 	{
 		// Startup
-		EIS_CORE_INFO("Starting server...");
 
 		SteamDatagramErrMsg errMsg;
 		if (!GameNetworkingSockets_Init(nullptr, errMsg))
@@ -88,7 +85,7 @@ namespace Eis
 		}
 
 		// Cleanup
-		EIS_CORE_INFO("Closing connections...");
+
 		for (const auto& [clientId, clientInfo] : m_ConnectedClients)
 		{
 			m_Interface->CloseConnection(clientId, 0, "Server Shutdown", true);
@@ -104,8 +101,6 @@ namespace Eis
 
 		GameNetworkingSockets_Kill();
 		m_Interface = nullptr;
-
-		EIS_CORE_INFO("Server stopped.");
 	}
 
 	void Server::ConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* info) { s_ServerInstance->OnConnectionStatusChanged(info); }

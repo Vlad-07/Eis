@@ -12,8 +12,8 @@ namespace Eis
 	class ImGuiLayer : public Layer
 	{
 	public:
-		ImGuiLayer();
-		~ImGuiLayer() = default;
+		ImGuiLayer() : Layer("ImGuiLayer") {}
+		virtual ~ImGuiLayer() = default;
 
 		virtual void Attach() override;
 		virtual void Detach() override;
