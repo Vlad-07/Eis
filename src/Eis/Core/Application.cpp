@@ -21,15 +21,16 @@ namespace Eis
 		s_Instance = this;
 
 		Time::Init();
+		Random::Init();
 
 		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer2D::Init();
-		Random::Init();
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		Scope<ImGuiLayer> imlayer = CreateScope<ImGuiLayer>();
+		m_ImGuiLayer = imlayer.get();
+		PushOverlay(std::move(imlayer));
 	}
 
 	Application::~Application()
@@ -65,14 +66,14 @@ namespace Eis
 		{
 			EIS_PROFILE_SCOPE("LayerStack FixedUpdate");
 
-			for (Layer* layer : s_Instance->m_LayerStack)
+			for (Scope<Layer>& layer : s_Instance->m_LayerStack)
 				layer->FixedUpdate();
 		}
 
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
 
-			for (Layer* layer : s_Instance->m_LayerStack)
+			for (Scope<Layer>& layer : s_Instance->m_LayerStack)
 				layer->Update();
 		}
 
@@ -81,7 +82,7 @@ namespace Eis
 			{
 				EIS_PROFILE_SCOPE("LayerStack Render");
 
-				for (Layer* layer : s_Instance->m_LayerStack)
+				for (Scope<Layer>& layer : s_Instance->m_LayerStack)
 					layer->Render();
 			}
 
@@ -89,7 +90,7 @@ namespace Eis
 			{
 				EIS_PROFILE_SCOPE("LayerStack ImGuiRender");
 
-				for (Layer* layer : s_Instance->m_LayerStack)
+				for (Scope<Layer>& layer : s_Instance->m_LayerStack)
 					layer->ImGuiRender();
 			}
 			s_Instance->m_ImGuiLayer->End();
@@ -139,20 +140,18 @@ namespace Eis
 		}
 	}
 
-	void Application::PushLayer(Layer* layer)
+	void Application::PushLayer(Scope<Layer> layer)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_LayerStack.PushLayer(layer);
-		layer->Attach();
+		m_LayerStack.PushLayer(std::move(layer));
 	}
 
-	void Application::PushOverlay(Layer* overlay)
+	void Application::PushOverlay(Scope<Layer> overlay)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_LayerStack.PushOverlay(overlay);
-		overlay->Attach();
+		m_LayerStack.PushOverlay(std::move(overlay));
 	}
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)

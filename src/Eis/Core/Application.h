@@ -23,8 +23,8 @@ namespace Eis
 
 		void OnEvent(Event& event);
 
-		void PushLayer(Layer* layer);
-		void PushOverlay(Layer* overlay);
+		void PushLayer(Scope<Layer> layer);
+		void PushOverlay(Scope<Layer> overlay);
 
 		static Application& Get() { return *s_Instance; }
 		static Window& GetWindow() { return *s_Instance->m_Window; }
@@ -53,7 +53,7 @@ namespace Eis
 		Scope<Window> m_Window;
 
 		LayerStack m_LayerStack;
-		ImGuiLayer* m_ImGuiLayer;
+		ImGuiLayer* m_ImGuiLayer; // Tehnically unsfe
 
 		bool m_Running = true;
 		Duration m_TargetFrametime;

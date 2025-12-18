@@ -10,6 +10,7 @@
 #include <chrono>
 #include <thread>
 
+// TODO: use tracy
 
 namespace Eis
 {
@@ -139,7 +140,7 @@ namespace Eis
 	#define EIS_PROFILE_END_SESSION() ::Eis::Instrumentor::Get().EndSession();
 	#define EIS_PROFILE_SCOPE(name) ::Eis::InstrumentationTimer timer##__LINE__(name);
 	#define EIS_PROFILE_FUNCTION() EIS_PROFILE_SCOPE(__FUNCSIG__)
-	
+
 #ifdef EIS_PROFILE_RENDERER
 	#define EIS_PROFILE_RENDERER_SCOPE(name) EIS_PROFILE_SCOPE(name)
 	#define EIS_PROFILE_RENDERER_FUNCTION() EIS_PROFILE_SCOPE(__FUNCSIG__)
