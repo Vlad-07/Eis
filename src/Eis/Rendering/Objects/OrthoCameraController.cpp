@@ -14,7 +14,7 @@ namespace Eis
 		// might be best handled by the window sistem and keep this as is (free aspect)
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
-		m_AspectRatio = (float)Eis::Application::GetWindow().GetWidth() / Eis::Application::GetWindow().GetHeight();
+		m_AspectRatio = static_cast<float>(Eis::Application::GetWindow().GetWidth()) / Eis::Application::GetWindow().GetHeight();
 		m_Camera = OrthographicCamera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
@@ -88,7 +88,7 @@ namespace Eis
 
 		glm::vec2 mousePos = Eis::Input::GetMousePos();
 
-		mousePos /= glm::vec2(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
+		mousePos /= glm::vec2(Application::GetWindow().GetWidth(), Application::GetWindow().GetHeight());
 		mousePos = mousePos * 2.0f - glm::vec2(1.0f);
 		mousePos.y *= -1.0f;
 
@@ -120,7 +120,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_AspectRatio = (float)e.GetSize().x / e.GetSize().y;
+		m_AspectRatio = static_cast<float>(e.GetSize().x) / e.GetSize().y;
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 		return false;
 	}

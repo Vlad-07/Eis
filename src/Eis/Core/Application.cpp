@@ -1,8 +1,6 @@
 #include "Eispch.h"
 #include "Application.h"
 
-#include <imgui.h>
-
 #include "Eis/Core/Core.h"
 #include "Eis/Core/Random.h"
 #include "Eis/Input/Input.h"

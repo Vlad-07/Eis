@@ -87,6 +87,7 @@
 	#define __FUNCSIG__ __PRETTY_FUNCTION__
 #endif
 
+// TODO: this should not be a macro
 #ifdef EIS_PLATFORM_WINDOWS
 	#define EIS_LOG_FILE
 #elif defined(EIS_PLATFORM_WEB)
@@ -105,6 +106,9 @@
 
 #define EIS_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1) // Used for event functions
 
+
+#define EIS_DEPRECATED [[deprecated]]
+#define EIS_DEPRECATED_MSG(msg) [[deprecated(msg)]]
 
 
 // Wrappers for smart pointers

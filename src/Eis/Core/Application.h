@@ -2,8 +2,8 @@
 
 #include "Eis/Core/Window.h"
 #include "Eis/Core/LayerStack.h"
-
 #include "Eis/Core/Time.h"
+
 #include "Eis/Events/Event.h"
 #include "Eis/Events/ApplicationEvent.h"
 
@@ -21,15 +21,16 @@ namespace Eis
 		virtual ~Application();
 
 
-		void OnEvent(Event& event);
-
-		void PushLayer(Scope<Layer> layer);
-		void PushOverlay(Scope<Layer> overlay);
-
 		static Application& Get() { return *s_Instance; }
 		static Window& GetWindow() { return *s_Instance->m_Window; }
 
 		static void ShouldClose() { s_Instance->m_Running = false; }
+
+	protected:
+		void OnEvent(Event& event);
+
+		void PushLayer(Scope<Layer> layer);
+		void PushOverlay(Scope<Layer> overlay);
 
 	private:
 		void Run();
@@ -37,7 +38,7 @@ namespace Eis
 
 		// Limited to a way lower value than is actually set due to oversleeping
 		// Used only for limiting fps on focus lost
-		static void SetTargetFps(int fps) { s_Instance->m_TargetFrametime = Duration::FromHz((float)fps); }
+		void SetTargetFps(int fps) { s_Instance->m_TargetFrametime = Duration::FromHz((float)fps); }
 		void WaitFPSLimit() const;
 
 		bool OnWindowResize(WindowResizeEvent& e);

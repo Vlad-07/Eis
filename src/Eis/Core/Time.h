@@ -30,8 +30,8 @@ namespace Eis
 
 		operator double() const { return GetSeconds(); }
 
-		Duration& operator=(const ChronoDuration& other) { m_Duration = other; return *this; }
-		Duration& operator=(const Duration& other) { m_Duration = other.m_Duration; return *this; }
+		const Duration& operator=(const ChronoDuration& other) { m_Duration = other; return *this; }
+		const Duration& operator=(const Duration& other) { m_Duration = other.m_Duration; return *this; }
 
 		// will implement operators as needed
 

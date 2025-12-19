@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Eis/Core/Core.h"
+#include "Eis/Debug/Instrumentor.h"
 
 
 #if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
