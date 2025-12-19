@@ -21,6 +21,7 @@ namespace Eis
 
 		void Clear();
 
+		size_t GetSize() const { return m_Layers.size(); }
 
 		std::vector<Scope<Layer>>::iterator begin() { return m_Layers.begin(); }
 		std::vector<Scope<Layer>>::iterator end() { return m_Layers.end(); }

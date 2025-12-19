@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Eis/Core/Window.h"
+#include "Eis/Core/LayerLib.h"
 #include "Eis/Core/LayerStack.h"
 #include "Eis/Core/Time.h"
 
@@ -24,23 +25,30 @@ namespace Eis
 		static Application& Get() { return *s_Instance; }
 		static Window& GetWindow() { return *s_Instance->m_Window; }
 
+		static void QueueTransition(uint32_t id);
+		static void QueueTransition(const std::string& name);
+
 		static void ShouldClose() { s_Instance->m_Running = false; }
 
 	protected:
-		void OnEvent(Event& event);
-
-		void PushLayer(Scope<Layer> layer);
-		void PushOverlay(Scope<Layer> overlay);
+		void RegisterLayer(const Layer::Factory& layer, const std::string& name);
+//		void RegisterOverlay(Layer::Factory overlay, const std::string& name);
 
 	private:
 		void Run();
-		static void RunLoop(); // HACK: ugly s_Instance-> everywhere but emscripten needs func ptr
+		void RunLoop();
+
+		// emscripten needs func ptr
+		static void StaticRunLoop() { s_Instance->RunLoop(); }
 
 		// Limited to a way lower value than is actually set due to oversleeping
 		// Used only for limiting fps on focus lost
 		void SetTargetFps(int fps) { s_Instance->m_TargetFrametime = Duration::FromHz((float)fps); }
 		void WaitFPSLimit() const;
 
+		void HandleTransition();
+
+		void OnEvent(Event& event);
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnWindowFocused(WindowFocusEvent& e);
 		bool OnWindowLostFocus(WindowLostFocusEvent& e);
@@ -53,8 +61,19 @@ namespace Eis
 
 		Scope<Window> m_Window;
 
+		LayerLib m_LayerLib;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer; // Tehnically unsfe
+
+		// Might not be the best thing to do
+		struct ActiveLayerData
+		{
+			Layer* LayerPtr; // Tehnically unsfe
+			std::string Name;
+			int32_t Id;
+		} m_ActiveLayer;
+		std::string m_QueuedLayerName{};
+		int32_t m_QueuedLayerId = -1;
 
 		bool m_Running = true;
 		Duration m_TargetFrametime;

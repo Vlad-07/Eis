@@ -82,34 +82,13 @@ namespace Eis
 		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const Image& image) : m_Width(image.GetWidth()), m_Height(image.GetHeight())
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		if (image.GetChannels() != 3 && image.GetChannels() != 4)
-			EIS_CORE_ERROR("Only RGB and RGBA image formats are supported!");
-
-		m_InternalFormat = image.GetChannels() == 4 ? GL_RGBA8 : GL_RGB8;
-		m_DataFormat = image.GetChannels() == 4 ? GL_RGBA : GL_RGB;
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, m_InternalFormat, m_Width, m_Height);
-
-		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, image.GetData());
-	}
-
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glDeleteTextures(1, &m_RendererId);
 	}
+
 
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{

@@ -84,34 +84,13 @@ namespace Eis
 		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
 	}
 
-	OpenGLES2Texture2D::OpenGLES2Texture2D(const Image& image) : m_Width(image.GetWidth()), m_Height(image.GetHeight())
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		if (image.GetChannels() != 3 && image.GetChannels() != 4)
-			EIS_CORE_ERROR("Only RGB and RGBA image formats are supported!");
-
-		m_InternalFormat = image.GetChannels() == 4 ? GL_RGBA8 : GL_RGB8;
-		m_DataFormat = image.GetChannels() == 4 ? GL_RGBA : GL_RGB;
-
-		glGenTextures(1, &m_RendererId);
-		glBindTexture(GL_TEXTURE_2D, m_RendererId);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glTexImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, image.GetData());
-	}
-
 	OpenGLES2Texture2D::~OpenGLES2Texture2D()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glDeleteTextures(1, &m_RendererId);
 	}
+
 
 	void OpenGLES2Texture2D::SetData(void* data, uint32_t size)
 	{

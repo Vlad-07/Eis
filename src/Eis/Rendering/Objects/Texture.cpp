@@ -40,20 +40,4 @@ namespace Eis
 			return nullptr;
 		}
 	}
-
-	Ref<Texture2D> Texture2D::Create(const Image& image)
-	{
-		switch (Renderer2D::GetAPI())
-		{
-		case RendererAPI::API::OpenGL:
-			return CreateRef<OpenGLTexture2D>(image);
-
-		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLES2Texture2D>(image);
-
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
-			return nullptr;
-		}
-	}
 }

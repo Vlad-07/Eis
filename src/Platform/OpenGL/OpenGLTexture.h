@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Core/Image.h"
 
 
 typedef unsigned int GLenum;
@@ -13,7 +12,6 @@ namespace Eis
 	public:
 		OpenGLTexture2D(const std::string& path);
 		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const Image& image);
 		virtual ~OpenGLTexture2D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }

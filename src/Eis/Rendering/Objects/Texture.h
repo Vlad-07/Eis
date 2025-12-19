@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
+
 #include "Eis/Core/Core.h"
-#include "Eis/Core/Image.h"
 
 
 namespace Eis
@@ -24,12 +24,10 @@ namespace Eis
 		virtual bool operator==(const Texture& other) const = 0;
 	};
 
-	// TODO: more texture customizability
 	class Texture2D : public Texture
 	{
 	public:
 		static Ref<Texture2D> Create(const std::string& path);
 		static Ref<Texture2D> Create(uint32_t width, uint32_t height);
-		static Ref<Texture2D> Create(const Image& image);
 	};
 }

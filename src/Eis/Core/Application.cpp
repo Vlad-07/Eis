@@ -26,9 +26,9 @@ namespace Eis
 
 		Renderer2D::Init();
 
-		Scope<ImGuiLayer> imlayer = CreateScope<ImGuiLayer>();
-		m_ImGuiLayer = imlayer.get();
-		PushOverlay(std::move(imlayer));
+		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();
+		m_ImGuiLayer = static_cast<ImGuiLayer*>(imlayer.get());
+		m_LayerStack.PushOverlay(std::move(imlayer));
 	}
 
 	Application::~Application()
@@ -48,7 +48,7 @@ namespace Eis
 			RunLoop();
 		}
 		#else
-		emscripten_set_main_loop(RunLoop, 0, true);
+		emscripten_set_main_loop(StaticRunLoop, 0, true);
 		#endif
 	}
 
@@ -56,7 +56,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		s_Instance->m_Window->PollEvents();
+		m_Window->PollEvents();
 
 		Time::FrameStart();
 
@@ -64,39 +64,41 @@ namespace Eis
 		{
 			EIS_PROFILE_SCOPE("LayerStack FixedUpdate");
 
-			for (Scope<Layer>& layer : s_Instance->m_LayerStack)
+			for (Scope<Layer>& layer : m_LayerStack)
 				layer->FixedUpdate();
 		}
 
 		{
 			EIS_PROFILE_SCOPE("LayerStack Update");
 
-			for (Scope<Layer>& layer : s_Instance->m_LayerStack)
+			for (Scope<Layer>& layer : m_LayerStack)
 				layer->Update();
 		}
 
-		if (!s_Instance->m_Window->IsIconified())
+		if (!m_Window->IsIconified())
 		{
 			{
 				EIS_PROFILE_SCOPE("LayerStack Render");
 
-				for (Scope<Layer>& layer : s_Instance->m_LayerStack)
+				for (Scope<Layer>& layer : m_LayerStack)
 					layer->Render();
 			}
 
-			s_Instance->m_ImGuiLayer->Begin();
+			m_ImGuiLayer->Begin();
 			{
 				EIS_PROFILE_SCOPE("LayerStack ImGuiRender");
 
-				for (Scope<Layer>& layer : s_Instance->m_LayerStack)
+				for (Scope<Layer>& layer : m_LayerStack)
 					layer->ImGuiRender();
 			}
-			s_Instance->m_ImGuiLayer->End();
+			m_ImGuiLayer->End();
 		}
 
-		s_Instance->m_Window->SwapBuffers();
+		m_Window->SwapBuffers();
 
-		s_Instance->WaitFPSLimit();
+		HandleTransition();
+
+		WaitFPSLimit();
 	}
 
 	void Application::WaitFPSLimit() const
@@ -120,6 +122,80 @@ namespace Eis
 		}
 	}
 
+	void Application::RegisterLayer(const Layer::Factory& layer, const std::string& name)
+	{
+		m_LayerLib.RegisterLayer(layer, name);
+		if (m_LayerStack.GetSize() == 1)
+		{
+			auto layer = m_LayerLib.MakeLayer(0);
+			m_ActiveLayer.LayerPtr = layer.get();
+			m_ActiveLayer.Id = 0;
+			m_ActiveLayer.Name = layer->GetName();
+			m_LayerStack.PushLayer(std::move(layer));
+		}
+	}
+
+	void Application::QueueTransition(uint32_t id)
+	{
+		if (s_Instance->m_ActiveLayer.Id == id)
+		{
+			EIS_CORE_WARN("Request to transition to active layer ignored!");
+			return;
+		}
+
+		s_Instance->m_QueuedLayerId = id;
+		s_Instance->m_QueuedLayerName.clear();
+	}
+
+	void Application::QueueTransition(const std::string& name)
+	{
+		if (s_Instance->m_ActiveLayer.Name == name)
+		{
+			EIS_CORE_WARN("Request to transition to active layer ignored!");
+			return;
+		}
+
+		s_Instance->m_QueuedLayerName = name;
+		s_Instance->m_QueuedLayerId = -1;
+	}
+
+	void Application::HandleTransition()
+	{
+		if (m_QueuedLayerId != -1)
+		{
+			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
+
+			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerId);
+
+			m_ActiveLayer.LayerPtr = layer.get();
+			m_ActiveLayer.Id = m_QueuedLayerId;
+			m_ActiveLayer.Name = m_ActiveLayer.LayerPtr->GetName();
+
+			m_LayerStack.PushLayer(std::move(layer));
+
+			m_QueuedLayerId = -1;
+
+			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
+		}
+		else if (!m_QueuedLayerName.empty())
+		{
+			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
+
+			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerName);
+
+			m_ActiveLayer.LayerPtr = layer.get();
+			m_ActiveLayer.Id = m_LayerLib.GetLayerId(m_QueuedLayerName);
+			m_ActiveLayer.Name = m_QueuedLayerName;
+
+			m_LayerStack.PushLayer(std::move(layer));
+
+			m_QueuedLayerName.clear();
+
+			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
+		}
+	}
+
+
 	void Application::OnEvent(Event& e)
 	{
 		EIS_PROFILE_FUNCTION();
@@ -136,20 +212,6 @@ namespace Eis
 			if (e.Handled)
 				break;
 		}
-	}
-
-	void Application::PushLayer(Scope<Layer> layer)
-	{
-		EIS_PROFILE_FUNCTION();
-
-		m_LayerStack.PushLayer(std::move(layer));
-	}
-
-	void Application::PushOverlay(Scope<Layer> overlay)
-	{
-		EIS_PROFILE_FUNCTION();
-
-		m_LayerStack.PushOverlay(std::move(overlay));
 	}
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)

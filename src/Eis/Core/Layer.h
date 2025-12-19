@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Eis/Core/Core.h"
 #include "Eis/Events/Event.h"
 
@@ -9,7 +11,10 @@ namespace Eis
 	class Layer
 	{
 	public:
-		Layer(const std::string& debugName = "Layer") : m_DebugName(debugName) {}
+		using Factory = std::function<Scope<Layer>(const std::string& layerName)>;
+
+	public:
+		Layer(const std::string& name = "Layer") : m_Name(name) {}
 		virtual ~Layer() = default;
 
 		virtual void Attach() {}
@@ -23,9 +28,9 @@ namespace Eis
 
 		virtual void OnEvent(Event& event) {}
 
-		const std::string& GetName() const { return m_DebugName; }
+		const std::string& GetName() const { return m_Name; }
 
 	protected:
-		std::string m_DebugName;
+		std::string m_Name;
 	};
 }
