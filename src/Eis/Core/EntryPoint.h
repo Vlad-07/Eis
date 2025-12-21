@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eis/Core/Core.h"
+#include "Eis/Core/Application.h"
 #include "Eis/Debug/Instrumentor.h"
 
 

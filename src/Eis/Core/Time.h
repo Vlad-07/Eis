@@ -1,7 +1,8 @@
 #pragma once
 
 #include <chrono>
-#include "Eis/Core/Log.h"
+
+#include "Eis/Debug/Assert.h"
 
 
 namespace Eis

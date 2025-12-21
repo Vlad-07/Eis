@@ -68,13 +68,6 @@
 	#define EIS_DEBUGBREAK()
 #endif
 
-#ifdef EIS_ENABLE_ASSERTS
-	#define EIS_ASSERT(x, ...) { if(!(x)) { EIS_CRITICAL("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
-	#define EIS_CORE_ASSERT(x, ...) { if(!(x)) { EIS_CORE_CRITICAL("Assertion Failed: {0}", __VA_ARGS__); EIS_DEBUGBREAK(); } }
-#else
-	#define EIS_ASSERT(x, ...)
-	#define EIS_CORE_ASSERT(x, ...)
-#endif
 
 // Rendering
 #ifdef EIS_PLATFORM_WINDOWS

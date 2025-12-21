@@ -5,8 +5,8 @@
 #include <functional>
 #include <random>
 #include <chrono>
-#include <optional>
 
+#include <optional>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 #include "Eis/Core/Log.h"
+#include "Eis/Debug/Assert.h"
 #include "Eis/Debug/Instrumentor.h"
 
 #ifdef EIS_PLATFORM_WINDOWS

@@ -2,15 +2,16 @@
 
 // File only used by Eis apps
 
-
+// Core
 #include "Eis/Core/Core.h"
-
+#include "Eis/Core/Layer.h"
 #include "Eis/Core/Application.h"
 #include "Eis/Core/Log.h"
 #include "Eis/Core/Time.h"
 #include "Eis/Core/Random.h"
 
-#include "Eis/Core/Layer.h"
+// Debug
+#include "Eis/Debug/Assert.h"
 
 // Input
 #include "Eis/Input/Input.h"

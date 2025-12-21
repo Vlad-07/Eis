@@ -7,12 +7,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/ostr.h>
 
-// TODO: use compiled spdlog, not header only
-// TODO: make core logging and assertions inaccesible to client
-
+// Consider compiled spdlog, not header only
 // Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 
 // Core log macros
+
 #define EIS_CORE_TRACE(...)		::Eis::Log::GetCoreLogger()->trace(__VA_ARGS__);
 #define EIS_CORE_INFO(...)		::Eis::Log::GetCoreLogger()->info(__VA_ARGS__);
 #define EIS_CORE_WARN(...)		::Eis::Log::GetCoreLogger()->warn(__VA_ARGS__);
@@ -20,6 +19,7 @@
 #define EIS_CORE_CRITICAL(...)	::Eis::Log::GetCoreLogger()->critical(__VA_ARGS__);
 
 // Client log macros
+
 #define EIS_TRACE(...)			::Eis::Log::GetClientLogger()->trace(__VA_ARGS__);
 #define EIS_INFO(...)			::Eis::Log::GetClientLogger()->info(__VA_ARGS__);
 #define EIS_WARN(...)			::Eis::Log::GetClientLogger()->warn(__VA_ARGS__);

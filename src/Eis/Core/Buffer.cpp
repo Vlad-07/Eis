@@ -1,6 +1,5 @@
 #include "Eispch.h"
 #include "Buffer.h"
-#include "Core.h"
 
 
 namespace Eis
