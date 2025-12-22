@@ -22,13 +22,16 @@ namespace Eis
 		virtual ~Application();
 
 
+		// Engine only
 		static Application& Get() { return *s_Instance; }
+		// Engine only
 		static Window& GetWindow() { return *s_Instance->m_Window; }
 
-		static void QueueTransition(uint32_t id);
-		static void QueueTransition(const std::string& name);
 
-		static void ShouldClose() { s_Instance->m_Running = false; }
+		void QueueTransition(uint32_t id);
+		void QueueTransition(const std::string& name);
+
+		void ShouldClose() { s_Instance->m_Running = false; }
 
 	protected:
 		void RegisterLayer(const Layer::Factory& layer, const std::string& name);

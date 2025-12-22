@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "Eis/Core/Core.h"
+#include "Eis/Core/EisContext.h"
 #include "Eis/Events/Event.h"
 
 
@@ -14,7 +15,7 @@ namespace Eis
 		using Factory = std::function<Scope<Layer>(const std::string& layerName)>;
 
 	public:
-		Layer(const std::string& name = "Layer") : m_Name(name) {}
+		Layer(const std::string& name) : m_Name(name) {}
 		virtual ~Layer() = default;
 
 		virtual void Attach() {}
@@ -32,5 +33,8 @@ namespace Eis
 
 	protected:
 		std::string m_Name;
+		EisContext Eis{};
+
+		friend class LayerLib;
 	};
 }

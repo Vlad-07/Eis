@@ -11,6 +11,7 @@ namespace Eis
 {
 	Application* Application::s_Instance = nullptr;
 
+
 	Application::Application(WindowProps props)
 	{
 		EIS_PROFILE_FUNCTION();
@@ -18,14 +19,20 @@ namespace Eis
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		// Init sub-systems
 		Time::Init();
 		Random::Init();
-
 		m_Window = Window::Create(props);
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
-
 		Renderer2D::Init();
 
+		// Init engine context
+		EisContext context{};
+		context.m_App = this;
+		context.m_Window = m_Window.get();
+		m_LayerLib.SetContext(context);
+
+		// Init ImGui overlay
 		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();
 		m_ImGuiLayer = static_cast<ImGuiLayer*>(imlayer.get());
 		m_LayerStack.PushOverlay(std::move(imlayer));
@@ -37,6 +44,7 @@ namespace Eis
 
 		Renderer2D::Shutdown();
 	}
+
 
 	void Application::Run()
 	{
@@ -101,6 +109,7 @@ namespace Eis
 		WaitFPSLimit();
 	}
 
+
 	void Application::WaitFPSLimit() const
 	{
 		// Prioritise vsync except in background
@@ -161,6 +170,8 @@ namespace Eis
 
 	void Application::HandleTransition()
 	{
+		// this is needlessly complicated
+
 		if (m_QueuedLayerId != -1)
 		{
 			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
@@ -175,7 +186,7 @@ namespace Eis
 
 			m_QueuedLayerId = -1;
 
-			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
+			EIS_CORE_INFO("Transitioned to {}.", m_ActiveLayer.Name);
 		}
 		else if (!m_QueuedLayerName.empty())
 		{

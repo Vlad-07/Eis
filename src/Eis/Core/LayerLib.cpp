@@ -9,36 +9,31 @@ namespace Eis
 		m_LayerFactories.emplace_back(factory, name);
 	}
 
-	Scope<Layer> LayerLib::MakeLayer(uint8_t id) const
-	{
-		EIS_CORE_ASSERT(m_LayerFactories.size(), "No layers registered!");
-		EIS_CORE_ASSERT(id < m_LayerFactories.size(), "Invalid layer id requested: {}!", id);
-
-		const auto& pair = m_LayerFactories[id];
-		return pair.first(pair.second);
-	}
-
 	Scope<Layer> LayerLib::MakeLayer(const std::string& name) const
 	{
-		EIS_CORE_ASSERT(m_LayerFactories.size(), "No layers registered!");
+		int32_t id = GetLayerId(name);
+		return MakeLayer(id);
+	}
 
-		for (auto&[factory, n] : m_LayerFactories)
-		{
-			if (name == n)
-				return factory(n);
-		}
-		EIS_CORE_CRITICAL("No layer named {} found!", name);
-		return m_LayerFactories[0].first("");
+	Scope<Layer> LayerLib::MakeLayer(int32_t id) const
+	{
+		EIS_CORE_ASSERT(m_LayerFactories.size(), "No layers registered!");
+		EIS_CORE_ASSERT(0 <= id && id < m_LayerFactories.size(), "Invalid layer id requested: {}!", id);
+
+		const auto& pair = m_LayerFactories[id];
+		auto layer = pair.first(pair.second);
+		layer->Eis = m_Context;
+		return layer;
 	}
 
 	int32_t LayerLib::GetLayerId(const std::string& name) const
 	{
-		int i = 0;
-		for (auto& [factory, n] : m_LayerFactories)
+		int32_t id = 0;
+		for (const auto& pair : m_LayerFactories)
 		{
-			if (name == n)
-				return i;
-			i++;
+			if (name == pair.second)
+				return id;
+			id++;
 		}
 		EIS_CORE_ERROR("No layer named {} found!", name);
 		return -1;
