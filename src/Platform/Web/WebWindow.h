@@ -22,7 +22,7 @@ namespace Eis
 		virtual void SetTitle(const std::string& title) override;
 		virtual void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 
-		virtual void* GetNativeWindow() const override { return m_Window; }
+		virtual void* GetNativeWindow() const override { return static_cast<void*>(m_Window); }
 
 	private:
 		GLFWwindow* m_Window = nullptr;

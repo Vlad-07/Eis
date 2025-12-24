@@ -6,11 +6,12 @@
 
 namespace Eis
 {
-	#ifdef EIS_PLATFORM_WINDOWS
-		RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
-	#elif defined(EIS_PLATFORM_WEB)
-		RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGLES2;
-	#endif
+	RendererAPI::API RendererAPI::s_API =
+#ifdef EIS_PLATFORM_WINDOWS
+		RendererAPI::API::OpenGL;
+#elif defined(EIS_PLATFORM_WEB)
+		RendererAPI::API::OpenGLES2;
+#endif
 
 	Scope<RendererAPI> RendererAPI::Create()
 	{
@@ -21,7 +22,7 @@ namespace Eis
 			return CreateScope<OpenGLRendererAPI>();
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)s_API);
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)s_API);
 			return nullptr;
 		}
 	}

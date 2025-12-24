@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include "Eis/Rendering/Objects/VertexArray.h"
+
 
 namespace Eis
 {

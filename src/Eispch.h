@@ -6,6 +6,7 @@
 #include <random>
 #include <chrono>
 
+#include <ostream>
 #include <optional>
 #include <string>
 #include <sstream>

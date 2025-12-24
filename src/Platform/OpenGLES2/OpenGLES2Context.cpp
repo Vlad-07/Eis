@@ -23,9 +23,9 @@ namespace Eis
 		}
 
 		EIS_CORE_INFO("OpenGL ES Renderer:");
-		EIS_CORE_INFO("    Vendor:  {0}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-		EIS_CORE_INFO("    Device:  {0}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-		EIS_CORE_INFO("    Version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+		EIS_CORE_INFO("    Vendor:  {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+		EIS_CORE_INFO("    Device:  {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+		EIS_CORE_INFO("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 #ifdef EIS_ENABLE_ASSERTS
 		int versionMajor;

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <ostream>
+
+
 namespace Eis
 {
-	typedef enum class KeyCode : uint16_t
+	enum class KeyCode : uint16_t
 	{
 		// From glfw3.h
 		Space = 32,
@@ -62,6 +65,7 @@ namespace Eis
 		World2 = 162, /* non-US #2 */
 
 		/* Function keys */
+
 		Escape = 256,
 		Enter = 257,
 		Tab = 258,
@@ -108,6 +112,7 @@ namespace Eis
 		F25 = 314,
 
 		/* Keypad */
+
 		KP0 = 320,
 		KP1 = 321,
 		KP2 = 322,
@@ -135,7 +140,7 @@ namespace Eis
 		RightAlt = 346,
 		RightSuper = 347,
 		Menu = 348
-	} Key;
+	};
 
 	inline std::ostream& operator<<(std::ostream& os, KeyCode keyCode)
 	{
@@ -146,128 +151,131 @@ namespace Eis
 
 
 // From glfw3.h
-#define EIS_KEY_SPACE			::Eis::Key::Space
-#define EIS_KEY_APOSTROPHE		::Eis::Key::Apostrophe		/* ' */
-#define EIS_KEY_COMMA			::Eis::Key::Comma			/* , */
-#define EIS_KEY_MINUS			::Eis::Key::Minus			/* - */
-#define EIS_KEY_PERIOD			::Eis::Key::Period			/* . */
-#define EIS_KEY_SLASH			::Eis::Key::Slash			/* / */
-#define EIS_KEY_0				::Eis::Key::D0
-#define EIS_KEY_1				::Eis::Key::D1
-#define EIS_KEY_2				::Eis::Key::D2
-#define EIS_KEY_3				::Eis::Key::D3
-#define EIS_KEY_4				::Eis::Key::D4
-#define EIS_KEY_5				::Eis::Key::D5
-#define EIS_KEY_6				::Eis::Key::D6
-#define EIS_KEY_7				::Eis::Key::D7
-#define EIS_KEY_8				::Eis::Key::D8
-#define EIS_KEY_9				::Eis::Key::D9
-#define EIS_KEY_SEMICOLON		::Eis::Key::Semicolon		/* ; */
-#define EIS_KEY_EQUAL			::Eis::Key::Equal			/* = */
-#define EIS_KEY_A				::Eis::Key::A
-#define EIS_KEY_B				::Eis::Key::B
-#define EIS_KEY_C				::Eis::Key::C
-#define EIS_KEY_D				::Eis::Key::D
-#define EIS_KEY_E				::Eis::Key::E
-#define EIS_KEY_F				::Eis::Key::F
-#define EIS_KEY_G				::Eis::Key::G
-#define EIS_KEY_H				::Eis::Key::H
-#define EIS_KEY_I				::Eis::Key::I
-#define EIS_KEY_J				::Eis::Key::J
-#define EIS_KEY_K				::Eis::Key::K
-#define EIS_KEY_L				::Eis::Key::L
-#define EIS_KEY_M				::Eis::Key::M
-#define EIS_KEY_N				::Eis::Key::N
-#define EIS_KEY_O				::Eis::Key::O
-#define EIS_KEY_P				::Eis::Key::P
-#define EIS_KEY_Q				::Eis::Key::Q
-#define EIS_KEY_R				::Eis::Key::R
-#define EIS_KEY_S				::Eis::Key::S
-#define EIS_KEY_T				::Eis::Key::T
-#define EIS_KEY_U				::Eis::Key::U
-#define EIS_KEY_V				::Eis::Key::V
-#define EIS_KEY_W				::Eis::Key::W
-#define EIS_KEY_X				::Eis::Key::X
-#define EIS_KEY_Y				::Eis::Key::Y
-#define EIS_KEY_Z				::Eis::Key::Z
-#define EIS_KEY_LEFT_BRACKET	::Eis::Key::LeftBracket		/* [ */
-#define EIS_KEY_BACKSLASH		::Eis::Key::Backslash		/* \ */
-#define EIS_KEY_RIGHT_BRACKET	::Eis::Key::RightBracket	/* ] */
-#define EIS_KEY_GRAVE_ACCENT	::Eis::Key::GraveAccent		/* ` */
-#define EIS_KEY_WORLD_1			::Eis::Key::World1			/* non-US #1 */
-#define EIS_KEY_WORLD_2			::Eis::Key::World2			/* non-US #2 */
+
+#define EIS_KEY_SPACE			::Eis::KeyCode::Space
+#define EIS_KEY_APOSTROPHE		::Eis::KeyCode::Apostrophe		/* ' */
+#define EIS_KEY_COMMA			::Eis::KeyCode::Comma			/* , */
+#define EIS_KEY_MINUS			::Eis::KeyCode::Minus			/* - */
+#define EIS_KEY_PERIOD			::Eis::KeyCode::Period			/* . */
+#define EIS_KEY_SLASH			::Eis::KeyCode::Slash			/* / */
+#define EIS_KEY_0				::Eis::KeyCode::D0
+#define EIS_KEY_1				::Eis::KeyCode::D1
+#define EIS_KEY_2				::Eis::KeyCode::D2
+#define EIS_KEY_3				::Eis::KeyCode::D3
+#define EIS_KEY_4				::Eis::KeyCode::D4
+#define EIS_KEY_5				::Eis::KeyCode::D5
+#define EIS_KEY_6				::Eis::KeyCode::D6
+#define EIS_KEY_7				::Eis::KeyCode::D7
+#define EIS_KEY_8				::Eis::KeyCode::D8
+#define EIS_KEY_9				::Eis::KeyCode::D9
+#define EIS_KEY_SEMICOLON		::Eis::KeyCode::Semicolon		/* ; */
+#define EIS_KEY_EQUAL			::Eis::KeyCode::Equal			/* = */
+#define EIS_KEY_A				::Eis::KeyCode::A
+#define EIS_KEY_B				::Eis::KeyCode::B
+#define EIS_KEY_C				::Eis::KeyCode::C
+#define EIS_KEY_D				::Eis::KeyCode::D
+#define EIS_KEY_E				::Eis::KeyCode::E
+#define EIS_KEY_F				::Eis::KeyCode::F
+#define EIS_KEY_G				::Eis::KeyCode::G
+#define EIS_KEY_H				::Eis::KeyCode::H
+#define EIS_KEY_I				::Eis::KeyCode::I
+#define EIS_KEY_J				::Eis::KeyCode::J
+#define EIS_KEY_K				::Eis::KeyCode::K
+#define EIS_KEY_L				::Eis::KeyCode::L
+#define EIS_KEY_M				::Eis::KeyCode::M
+#define EIS_KEY_N				::Eis::KeyCode::N
+#define EIS_KEY_O				::Eis::KeyCode::O
+#define EIS_KEY_P				::Eis::KeyCode::P
+#define EIS_KEY_Q				::Eis::KeyCode::Q
+#define EIS_KEY_R				::Eis::KeyCode::R
+#define EIS_KEY_S				::Eis::KeyCode::S
+#define EIS_KEY_T				::Eis::KeyCode::T
+#define EIS_KEY_U				::Eis::KeyCode::U
+#define EIS_KEY_V				::Eis::KeyCode::V
+#define EIS_KEY_W				::Eis::KeyCode::W
+#define EIS_KEY_X				::Eis::KeyCode::X
+#define EIS_KEY_Y				::Eis::KeyCode::Y
+#define EIS_KEY_Z				::Eis::KeyCode::Z
+#define EIS_KEY_LEFT_BRACKET	::Eis::KeyCode::LeftBracket		/* [ */
+#define EIS_KEY_BACKSLASH		::Eis::KeyCode::Backslash		/* \ */
+#define EIS_KEY_RIGHT_BRACKET	::Eis::KeyCode::RightBracket	/* ] */
+#define EIS_KEY_GRAVE_ACCENT	::Eis::KeyCode::GraveAccent		/* ` */
+#define EIS_KEY_WORLD_1			::Eis::KeyCode::World1			/* non-US #1 */
+#define EIS_KEY_WORLD_2			::Eis::KeyCode::World2			/* non-US #2 */
 
 /* Function keys */
-#define EIS_KEY_ESCAPE			::Eis::Key::Escape
-#define EIS_KEY_ENTER			::Eis::Key::Enter
-#define EIS_KEY_TAB				::Eis::Key::Tab
-#define EIS_KEY_BACKSPACE		::Eis::Key::Backspace
-#define EIS_KEY_INSERT			::Eis::Key::Insert
-#define EIS_KEY_DELETE			::Eis::Key::Delete
-#define EIS_KEY_RIGHT			::Eis::Key::Right
-#define EIS_KEY_LEFT			::Eis::Key::Left
-#define EIS_KEY_DOWN			::Eis::Key::Down
-#define EIS_KEY_UP				::Eis::Key::Up
-#define EIS_KEY_PAGE_UP			::Eis::Key::PageUp
-#define EIS_KEY_PAGE_DOWN		::Eis::Key::PageDown
-#define EIS_KEY_HOME			::Eis::Key::Home
-#define EIS_KEY_END				::Eis::Key::End
-#define EIS_KEY_CAPS_LOCK		::Eis::Key::CapsLock
-#define EIS_KEY_SCROLL_LOCK		::Eis::Key::ScrollLock
-#define EIS_KEY_NUM_LOCK		::Eis::Key::NumLock
-#define EIS_KEY_PRINT_SCREEN	::Eis::Key::PrintScreen
-#define EIS_KEY_PAUSE			::Eis::Key::Pause
-#define EIS_KEY_F1				::Eis::Key::F1
-#define EIS_KEY_F2				::Eis::Key::F2
-#define EIS_KEY_F3				::Eis::Key::F3
-#define EIS_KEY_F4				::Eis::Key::F4
-#define EIS_KEY_F5				::Eis::Key::F5
-#define EIS_KEY_F6				::Eis::Key::F6
-#define EIS_KEY_F7				::Eis::Key::F7
-#define EIS_KEY_F8				::Eis::Key::F8
-#define EIS_KEY_F9				::Eis::Key::F9
-#define EIS_KEY_F10				::Eis::Key::F10
-#define EIS_KEY_F11				::Eis::Key::F11
-#define EIS_KEY_F12				::Eis::Key::F12
-#define EIS_KEY_F13				::Eis::Key::F13
-#define EIS_KEY_F14				::Eis::Key::F14
-#define EIS_KEY_F15				::Eis::Key::F15
-#define EIS_KEY_F16				::Eis::Key::F16
-#define EIS_KEY_F17				::Eis::Key::F17
-#define EIS_KEY_F18				::Eis::Key::F18
-#define EIS_KEY_F19				::Eis::Key::F19
-#define EIS_KEY_F20				::Eis::Key::F20
-#define EIS_KEY_F21				::Eis::Key::F21
-#define EIS_KEY_F22				::Eis::Key::F22
-#define EIS_KEY_F23				::Eis::Key::F23
-#define EIS_KEY_F24				::Eis::Key::F24
-#define EIS_KEY_F25				::Eis::Key::F25
+
+#define EIS_KEY_ESCAPE			::Eis::KeyCode::Escape
+#define EIS_KEY_ENTER			::Eis::KeyCode::Enter
+#define EIS_KEY_TAB				::Eis::KeyCode::Tab
+#define EIS_KEY_BACKSPACE		::Eis::KeyCode::Backspace
+#define EIS_KEY_INSERT			::Eis::KeyCode::Insert
+#define EIS_KEY_DELETE			::Eis::KeyCode::Delete
+#define EIS_KEY_RIGHT			::Eis::KeyCode::Right
+#define EIS_KEY_LEFT			::Eis::KeyCode::Left
+#define EIS_KEY_DOWN			::Eis::KeyCode::Down
+#define EIS_KEY_UP				::Eis::KeyCode::Up
+#define EIS_KEY_PAGE_UP			::Eis::KeyCode::PageUp
+#define EIS_KEY_PAGE_DOWN		::Eis::KeyCode::PageDown
+#define EIS_KEY_HOME			::Eis::KeyCode::Home
+#define EIS_KEY_END				::Eis::KeyCode::End
+#define EIS_KEY_CAPS_LOCK		::Eis::KeyCode::CapsLock
+#define EIS_KEY_SCROLL_LOCK		::Eis::KeyCode::ScrollLock
+#define EIS_KEY_NUM_LOCK		::Eis::KeyCode::NumLock
+#define EIS_KEY_PRINT_SCREEN	::Eis::KeyCode::PrintScreen
+#define EIS_KEY_PAUSE			::Eis::KeyCode::Pause
+#define EIS_KEY_F1				::Eis::KeyCode::F1
+#define EIS_KEY_F2				::Eis::KeyCode::F2
+#define EIS_KEY_F3				::Eis::KeyCode::F3
+#define EIS_KEY_F4				::Eis::KeyCode::F4
+#define EIS_KEY_F5				::Eis::KeyCode::F5
+#define EIS_KEY_F6				::Eis::KeyCode::F6
+#define EIS_KEY_F7				::Eis::KeyCode::F7
+#define EIS_KEY_F8				::Eis::KeyCode::F8
+#define EIS_KEY_F9				::Eis::KeyCode::F9
+#define EIS_KEY_F10				::Eis::KeyCode::F10
+#define EIS_KEY_F11				::Eis::KeyCode::F11
+#define EIS_KEY_F12				::Eis::KeyCode::F12
+#define EIS_KEY_F13				::Eis::KeyCode::F13
+#define EIS_KEY_F14				::Eis::KeyCode::F14
+#define EIS_KEY_F15				::Eis::KeyCode::F15
+#define EIS_KEY_F16				::Eis::KeyCode::F16
+#define EIS_KEY_F17				::Eis::KeyCode::F17
+#define EIS_KEY_F18				::Eis::KeyCode::F18
+#define EIS_KEY_F19				::Eis::KeyCode::F19
+#define EIS_KEY_F20				::Eis::KeyCode::F20
+#define EIS_KEY_F21				::Eis::KeyCode::F21
+#define EIS_KEY_F22				::Eis::KeyCode::F22
+#define EIS_KEY_F23				::Eis::KeyCode::F23
+#define EIS_KEY_F24				::Eis::KeyCode::F24
+#define EIS_KEY_F25				::Eis::KeyCode::F25
 
 /* Keypad */
-#define EIS_KEY_KP_0			::Eis::Key::KP0
-#define EIS_KEY_KP_1			::Eis::Key::KP1
-#define EIS_KEY_KP_2			::Eis::Key::KP2
-#define EIS_KEY_KP_3			::Eis::Key::KP3
-#define EIS_KEY_KP_4			::Eis::Key::KP4
-#define EIS_KEY_KP_5			::Eis::Key::KP5
-#define EIS_KEY_KP_6			::Eis::Key::KP6
-#define EIS_KEY_KP_7			::Eis::Key::KP7
-#define EIS_KEY_KP_8			::Eis::Key::KP8
-#define EIS_KEY_KP_9			::Eis::Key::KP9
-#define EIS_KEY_KP_DECIMAL		::Eis::Key::KPDecimal
-#define EIS_KEY_KP_DIVIDE		::Eis::Key::KPDivide
-#define EIS_KEY_KP_MULTIPLY		::Eis::Key::KPMultiply
-#define EIS_KEY_KP_SUBTRACT		::Eis::Key::KPSubtract
-#define EIS_KEY_KP_ADD			::Eis::Key::KPAdd
-#define EIS_KEY_KP_ENTER		::Eis::Key::KPEnter
-#define EIS_KEY_KP_EQUAL		::Eis::Key::KPEqual
 
-#define EIS_KEY_LEFT_SHIFT		::Eis::Key::LeftShift
-#define EIS_KEY_LEFT_CONTROL	::Eis::Key::LeftControl
-#define EIS_KEY_LEFT_ALT		::Eis::Key::LeftAlt
-#define EIS_KEY_LEFT_SUPER		::Eis::Key::LeftSuper
-#define EIS_KEY_RIGHT_SHIFT		::Eis::Key::RightShift
-#define EIS_KEY_RIGHT_CONTROL	::Eis::Key::RightControl
-#define EIS_KEY_RIGHT_ALT		::Eis::Key::RightAlt
-#define EIS_KEY_RIGHT_SUPER		::Eis::Key::RightSuper
-#define EIS_KEY_MENU			::Eis::Key::Menu
+#define EIS_KEY_KP_0			::Eis::KeyCode::KP0
+#define EIS_KEY_KP_1			::Eis::KeyCode::KP1
+#define EIS_KEY_KP_2			::Eis::KeyCode::KP2
+#define EIS_KEY_KP_3			::Eis::KeyCode::KP3
+#define EIS_KEY_KP_4			::Eis::KeyCode::KP4
+#define EIS_KEY_KP_5			::Eis::KeyCode::KP5
+#define EIS_KEY_KP_6			::Eis::KeyCode::KP6
+#define EIS_KEY_KP_7			::Eis::KeyCode::KP7
+#define EIS_KEY_KP_8			::Eis::KeyCode::KP8
+#define EIS_KEY_KP_9			::Eis::KeyCode::KP9
+#define EIS_KEY_KP_DECIMAL		::Eis::KeyCode::KPDecimal
+#define EIS_KEY_KP_DIVIDE		::Eis::KeyCode::KPDivide
+#define EIS_KEY_KP_MULTIPLY		::Eis::KeyCode::KPMultiply
+#define EIS_KEY_KP_SUBTRACT		::Eis::KeyCode::KPSubtract
+#define EIS_KEY_KP_ADD			::Eis::KeyCode::KPAdd
+#define EIS_KEY_KP_ENTER		::Eis::KeyCode::KPEnter
+#define EIS_KEY_KP_EQUAL		::Eis::KeyCode::KPEqual
+
+#define EIS_KEY_LEFT_SHIFT		::Eis::KeyCode::LeftShift
+#define EIS_KEY_LEFT_CONTROL	::Eis::KeyCode::LeftControl
+#define EIS_KEY_LEFT_ALT		::Eis::KeyCode::LeftAlt
+#define EIS_KEY_LEFT_SUPER		::Eis::KeyCode::LeftSuper
+#define EIS_KEY_RIGHT_SHIFT		::Eis::KeyCode::RightShift
+#define EIS_KEY_RIGHT_CONTROL	::Eis::KeyCode::RightControl
+#define EIS_KEY_RIGHT_ALT		::Eis::KeyCode::RightAlt
+#define EIS_KEY_RIGHT_SUPER		::Eis::KeyCode::RightSuper
+#define EIS_KEY_MENU			::Eis::KeyCode::Menu

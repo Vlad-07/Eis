@@ -1,4 +1,4 @@
-#include <Eispch.h>
+#include "Eispch.h"
 #include "OrthographicCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -6,19 +6,38 @@
 
 namespace Eis
 {
-	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
+	OrthographicCamera::OrthographicCamera(float aspectRatio, float zoom)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		SetProjection(left, right, bottom, top);
+		SetProjection(aspectRatio, zoom);
 	}
 
-	void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
+	void OrthographicCamera::SetProjection(float aspectRatio, float zoom)
 	{
 		EIS_PROFILE_FUNCTION();
 
-		m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		m_ProjectionMatrix = glm::ortho(-aspectRatio * zoom, aspectRatio * zoom, -zoom, zoom, -1.0f, 1.0f);
 		RecalculateViewMatrix();
+	}
+
+	void OrthographicCamera::AddRotation(float rot)
+	{
+		m_Rotation += rot;
+		if (m_Rotation > 360.0f) m_Rotation -= 360.0f;
+		else if (m_Rotation < -360.0f) m_Rotation += 360.0f;
+		RecalculateViewMatrix();
+	}
+
+	const OrthographicCamera& OrthographicCamera::operator=(const OrthographicCamera& other)
+	{
+		m_ProjectionMatrix = other.m_ProjectionMatrix;
+		m_ViewMatrix = other.m_ViewMatrix;
+		m_ViewProjectionMatrix = other.m_ViewProjectionMatrix;
+		m_Position = other.m_Position;
+		m_Rotation = other.m_Rotation;
+
+		return *this;
 	}
 
 	void OrthographicCamera::RecalculateViewMatrix()

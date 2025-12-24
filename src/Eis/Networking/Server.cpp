@@ -1,4 +1,4 @@
-#include <Eispch.h>
+#include "Eispch.h"
 #include "Server.h"
 
 #ifdef EIS_NETWORKING_ENABLE
@@ -72,7 +72,7 @@ namespace Eis
 			return;
 		}
 
-		EIS_CORE_INFO("Server listening on port {0}", m_Port);
+		EIS_CORE_INFO("Server listening on port {}", m_Port);
 
 		m_Running = true;
 

@@ -30,7 +30,7 @@ namespace Eis
 
 			glfwSetErrorCallback([](int error_code, const char* description)
 			{
-				EIS_CORE_ERROR("OpenGL Error: {0} ({1})", error_code, description);
+				EIS_CORE_ERROR("OpenGL Error: {} ({})", error_code, description);
 			});
 		}
 
@@ -43,7 +43,7 @@ namespace Eis
 		m_Data.Iconified = false;
 		m_Data.VSync = true;
 
-		EIS_CORE_INFO("Initializing '{0}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
+		EIS_CORE_INFO("Initializing '{}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
@@ -56,7 +56,7 @@ namespace Eis
 
 			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-			EIS_CORE_ASSERT(m_Window, "Failed to create {0} window!", m_Data.Title);
+			EIS_CORE_ASSERT(m_Window, "Failed to create {} window!", m_Data.Title);
 
 			s_WindowCount++;
 		}
@@ -238,7 +238,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		EIS_CORE_TRACE("Destroyed '{0}' window", m_Data.Title);
+		EIS_CORE_TRACE("Destroyed '{}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
 		s_WindowCount--;
 

@@ -20,7 +20,7 @@ namespace Eis
 			return CreateScope<OpenGLES2Context>(static_cast<GLFWwindow*>(window));
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
 			return nullptr;
 		}
     }

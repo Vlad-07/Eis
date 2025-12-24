@@ -14,12 +14,10 @@
 
 namespace Eis
 {
-	using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
-
 	struct ProfileResult
 	{
 		std::string Name;
-		FloatingPointMicroseconds Start;
+		std::chrono::duration<double, std::micro> Start;
 		std::chrono::microseconds ElapsedTime;
 		std::thread::id ThreadID;
 	};
@@ -44,7 +42,7 @@ namespace Eis
 				m_CurrentSession = std::make_shared<InstrumentationSession>(InstrumentationSession{ name });
 			}
 			else if (Log::GetCoreLogger())
-				EIS_CORE_ERROR("Instrumentor could not open results file '{0}'!", filePath);
+				EIS_CORE_ERROR("Instrumentor could not open results file '{}'!", filePath);
 		}
 		void EndSession()
 		{
@@ -119,7 +117,7 @@ namespace Eis
 			const auto endTimepoint = std::chrono::steady_clock::now();
 			const auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch()
 									- std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch();
-			const auto highResStart = FloatingPointMicroseconds{ m_StartTimepoint.time_since_epoch() };
+			const auto highResStart = std::chrono::duration<double, std::micro>{ m_StartTimepoint.time_since_epoch() };
 
 			Instrumentor::Get().WriteProfile({ m_Name, highResStart, elapsedTime, std::this_thread::get_id() });
 

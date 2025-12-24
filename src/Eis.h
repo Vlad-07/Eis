@@ -26,12 +26,7 @@
 // Rendering
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
-
 #include "Eis/Rendering/Objects/OrthoCameraController.h"
 
 #include "Eis/Rendering/Objects/Shader.h"
-#include "Eis/Rendering/Objects/Buffers.h"
 #include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Rendering/Objects/VertexArray.h"
-
-#include "Eis/Rendering/Objects/OrthographicCamera.h"

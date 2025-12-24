@@ -1,4 +1,4 @@
-#include <Eispch.h>
+#include "Eispch.h"
 #include "Client.h"
 
 #ifdef EIS_NETWORKING_ENABLE
@@ -120,16 +120,16 @@ namespace Eis
 			{
 				// should distinguish between a timeout, a rejected connection, or some other transport problem
 				m_ConnectionStatus = ConnectionFailed;
-				EIS_CORE_WARN("Could not connect to remote host. {0}", m_ConnectionDebugMessage);
+				EIS_CORE_WARN("Could not connect to remote host. {}", m_ConnectionDebugMessage);
 			}
 			else if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
 			{
-				EIS_CORE_WARN("Lost connection with remote host. {0}", m_ConnectionDebugMessage);
+				EIS_CORE_WARN("Lost connection with remote host. {}", m_ConnectionDebugMessage);
 			}
 			else
 			{
 				// should check reason code for a normal disconnection
-				EIS_CORE_INFO("Disconnected from host. {0}", m_ConnectionDebugMessage);
+				EIS_CORE_INFO("Disconnected from host. {}", m_ConnectionDebugMessage);
 			}
 
 			m_Interface->CloseConnection(m_Connection, 0, nullptr, false);

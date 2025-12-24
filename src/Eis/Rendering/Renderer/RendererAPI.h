@@ -2,11 +2,11 @@
 
 #include <glm/glm.hpp>
 
-#include "Eis/Rendering/Objects/VertexArray.h"
-
 
 namespace Eis
 {
+	class VertexArray;
+
 	class RendererAPI
 	{
 	public:

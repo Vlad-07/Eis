@@ -1,19 +1,26 @@
 #pragma once
 
-#include "Eis/Input/Input.h"
 #include <glm/glm.hpp>
+#include "Eis/Input/InputContext.h"
 
+
+struct GLFWwindow;
 
 namespace Eis
 {
-	class GLFWInput : public Input
+	class GLFWInput : public InputContext
 	{
-	protected:
-		virtual bool IsKeyPressedImpl(KeyCode keycode) override;
+	public:
+		GLFWInput(void* window) : m_Window(static_cast<GLFWwindow*>(window)) {}
+		virtual ~GLFWInput() = default;
 
-		virtual bool IsMouseButtonPressedImpl(MouseCode button) override;
-		virtual glm::vec2 GetMousePosImpl() override;
-		virtual float GetMouseXImpl() override;
-		virtual float GetMouseYImpl() override;
+
+		virtual bool IsKeyPressedImpl(KeyCode keycode) const override;
+
+		virtual bool IsMouseButtonPressedImpl(MouseCode button) const override;
+		virtual glm::vec2 GetMousePosImpl() const override;
+
+	private:
+		GLFWwindow* m_Window = nullptr;
 	};
 }

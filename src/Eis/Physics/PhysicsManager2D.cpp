@@ -1,6 +1,7 @@
-#include <Eispch.h>
+#include "Eispch.h"
 #include "PhysicsManager2D.h"
-#include <Eis/Rendering/Renderer/Renderer2D.h>
+
+#include "Eis/Rendering/Renderer/Renderer2D.h"
 
 
 namespace Eis
@@ -86,7 +87,7 @@ namespace Eis
 	{
 		if (id >= s_Instance->m_Bodies.size())
 		{
-			EIS_CORE_ERROR("Invalid body id requested: {0}!", id);
+			EIS_CORE_ERROR("Invalid body id requested: {}!", id);
 			static Rigidbody2D b({}, 0, 0, 0);
 			return b;
 		}

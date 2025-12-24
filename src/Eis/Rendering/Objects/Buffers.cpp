@@ -17,7 +17,7 @@ namespace Eis
 			return CreateRef<OpenGLVertexBuffer>(size);
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
 			return nullptr;
 		}
 	}
@@ -31,7 +31,7 @@ namespace Eis
 			return CreateRef<OpenGLVertexBuffer>(vertices, size);
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
 			return nullptr;
 		}
 	}
@@ -47,7 +47,7 @@ namespace Eis
 			return CreateRef<OpenGLIndexBuffer>(indices, count);
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API! ({0})", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
 			return nullptr;
 		}
 	}

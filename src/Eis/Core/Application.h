@@ -8,13 +8,13 @@
 #include "Eis/Events/Event.h"
 #include "Eis/Events/ApplicationEvent.h"
 
-#include "Eis/ImGui/ImGuiLayer.h"
-
 
 int main(int argc, char** args);
 
 namespace Eis
 {
+	class ImGuiLayer;
+
 	class Application
 	{
 	public:
@@ -23,9 +23,10 @@ namespace Eis
 
 
 		// Engine only
+
 		static Application& Get() { return *s_Instance; }
-		// Engine only
 		static Window& GetWindow() { return *s_Instance->m_Window; }
+		static Input& GetInput() { return s_Instance->m_Window->GetInput(); }
 
 
 		void QueueTransition(uint32_t id);

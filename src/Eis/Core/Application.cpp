@@ -3,8 +3,9 @@
 
 #include "Eis/Core/Core.h"
 #include "Eis/Core/Random.h"
-#include "Eis/Input/Input.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
+
+#include "Eis/ImGui/ImGuiLayer.h"
 
 
 namespace Eis
@@ -30,6 +31,7 @@ namespace Eis
 		EisContext context{};
 		context.m_App = this;
 		context.m_Window = m_Window.get();
+		context.m_Input = &m_Window->GetInput();
 		m_LayerLib.SetContext(context);
 
 		// Init ImGui overlay

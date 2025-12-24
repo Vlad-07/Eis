@@ -32,7 +32,7 @@ namespace Eis
 		auto count = lastDot == std::string::npos ? filePath.size() - lastSlash : lastDot - lastSlash;
 		m_Name = filePath.substr(lastSlash, count);
 
-		EIS_CORE_INFO("Compiling shader: {0}", m_Name);
+		EIS_CORE_INFO("Compiling shader: {}", m_Name);
 
 		std::string source = ReadFile(filePath);
 		auto shaderSources = PreProcess(source);
@@ -77,10 +77,10 @@ namespace Eis
 				in.close();
 			}
 			else
-				EIS_CORE_ERROR("Could not read from file '{0}'", filePath);
+				EIS_CORE_ERROR("Could not read from file '{}'", filePath);
 		}
 		else
-			EIS_CORE_WARN("Could not open file '{0}'", filePath);
+			EIS_CORE_WARN("Could not open file '{}'", filePath);
 
 		return result;
 	}
@@ -146,7 +146,7 @@ namespace Eis
 
 				glDeleteShader(shader);
 
-				EIS_CORE_ERROR("{0}", infoLog.data());
+				EIS_CORE_ERROR("{}", infoLog.data());
 				EIS_CORE_ASSERT(false, "Shader compilation failure!");
 				break;
 			}
@@ -172,7 +172,7 @@ namespace Eis
 			for (auto id : glShaderIDs)
 				glDeleteShader(id);
 
-			EIS_CORE_ERROR("{0}", infoLog.data());
+			EIS_CORE_ERROR("{}", infoLog.data());
 			EIS_CORE_ASSERT(false, "Shader link failure!");
 			return;
 		}

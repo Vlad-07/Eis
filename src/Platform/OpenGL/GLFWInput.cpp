@@ -8,37 +8,25 @@
 
 namespace Eis
 {
-	bool GLFWInput::IsKeyPressedImpl(KeyCode keycode)
+	bool GLFWInput::IsKeyPressedImpl(KeyCode keycode) const
 	{
-		auto window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
+		auto state = glfwGetKey(m_Window, static_cast<int32_t>(keycode));
 
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool GLFWInput::IsMouseButtonPressedImpl(MouseCode button)
+	bool GLFWInput::IsMouseButtonPressedImpl(MouseCode button) const
 	{
-		auto window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
+		auto state = glfwGetMouseButton(m_Window, static_cast<int32_t>(button));
 
 		return state == GLFW_PRESS;
 	}
 
-	glm::vec2 GLFWInput::GetMousePosImpl()
+	glm::vec2 GLFWInput::GetMousePosImpl() const
 	{
-		auto window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		double xPos, yPos;
-		glfwGetCursorPos(window, &xPos, &yPos);
+		glfwGetCursorPos(m_Window, &xPos, &yPos);
 
 		return glm::vec2(static_cast<float>(xPos), static_cast<float>(yPos)) * Application::GetWindow().GetScale();
-	}
-
-	float GLFWInput::GetMouseXImpl()
-	{
-		return GetMousePosImpl().x;
-	}
-	float GLFWInput::GetMouseYImpl()
-	{
-		return GetMousePosImpl().y;
 	}
 }

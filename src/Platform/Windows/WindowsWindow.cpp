@@ -28,7 +28,7 @@ namespace Eis
 
 			glfwSetErrorCallback([](int error_code, const char* description)
 			{
-				EIS_CORE_ERROR("OpenGL Error: {0} ({1})", error_code, description);
+				EIS_CORE_ERROR("OpenGL Error: {} ({})", error_code, description);
 			});
 		}
 
@@ -50,7 +50,7 @@ namespace Eis
 
 			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-			EIS_CORE_ASSERT(m_Window, "Failed to create {0} window!", m_Data.Title);
+			EIS_CORE_ASSERT(m_Window, "Failed to create {} window!", m_Data.Title);
 
 			s_WindowCount++;
 		}
@@ -212,13 +212,17 @@ namespace Eis
 				MouseScrolledEvent event(static_cast<float>(xoffset), static_cast<float>(yoffset));
 				data.EventCallback(event);
 			});
+
+		// Init input
+
+		m_Input.Init(m_Window);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
 		EIS_PROFILE_FUNCTION();
 
-		EIS_CORE_TRACE("Destroyed '{0}' window", m_Data.Title);
+		EIS_CORE_TRACE("Destroyed '{}' window", m_Data.Title);
 		glfwDestroyWindow(m_Window);
 		s_WindowCount--;
 

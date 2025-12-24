@@ -1,23 +1,42 @@
 #include "Eispch.h"
+#include "Input.h"
 
-#include "Eis/Input/Input.h"
-
-#if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
-    #include "Platform/OpenGL/GLFWInput.h"
-#endif
+#include "Eis/Input/InputContext.h"
 
 
 namespace Eis
 {
-    Scope<Input> Input::s_Instance = Input::Create();
+	Input::Input() = default;
+	Input::~Input() = default;
 
-    Scope<Input> Eis::Input::Create()
-    {
-#if defined(EIS_PLATFORM_WINDOWS) || defined(EIS_PLATFORM_WEB)
-        return CreateScope<GLFWInput>();
-#else
-        #error Unknown platform!
-        return nullptr;
-#endif
-    }
+	void Input::Init(void* window)
+	{
+		EIS_CORE_ASSERT(window, "Invalid window handle!");
+		m_Context = InputContext::Create(window);
+	}
+
+
+	bool Input::IsKeyPressed(KeyCode key) const
+	{
+		return m_Context->IsKeyPressedImpl(key);
+	}
+
+	bool Input::IsMouseButtonPressed(MouseCode button) const
+	{
+		return m_Context->IsMouseButtonPressedImpl(button);
+	}
+
+	glm::vec2 Input::GetMousePos() const
+	{
+		return m_Context->GetMousePosImpl();
+	}
+
+	float Input::GetMouseX() const
+	{
+		return m_Context->GetMousePosImpl().x;
+	}
+	float Input::GetMouseY() const
+	{
+		return m_Context->GetMousePosImpl().y;
+	}
 }

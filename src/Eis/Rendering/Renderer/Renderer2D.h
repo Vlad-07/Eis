@@ -2,21 +2,21 @@
 
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 
-#include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
 namespace Eis
 {
+	class Shader;
+
 	class Renderer2D
 	{
 	public:
+	// Only called by engine
+
 		static void Init();
 		static void Shutdown();
-
-		static void BeginScene(const OrthographicCamera& camera);
-		static void EndScene();
 
 		static void StartBatch();
 		static void StartBatchQuads();
@@ -32,9 +32,19 @@ namespace Eis
 		static void FlushCircles();
 		static void FlushLines();
 
-		// Primitives
+		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
+
+		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+
+	// Called by app
+
+		static void BeginScene(const OrthographicCamera& camera);
+		static void EndScene();
+
+	// Primitives
 
 		// Quads
+
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 
@@ -61,7 +71,8 @@ namespace Eis
 		static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color);
 
 
-		// Stats
+	// Stats
+
 		struct Statistics
 		{
 			uint32_t DrawCalls = 0;
@@ -76,7 +87,8 @@ namespace Eis
 		static const Statistics& GetStats();
 		static void ResetStats();
 
-		// Commands
+	// Commands
+
 		static float GetLineWidth();
 		static void  SetLineWidth(float width);
 
@@ -84,10 +96,6 @@ namespace Eis
 		static void SetClearColor(const glm::vec4& col) { RenderCommands::SetClearColor(col); }
 
 		static void Clear() { RenderCommands::Clear(); }
-
-		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
-
-		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 		// HACK: hijack quad shader for custom shaders
 		// TODO: custom shader support
