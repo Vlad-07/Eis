@@ -43,8 +43,6 @@ namespace Eis
 		m_Data.Iconified = false;
 		m_Data.VSync = true;
 
-		EIS_CORE_INFO("Initializing '{}' window ({1}, {2}, {3})", m_Data.Title, m_Data.Width, m_Data.Height, m_Data.VSync);
-
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -141,7 +139,7 @@ namespace Eis
 					data.EventCallback(event);
 				}
 
-				return false; // should it be consumed?
+				return false;
 			});
 		// glfwSetWindowCloseCallback();
 		emscripten_set_beforeunload_callback((void*)&m_Data, [](int eventType, const void*, void* userData) -> const char*
@@ -232,6 +230,11 @@ namespace Eis
 			{
 				return mods == 0 && action == GLFW_PRESS && key == GLFW_KEY_F12;
 			});
+
+
+		// Init input
+
+		m_Input.Init(m_Window);
 	}
 
 	WebWindow::~WebWindow()

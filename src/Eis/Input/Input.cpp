@@ -18,16 +18,19 @@ namespace Eis
 
 	bool Input::IsKeyPressed(KeyCode key) const
 	{
+		EIS_CORE_ASSERT(m_Context, "Input context not initialized!");
 		return m_Context->IsKeyPressedImpl(key);
 	}
 
 	bool Input::IsMouseButtonPressed(MouseCode button) const
 	{
+		EIS_CORE_ASSERT(m_Context, "Input context not initialized!");
 		return m_Context->IsMouseButtonPressedImpl(button);
 	}
 
 	glm::vec2 Input::GetMousePos() const
 	{
+		EIS_CORE_ASSERT(m_Context, "Input context not initialized!");
 		return m_Context->GetMousePosImpl();
 	}
 

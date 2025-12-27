@@ -4,7 +4,7 @@
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Platform/OpenGL/OpenGLVertexArray.h"
-#include "Platform/OpenGLES2/OpenGLES2VertexArray.h"
+#include "Platform/WebGL/WebGLVertexArray.h"
 
 
 namespace Eis
@@ -17,7 +17,7 @@ namespace Eis
 			return CreateRef<OpenGLVertexArray>();
 
 		case RendererAPI::API::OpenGLES2:
-			return CreateRef<OpenGLES2VertexArray>(); // TODO: check vao extension
+			return CreateRef<WebGLVertexArray>(); // TODO: check vao extension
 
 		default:
 			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());

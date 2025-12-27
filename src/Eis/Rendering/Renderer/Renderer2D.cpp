@@ -11,6 +11,12 @@
 
 namespace Eis
 {
+	struct TriangleVertex
+	{
+		glm::vec3 Position;
+		glm::vec4 Color;
+	};
+
 	struct QuadVertex
 	{
 		glm::vec3 Position;
@@ -37,15 +43,19 @@ namespace Eis
 
 	struct Renderer2DData
 	{
-		static const uint32_t MaxQuads        = 10000;
+		static const uint32_t MaxTriangles   = 10'000;
+		static const uint32_t MaxTriVertices = MaxTriangles * 3;
+		static const uint32_t MaxTriIndices  = MaxTriangles * 3;
+
+		static const uint32_t MaxQuads        = 10'000;
 		static const uint32_t MaxQuadVertices = MaxQuads * 4;
 		static const uint32_t MaxQuadIndices  = MaxQuads * 6;
 
-		static const uint32_t MaxCircles         = 10000;
+		static const uint32_t MaxCircles        = 10'000;
 		static const uint32_t MaxCircleVertices = MaxCircles * 4;
 		static const uint32_t MaxCircleIndices  = MaxCircles * 6;
 
-		static const uint32_t MaxLines        = 10000;
+		static const uint32_t MaxLines        = 10'000;
 		static const uint32_t MaxLineVertices = MaxLines * 2;
 
 	#ifndef EIS_PLATFORM_WEB // HACK: check max tex slots at runtime
@@ -53,6 +63,10 @@ namespace Eis
 	#else
 		static const uint32_t MaxTextureSlots = 16;
 	#endif
+
+		Ref<VertexArray> TriangleVertexArray;
+		Ref<VertexBuffer> TriangleVertexBuffer;
+		Ref<Shader> TriangleShader;
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
@@ -68,6 +82,10 @@ namespace Eis
 
 		Ref<Texture2D> WhiteTexture;
 
+		uint32_t TriangleIndexCount = 0;
+		TriangleVertex* TriangleVertexBufferBase = nullptr;
+		TriangleVertex* TriangleVertexBufferPtr = nullptr;
+
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
@@ -76,7 +94,7 @@ namespace Eis
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
 
-		uint32_t LineVertexCount = 0;
+		uint32_t LineIndexCount = 0;
 		LineVertex* LineVertexBufferBase = nullptr;
 		LineVertex* LineVertexBufferPtr = nullptr;
 
@@ -99,15 +117,38 @@ namespace Eis
 		RenderCommands::Init();
 
 
+		// Init Triangles
+
+		s_Data.TriangleVertexBuffer = VertexBuffer::Create(s_Data.MaxTriVertices * sizeof(TriangleVertex));
+		s_Data.TriangleVertexBuffer->SetLayout({
+				{ ShaderDataType::Float3, "a_Position"},
+				{ ShaderDataType::Float4, "a_Color"}
+			});
+
+		s_Data.TriangleVertexArray = VertexArray::Create();
+		s_Data.TriangleVertexArray->AddVertexBuffer(s_Data.TriangleVertexBuffer);
+
+		uint32_t* triIndices = new uint32_t[s_Data.MaxTriVertices];
+		for (uint32_t i = 0, off = 0; i < s_Data.MaxTriIndices; i++)
+			triIndices[i] = i;
+
+		Ref<IndexBuffer> triIb = IndexBuffer::Create(triIndices, s_Data.MaxTriIndices);
+		s_Data.TriangleVertexArray->SetIndexBuffer(triIb);
+		delete[] triIndices;
+
+		s_Data.TriangleVertexBufferBase = new TriangleVertex[s_Data.MaxTriVertices];
+
+
 		// Init Quads
+
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxQuadVertices * sizeof(QuadVertex));
 		s_Data.QuadVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
-			{ ShaderDataType::Float,  "a_TexIndex" },
-			{ ShaderDataType::Float,  "a_TilingFactor" }
-		});
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float4, "a_Color" },
+				{ ShaderDataType::Float2, "a_TexCoord" },
+				{ ShaderDataType::Float,  "a_TexIndex" },
+				{ ShaderDataType::Float,  "a_TilingFactor" }
+			});
 
 		s_Data.QuadVertexArray = VertexArray::Create();
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -133,14 +174,15 @@ namespace Eis
 
 
 		// Init Circles
+
 		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxCircleVertices * sizeof(CircleVertex));
 		s_Data.CircleVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_WorldPosition" },
-			{ ShaderDataType::Float3, "a_LocalPosition" },
-			{ ShaderDataType::Float4, "a_Color" },
-			{ ShaderDataType::Float,  "a_Thickness" },
-			{ ShaderDataType::Float,  "a_Fade" }
-		});
+				{ ShaderDataType::Float3, "a_WorldPosition" },
+				{ ShaderDataType::Float3, "a_LocalPosition" },
+				{ ShaderDataType::Float4, "a_Color" },
+				{ ShaderDataType::Float,  "a_Thickness" },
+				{ ShaderDataType::Float,  "a_Fade" }
+			});
 
 		s_Data.CircleVertexArray = VertexArray::Create();
 		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
@@ -150,6 +192,7 @@ namespace Eis
 
 
 		// Init Lines
+
 		s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxLineVertices * sizeof(LineVertex));
 		s_Data.LineVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
@@ -163,14 +206,20 @@ namespace Eis
 
 
 		// Init WhiteTexture
+
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTexData = 0xffffffff;
 		s_Data.WhiteTexture->SetData(&whiteTexData, sizeof(whiteTexData));
 
+
 		// Init Shaders
+
 		int samplers[s_Data.MaxTextureSlots];
 		for (int i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
+
+		s_Data.TriangleShader = Shader::Create("assets/shaders/Triangle.glsl");
+		s_Data.TriangleShader->Bind();
 
 		s_Data.QuadShader = Shader::Create("assets/shaders/Quad.glsl");
 		s_Data.QuadShader->Bind();
@@ -178,7 +227,6 @@ namespace Eis
 
 		s_Data.CircleShader = Shader::Create("assets/shaders/Circle.glsl");
 		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetInt("u_Texture", 0);
 
 		s_Data.LineShader = Shader::Create("assets/shaders/Line.glsl");
 		s_Data.LineShader->Bind();
@@ -207,6 +255,9 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
+		s_Data.TriangleShader->Bind();
+		s_Data.TriangleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
+
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
@@ -229,11 +280,17 @@ namespace Eis
 
 	void Renderer2D::StartBatch()
 	{
+		StartBatchTris();
 		StartBatchQuads();
 		StartBatchCircles();
 		StartBatchLines();
 	}
 
+	void Renderer2D::StartBatchTris()
+	{
+		s_Data.TriangleIndexCount = 0;
+		s_Data.TriangleVertexBufferPtr = s_Data.TriangleVertexBufferBase;
+	}
 	void Renderer2D::StartBatchQuads()
 	{
 		s_Data.QuadIndexCount = 0;
@@ -247,25 +304,8 @@ namespace Eis
 	}
 	void Renderer2D::StartBatchLines()
 	{
-		s_Data.LineVertexCount = 0;
+		s_Data.LineIndexCount = 0;
 		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
-	}
-
-
-	void Renderer2D::NextBatchQuads()
-	{
-		FlushQuads();
-		StartBatchQuads();
-	}
-	void Renderer2D::NextBatchCircles()
-	{
-		FlushCircles();
-		StartBatchCircles();
-	}
-	void Renderer2D::NextBatchLines()
-	{
-		FlushLines();
-		StartBatchLines();
 	}
 
 
@@ -273,11 +313,23 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
+		FlushTris();
 		FlushQuads();
 		FlushCircles();
 		FlushLines();
 	}
 
+	void Renderer2D::FlushTris()
+	{
+		if (s_Data.TriangleIndexCount == 0)
+			return;
+
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TriangleVertexBufferPtr - (uint8_t*)s_Data.TriangleVertexBufferBase);
+		s_Data.TriangleVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
+
+		s_Data.TriangleShader->Bind();
+		RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, dataSize);
+	}
 	void Renderer2D::FlushQuads()
 	{
 		if (s_Data.QuadIndexCount == 0)
@@ -310,7 +362,7 @@ namespace Eis
 	}
 	void Renderer2D::FlushLines()
 	{
-		if (s_Data.LineVertexCount == 0)
+		if (s_Data.LineIndexCount == 0)
 			return;
 
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
@@ -318,12 +370,88 @@ namespace Eis
 
 		s_Data.LineShader->Bind();
 		RenderCommands::SetLineWidth(s_Data.LineWidth);
-		RenderCommands::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+		RenderCommands::DrawLines(s_Data.LineVertexArray, s_Data.LineIndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
 
 
+	void Renderer2D::NextBatchTris()
+	{
+		FlushTris();
+		StartBatchTris();
+	}
+	void Renderer2D::NextBatchQuads()
+	{
+		FlushQuads();
+		StartBatchQuads();
+	}
+	void Renderer2D::NextBatchCircles()
+	{
+		FlushCircles();
+		StartBatchCircles();
+	}
+	void Renderer2D::NextBatchLines()
+	{
+		FlushLines();
+		StartBatchLines();
+	}
+
+
+	void Renderer2D::DrawTriangle(const glm::mat3& vertices, const glm::vec4& color)
+	{
+		DrawTriangle(vertices, glm::mat3x4(color, color, color));
+	}
+	void Renderer2D::DrawTriangle(const glm::mat3& vertices, const glm::mat3x4& colors)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		if (s_Data.TriangleIndexCount >= s_Data.MaxTriVertices)
+			NextBatchTris();
+
+
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			s_Data.TriangleVertexBufferPtr->Position = vertices[i];
+			s_Data.TriangleVertexBufferPtr->Color = colors[i];
+
+			s_Data.TriangleVertexBufferPtr++;
+		}
+
+		s_Data.TriangleIndexCount += 3;
+
+		s_Data.Stats.TriangleCount++;
+	}
+
+	void Renderer2D::DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::vec4& color)
+	{
+		DrawRotatedTriangle(vertices, rotation, glm::mat3x4(color, color, color));
+	}
+	void Renderer2D::DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::mat3x4& colors)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		if (s_Data.TriangleIndexCount >= s_Data.MaxTriVertices)
+			NextBatchTris();
+
+		const glm::vec3 center = (vertices[0] + vertices[1] + vertices[2]) / 3.0f;
+
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), center)
+									* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+									* glm::translate(glm::mat4(1.0f), -center);
+
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			s_Data.TriangleVertexBufferPtr->Position = transform * glm::vec4(vertices[i], 1.0f);
+			s_Data.TriangleVertexBufferPtr->Color = colors[i];
+
+			s_Data.TriangleVertexBufferPtr++;
+		}
+
+		s_Data.TriangleIndexCount += 3;
+
+		s_Data.Stats.TriangleCount++;
+	}
 
 
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -337,20 +465,22 @@ namespace Eis
 		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();
 
+
 		constexpr float textureIndex = 0.0f, // White Texture
 						tilingFactor = 1.0f;
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-							* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+									* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		for (uint32_t i = 0; i < 4; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = color;
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -370,37 +500,22 @@ namespace Eis
 		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();
 
+
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
-		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
-			{
-				textureIndex = (float)i;
-				break;
-			}
-		}
-		if (textureIndex == 0.0f)
-		{
-			if (s_Data.TextureSlotIndex >= s_Data.MaxTextureSlots)
-				NextBatchQuads();
+		const float textureIndex = GetTextureIndex(texture);
 
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-			s_Data.TextureSlotIndex++;
-		}
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+									* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-							* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-
-		for (uint32_t i = 0; i < 4; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = tint;
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
+
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -421,21 +536,23 @@ namespace Eis
 		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();
 
+
 		constexpr float textureIndex = 0.0f, // White Texture
 						tilingFactor = 1.0f;
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-							* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
-							* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+									* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+									* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		for (uint32_t i = 0; i < 4; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = color;
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -455,38 +572,23 @@ namespace Eis
 		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();
 
+
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		float textureIndex = 0.0f;
-		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
-		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
-			{
-				textureIndex = (float)i;
-				break;
-			}
-		}
-		if (textureIndex == 0.0f)
-		{
-			if (s_Data.TextureSlotIndex >= s_Data.MaxTextureSlots)
-				NextBatchQuads();
+		const float textureIndex = GetTextureIndex(texture);
 
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-			s_Data.TextureSlotIndex++;
-		}
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+									* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+									* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-							* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
-							* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-
-		for (uint32_t i = 0; i < 4; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = tint;
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
+
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -508,16 +610,18 @@ namespace Eis
 		if (s_Data.CircleIndexCount >= s_Data.MaxCircleIndices)
 			NextBatchCircles();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-							* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		for (uint32_t i = 0; i < 4; i++)
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+									* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
 			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
 			s_Data.CircleVertexBufferPtr->Color = color;
 			s_Data.CircleVertexBufferPtr->Thickness = thickness;
 			s_Data.CircleVertexBufferPtr->Fade = fade;
+
 			s_Data.CircleVertexBufferPtr++;
 		}
 
@@ -534,8 +638,8 @@ namespace Eis
 	}
 	void Renderer2D::DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color)
 	{
-		glm::vec3 offset = glm::rotate(glm::vec3(0.0f, length, 0.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::vec3 end = start + offset;
+		const glm::vec3 offset = glm::rotate(glm::vec3(0.0f, length, 0.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+		const glm::vec3 end = start + offset;
 		DrawLine(start, end, color);
 	}
 	void Renderer2D::DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color)
@@ -546,8 +650,9 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		if (s_Data.LineVertexCount >= s_Data.MaxLineVertices)
+		if (s_Data.LineIndexCount >= s_Data.MaxLineVertices)
 			NextBatchLines();
+
 
 		s_Data.LineVertexBufferPtr->Position = start;
 		s_Data.LineVertexBufferPtr->Color = color;
@@ -557,18 +662,14 @@ namespace Eis
 		s_Data.LineVertexBufferPtr->Color = color;
 		s_Data.LineVertexBufferPtr++;
 
-		s_Data.LineVertexCount += 2;
+		s_Data.LineIndexCount += 2;
 
 		s_Data.Stats.LineCount++;
 	}
 
 
 
-	float Renderer2D::GetLineWidth()
-	{
-		return s_Data.LineWidth;
-	}
-	void  Renderer2D::SetLineWidth(float width)
+	void Renderer2D::SetLineWidth(float width)
 	{
 		s_Data.LineWidth = width;
 	}
@@ -585,5 +686,29 @@ namespace Eis
 	Ref<Shader> Renderer2D::GetQuadShader()
 	{
 		return s_Data.QuadShader;
+	}
+
+
+	float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture)
+	{
+		for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+		{
+			if (*s_Data.TextureSlots[i] == *texture)
+				return static_cast<float>(i);
+		}
+
+		return PushTexture(texture);
+	}
+
+	float Renderer2D::PushTexture(const Ref<Texture2D>& texture)
+	{
+		if (s_Data.TextureSlotIndex >= s_Data.MaxTextureSlots)
+			NextBatchQuads();
+
+		const float textureIndex = static_cast<float>(s_Data.TextureSlotIndex);
+		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+		s_Data.TextureSlotIndex++;
+
+		return textureIndex;
 	}
 }

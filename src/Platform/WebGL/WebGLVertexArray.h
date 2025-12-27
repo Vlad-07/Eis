@@ -6,11 +6,11 @@
 namespace Eis
 {
 	// Emulation of VAOs
-	class OpenGLES2VertexArray : public VertexArray
+	class WebGLVertexArray : public VertexArray
 	{
 	public:
-		OpenGLES2VertexArray();
-		virtual ~OpenGLES2VertexArray();
+		WebGLVertexArray();
+		virtual ~WebGLVertexArray();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

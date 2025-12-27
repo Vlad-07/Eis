@@ -72,7 +72,7 @@ namespace Eis
 		// Might not be the best thing to do
 		struct ActiveLayerData
 		{
-			Layer* LayerPtr; // Tehnically unsfe
+			Layer* LayerPtr; // Tehnically unsafe
 			std::string Name;
 			int32_t Id;
 		} m_ActiveLayer;

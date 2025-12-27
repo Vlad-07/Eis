@@ -34,7 +34,7 @@ namespace Eis
 
 		static void SolveCollisionBasic(const CollisionManifold2D& manifold)
 		{
-			// HACK: for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
+			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
 			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
 						&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
 			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
@@ -60,7 +60,7 @@ namespace Eis
 		/*
 		static void SolveCollisionRotation(const CollisionManifold2D& manifold)
 		{
-			// HACK: for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
+			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
 			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
 						&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
 			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
@@ -119,7 +119,7 @@ namespace Eis
 
 		static void SolveCollisionRotationFriction(const CollisionManifold2D& manifold)
 		{
-			// HACK: for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
+			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
 			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
 				&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
 			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;

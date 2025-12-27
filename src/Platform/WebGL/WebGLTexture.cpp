@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "OpenGLES2Texture.h"
+#include "WebGLTexture.h"
 
 #include <glad/glad.h>
 #include <stb_image.h>
@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)
+	WebGLTexture2D::WebGLTexture2D(const std::string& path)
 		: m_Path(path)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -20,7 +20,7 @@ namespace Eis
 		stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data = nullptr;
 		{
-			EIS_PROFILE_RENDERER_SCOPE("stbi_load - OpenGLES2Texture2D::OpenGLES2Texture2D(const std::string& path)");
+			EIS_PROFILE_RENDERER_SCOPE("stbi_load - WebGLTexture2D::WebGLTexture2D(const std::string& path)");
 			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
 
@@ -64,7 +64,7 @@ namespace Eis
 		stbi_image_free(data);
 	}
 
-	OpenGLES2Texture2D::OpenGLES2Texture2D(uint32_t width, uint32_t height)
+	WebGLTexture2D::WebGLTexture2D(uint32_t width, uint32_t height)
 		:m_Width(width), m_Height(height)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -84,7 +84,7 @@ namespace Eis
 		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
 	}
 
-	OpenGLES2Texture2D::~OpenGLES2Texture2D()
+	WebGLTexture2D::~WebGLTexture2D()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -92,7 +92,7 @@ namespace Eis
 	}
 
 
-	void OpenGLES2Texture2D::SetData(void* data, uint32_t size)
+	void WebGLTexture2D::SetData(void* data, uint32_t size)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -101,7 +101,7 @@ namespace Eis
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLES2Texture2D::Bind(uint32_t slot) const
+	void WebGLTexture2D::Bind(uint32_t slot) const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -109,7 +109,7 @@ namespace Eis
 		glBindTexture(GL_TEXTURE_2D, m_RendererId);
 	}
 
-	void OpenGLES2Texture2D::Unbind(uint32_t slot) const
+	void WebGLTexture2D::Unbind(uint32_t slot) const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -117,9 +117,9 @@ namespace Eis
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	bool OpenGLES2Texture2D::operator==(const Texture& other) const
+	bool WebGLTexture2D::operator==(const Texture& other) const
 	{
-		auto* p = dynamic_cast<OpenGLES2Texture2D*>((Texture*)&other);
+		auto* p = dynamic_cast<WebGLTexture2D*>((Texture*)&other);
 		if (p == nullptr)
 			return false;
 		return m_RendererId == p->m_RendererId;

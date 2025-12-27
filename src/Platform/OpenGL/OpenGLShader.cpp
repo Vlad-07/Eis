@@ -19,7 +19,7 @@ namespace Eis
 	}
 
 
-	OpenGLShader::OpenGLShader(const std::string& filePath) : m_RendererId(0)
+	OpenGLShader::OpenGLShader(const std::string& filePath)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -40,9 +40,11 @@ namespace Eis
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
-		: m_RendererId(0), m_Name(name)
+		: m_Name(name)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
+
+		EIS_CORE_INFO("Compiling shader: {}", m_Name);
 
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vsSrc;

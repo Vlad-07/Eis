@@ -13,35 +13,19 @@ namespace Eis
 	class Renderer2D
 	{
 	public:
-	// Only called by engine
-
-		static void Init();
-		static void Shutdown();
-
-		static void StartBatch();
-		static void StartBatchQuads();
-		static void StartBatchCircles();
-		static void StartBatchLines();
-
-		static void NextBatchQuads();
-		static void NextBatchCircles();
-		static void NextBatchLines();
-
-		static void Flush();
-		static void FlushQuads();
-		static void FlushCircles();
-		static void FlushLines();
-
-		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
-
-		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-
 	// Called by app
 
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 
-	// Primitives
+		// Triangles
+
+		static void DrawTriangle(const glm::mat3& vertices, const glm::vec4& color);
+		static void DrawTriangle(const glm::mat3& vertices, const glm::mat3x4& colors);
+
+		static void DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::vec4& color);
+		static void DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::mat3x4& colors);
+
 
 		// Quads
 
@@ -60,11 +44,13 @@ namespace Eis
 
 
 		// Circles
+
 		static void DrawCircle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
 		static void DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
 
 		
 		// Lines
+
 		static void DrawLine(const glm::vec2& start, const float& angle, const float& length, const glm::vec4& color);
 		static void DrawLine(const glm::vec3& start, const float& angle, const float& length, const glm::vec4& color);
 		static void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec4& color);
@@ -76,12 +62,13 @@ namespace Eis
 		struct Statistics
 		{
 			uint32_t DrawCalls = 0;
+			uint32_t TriangleCount = 0;
 			uint32_t QuadCount = 0;
 			uint32_t CircleCount = 0;
 			uint32_t LineCount = 0;
 
-			uint32_t VertexCount() const { return (QuadCount + CircleCount) * 4 + LineCount * 2; }
-			uint32_t IndexCount() const { return (QuadCount + CircleCount) * 6 + LineCount * 2; }
+			uint32_t VertexCount() const { return TriangleCount * 3 + (QuadCount + CircleCount) * 4 + LineCount * 2; }
+			uint32_t IndexCount() const { return TriangleCount * 3 + (QuadCount + CircleCount) * 6 + LineCount * 2; }
 		};
 
 		static const Statistics& GetStats();
@@ -89,8 +76,7 @@ namespace Eis
 
 	// Commands
 
-		static float GetLineWidth();
-		static void  SetLineWidth(float width);
+		static void SetLineWidth(float width);
 
 		static void SetClearColor(const glm::vec3& col) { SetClearColor(glm::vec4(col, 1.0f)); }
 		static void SetClearColor(const glm::vec4& col) { RenderCommands::SetClearColor(col); }
@@ -100,5 +86,36 @@ namespace Eis
 		// HACK: hijack quad shader for custom shaders
 		// TODO: custom shader support
 		static Ref<Shader> GetQuadShader();
+
+
+	// Only called by engine
+
+		static void Init();
+		static void Shutdown();
+
+		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
+
+		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+
+	private:
+		static void StartBatch();
+		static void StartBatchTris();
+		static void StartBatchQuads();
+		static void StartBatchCircles();
+		static void StartBatchLines();
+
+		static void Flush();
+		static void FlushTris();
+		static void FlushQuads();
+		static void FlushCircles();
+		static void FlushLines();
+
+		static void NextBatchTris();
+		static void NextBatchQuads();
+		static void NextBatchCircles();
+		static void NextBatchLines();
+
+		static float GetTextureIndex(const Ref<Texture2D>& texture);
+		static float PushTexture(const Ref<Texture2D>& texture); // Returns texture's index
 	};
 }

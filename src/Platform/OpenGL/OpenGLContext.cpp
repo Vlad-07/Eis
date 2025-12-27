@@ -9,7 +9,7 @@ namespace Eis
 {
 	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle) : m_WindowHandle(windowHandle)
 	{
-		EIS_CORE_ASSERT(windowHandle, "Window handle is null!")
+		EIS_CORE_ASSERT(windowHandle, "Window handle is null!");
 	}
 
 	void OpenGLContext::Init()

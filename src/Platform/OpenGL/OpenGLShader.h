@@ -45,7 +45,7 @@ namespace Eis
 		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 	private:
-		uint32_t m_RendererId;
+		uint32_t m_RendererId = 0;
 		std::string m_Name;
 	};
 }

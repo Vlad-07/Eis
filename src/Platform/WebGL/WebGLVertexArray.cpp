@@ -1,5 +1,5 @@
 #include "Eispch.h"
-#include "OpenGLES2VertexArray.h"
+#include "WebGLVertexArray.h"
 
 #include <glad/glad.h>
 
@@ -28,19 +28,19 @@ namespace Eis
 	}
 
 
-	OpenGLES2VertexArray::OpenGLES2VertexArray()
+	WebGLVertexArray::WebGLVertexArray()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 		
 		m_RendererId = 0;
 	}
 
-	OpenGLES2VertexArray::~OpenGLES2VertexArray()
+	WebGLVertexArray::~WebGLVertexArray()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 	}
 
-	void OpenGLES2VertexArray::Bind() const
+	void WebGLVertexArray::Bind() const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -67,7 +67,7 @@ namespace Eis
 			m_IndexBuffer->Bind();
 	}
 
-	void OpenGLES2VertexArray::Unbind() const
+	void WebGLVertexArray::Unbind() const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -75,7 +75,7 @@ namespace Eis
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLES2VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb)
+	void WebGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -84,7 +84,7 @@ namespace Eis
 		m_VertexBuffers.push_back(vb);
 	}
 
-	void OpenGLES2VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& ib)
+	void WebGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& ib)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
