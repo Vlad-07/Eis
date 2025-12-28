@@ -13,7 +13,7 @@ namespace Eis
 		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<OpenGLVertexBuffer>(size);
 
 		default:
@@ -27,7 +27,7 @@ namespace Eis
 		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<OpenGLVertexBuffer>(vertices, size);
 
 		default:
@@ -43,7 +43,7 @@ namespace Eis
 		switch (Renderer2D::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<OpenGLIndexBuffer>(indices, count);
 
 		default:

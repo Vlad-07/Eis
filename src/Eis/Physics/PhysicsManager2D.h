@@ -1,9 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <Eis/Physics/Objects/Rigidbody2D.h>
-#include <Eis/Physics/CollisionChecker2D.h>
-#include <Eis/Physics/CollisionSolver2D.h>
+#include "Eis/Physics/Objects/Rigidbody2D.h"
 
 
 namespace Eis
@@ -21,7 +19,6 @@ namespace Eis
 		static void Update(uint8_t iterations) { s_Instance->UpdateInternal(iterations); }
 
 
-		static void AddBody(const Rigidbody2D& body) { s_Instance->m_Bodies.push_back(body); }
 		static void AddBody(glm::vec2 pos, float radius, float density, float restitution, bool isStatic = false);
 		static void AddBody(glm::vec2 pos, float rotation, glm::vec2 size, float density, float restitution, bool isStatic = false);
 		static void RemoveBody(uint32_t id) { s_Instance->m_Bodies.erase(s_Instance->m_Bodies.begin() + id); }

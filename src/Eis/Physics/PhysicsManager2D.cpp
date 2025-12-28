@@ -2,6 +2,8 @@
 #include "PhysicsManager2D.h"
 
 #include "Eis/Rendering/Renderer/Renderer2D.h"
+#include "Eis/Physics/CollisionChecker2D.h"
+#include "Eis/Physics/CollisionSolver2D.h"
 
 
 namespace Eis
@@ -49,7 +51,7 @@ namespace Eis
 		{
 			for (uint32_t b2 = b1 + 1; b2 < m_Bodies.size(); b2++)
 			{
-				if (m_Bodies[b1].GetStatic() && m_Bodies[b2].GetStatic()) continue;
+				if (m_Bodies[b1].GetProperties().Static && m_Bodies[b2].GetProperties().Static) continue;
 				if (!CollisionChecker2D::CheckBBIntersection(m_Bodies[b1], m_Bodies[b2])) continue;
 
 				m_Contacts.emplace_back(b1, b2);
@@ -62,10 +64,7 @@ namespace Eis
 	{
 		for (auto& [b1, b2] : m_Contacts)
 		{
-			Rigidbody2D& body1 = m_Bodies[b1];
-			Rigidbody2D& body2 = m_Bodies[b2];
-			
-			CollisionManifold2D manifold(body1, body2);
+			CollisionManifold2D manifold(&m_Bodies[b1], &m_Bodies[b2]);
 			if (CollisionChecker2D::CheckCollision(manifold))
 			{
 				CollisionSolver2D::SeparateBodies(manifold);

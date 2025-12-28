@@ -11,34 +11,28 @@ namespace Eis
 	public:
 		static void SeparateBodies(const CollisionManifold2D& manifold)
 		{
-			// HACK: for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
-			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
-						&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
-			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
-			Rigidbody2D& b2 = x ? manifold.Body1 : manifold.Body2;
+			Rigidbody2D& b1 = *manifold.Body1;
+			Rigidbody2D& b2 = *manifold.Body2;
 			const CollisionData2D& data = manifold.Data;
 
 			// static - static collisions aren't checked
-			if (b1.GetStatic())
+			if (b1.GetProperties().Static)
 				b2.Move(data.Normal * data.Depth);
-			else if (b2.GetStatic())
+			else if (b2.GetProperties().Static)
 				b1.Move(data.Normal * -data.Depth);
 			else
 			{
-				const float massSum = b1.GetMass() + b2.GetMass();
-				b1.Move(data.Normal * (data.Depth * (-b1.GetMass() / massSum)));
-				b2.Move(data.Normal * (data.Depth * ( b2.GetMass() / massSum)));
+				const float massSum = b1.GetProperties().Mass + b2.GetProperties().Mass;
+				b1.Move(data.Normal * (data.Depth * (-b1.GetProperties().Mass / massSum)));
+				b2.Move(data.Normal * (data.Depth * ( b2.GetProperties().Mass / massSum)));
 			}
 		}
 
 
 		static void SolveCollisionBasic(const CollisionManifold2D& manifold)
 		{
-			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
-			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
-						&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
-			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
-			Rigidbody2D& b2 = x ? manifold.Body1 : manifold.Body2;
+			Rigidbody2D& b1 = *manifold.Body1;
+			Rigidbody2D& b2 = *manifold.Body2;
 			const CollisionData2D& data = manifold.Data;
 
 			const glm::vec2 relativeVel = b2.GetLinearVelocity() - b1.GetLinearVelocity();
@@ -60,11 +54,8 @@ namespace Eis
 		/*
 		static void SolveCollisionRotation(const CollisionManifold2D& manifold)
 		{
-			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
-			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
-						&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
-			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
-			Rigidbody2D& b2 = x ? manifold.Body1 : manifold.Body2;
+			Rigidbody2D& b1 = *manifold.Body1;
+			Rigidbody2D& b2 = *manifold.Body2;
 			const CollisionData2D& data = manifold.Data;
 			const glm::vec2 contacts[2]{ manifold.Contact1, manifold.Contact2 };
 			glm::vec2 impulses[2]{};
@@ -119,11 +110,8 @@ namespace Eis
 
 		static void SolveCollisionRotationFriction(const CollisionManifold2D& manifold)
 		{
-			// for circle-polygon collisions, circle has to be in b1, otherwise separation breaks
-			const bool x = manifold.Body1.GetType() == ColliderType2D::POLYGON
-				&& manifold.Body2.GetType() == ColliderType2D::CIRCLE;
-			Rigidbody2D& b1 = x ? manifold.Body2 : manifold.Body1;
-			Rigidbody2D& b2 = x ? manifold.Body1 : manifold.Body2;
+			Rigidbody2D& b1 = *manifold.Body1;
+			Rigidbody2D& b2 = *manifold.Body2;
 			const CollisionData2D& data = manifold.Data;
 			const glm::vec2 contacts[2]{ manifold.Contact1, manifold.Contact2 };
 			glm::vec2 impulses[2]{};
@@ -147,8 +135,8 @@ namespace Eis
 				const glm::vec2 localAngVel2 = r2 * b2.GetAngularVelocity();
 
 				const glm::vec2 relativeVel =
-					(b2.GetLinearVelocity() + localAngVel2) -
-					(b1.GetLinearVelocity() + localAngVel1);
+					 (b2.GetLinearVelocity() + localAngVel2)
+					-(b1.GetLinearVelocity() + localAngVel1);
 
 				const float contactVelMag = glm::dot(relativeVel, data.Normal);
 
@@ -158,10 +146,10 @@ namespace Eis
 				const float r1PerpDotN = glm::dot(r1, data.Normal);
 				const float r2PerpDotN = glm::dot(r2, data.Normal);
 
-				float j = (-(1.0f + e) * contactVelMag) /
-					((b1.GetProperties().InvMass + b2.GetProperties().InvMass) +
-						(r1PerpDotN * r1PerpDotN) * b1.GetInvAngInertia() +
-						(r2PerpDotN * r2PerpDotN) * b2.GetInvAngInertia());
+				float j = (-(1.0f + e) * contactVelMag)
+					/ ((b1.GetProperties().InvMass + b2.GetProperties().InvMass)
+					+ (r1PerpDotN * r1PerpDotN) * b1.GetProperties().InvAngularInertia
+					+ (r2PerpDotN * r2PerpDotN) * b2.GetProperties().InvAngularInertia);
 				j /= manifold.ContactCount;
 
 				jList[i] = j;
@@ -174,10 +162,10 @@ namespace Eis
 				const glm::vec2& impulse = impulses[i];
 
 				// 2D cross: x.x * y.y - x.y * y.x
-				b1.AddLinearVel(-impulse * b1.GetInvMass());
-				b1.AddAngularVel(-(r1List[i].x * impulse.y - r1List[i].y * impulse.x) * b1.GetInvAngInertia());
-				b2.AddLinearVel(impulse * b2.GetInvMass());
-				b2.AddAngularVel((r2List[i].x * impulse.y - r2List[i].y * impulse.x) * b2.GetInvAngInertia());
+				b1.AddLinearVel(-impulse * b1.GetProperties().InvMass);
+				b1.AddAngularVel(-(r1List[i].x * impulse.y - r1List[i].y * impulse.x) * b1.GetProperties().InvAngularInertia);
+				b2.AddLinearVel(impulse * b2.GetProperties().InvMass);
+				b2.AddAngularVel((r2List[i].x * impulse.y - r2List[i].y * impulse.x) * b2.GetProperties().InvAngularInertia);
 			}
 
 			// Friction
@@ -193,12 +181,12 @@ namespace Eis
 				const glm::vec2 localAngVel2 = r2 * b2.GetAngularVelocity();
 
 				const glm::vec2 relativeVel =
-					(b2.GetLinearVelocity() + localAngVel2) -
-					(b1.GetLinearVelocity() + localAngVel1);
+					 (b2.GetLinearVelocity() + localAngVel2)
+					-(b1.GetLinearVelocity() + localAngVel1);
 
 				glm::vec2 tangent = relativeVel - data.Normal * glm::dot(relativeVel, data.Normal);
 
-				if (glm::all(glm::epsilonEqual(tangent, glm::vec2(0.0f), c_HalfMilimeter)))
+				if (glm::all(glm::epsilonEqual(tangent, glm::vec2(0.0f), c_SmallDist)))
 					continue;
 
 				tangent = glm::normalize(tangent);
@@ -206,10 +194,10 @@ namespace Eis
 				const float r1PerpDotT = glm::dot(r1, tangent);
 				const float r2PerpDotT = glm::dot(r2, tangent);
 
-				float jt = (-glm::dot(relativeVel, tangent)) /
-					((b1.GetProperties().InvMass + b2.GetProperties().InvMass) +
-						(r1PerpDotT * r1PerpDotT) * b1.GetInvAngInertia() +
-						(r2PerpDotT * r2PerpDotT) * b2.GetInvAngInertia());
+				float jt = (-glm::dot(relativeVel, tangent))
+					/ ((b1.GetProperties().InvMass + b2.GetProperties().InvMass)
+					+ (r1PerpDotT * r1PerpDotT) * b1.GetProperties().InvAngularInertia
+					+ (r2PerpDotT * r2PerpDotT) * b2.GetProperties().InvAngularInertia);
 				jt /= manifold.ContactCount;
 
 				glm::vec2 frictionImpulse;
@@ -226,10 +214,10 @@ namespace Eis
 				const glm::vec2& impulse = impulses[i];
 
 				// 2D cross: x.x * y.y - x.y * y.x
-				b1.AddLinearVel(-impulse * b1.GetInvMass());
-				b1.AddAngularVel(-(r1List[i].x * impulse.y - r1List[i].y * impulse.x) * b1.GetInvAngInertia());
-				b2.AddLinearVel(impulse * b2.GetInvMass());
-				b2.AddAngularVel((r2List[i].x * impulse.y - r2List[i].y * impulse.x) * b2.GetInvAngInertia());
+				b1.AddLinearVel(-impulse * b1.GetProperties().InvMass);
+				b1.AddAngularVel(-(r1List[i].x * impulse.y - r1List[i].y * impulse.x) * b1.GetProperties().InvAngularInertia);
+				b2.AddLinearVel(impulse * b2.GetProperties().InvMass);
+				b2.AddAngularVel((r2List[i].x * impulse.y - r2List[i].y * impulse.x) * b2.GetProperties().InvAngularInertia);
 			}
 		}
 	};

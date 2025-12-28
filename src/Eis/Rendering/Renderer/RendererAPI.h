@@ -13,7 +13,7 @@ namespace Eis
 		// TODO: maybe a fmt formater
 		enum class API : uint8_t
 		{
-			None = 0, OpenGL, OpenGLES2
+			None = 0, OpenGL, WebGL
 		};
 
 	public:

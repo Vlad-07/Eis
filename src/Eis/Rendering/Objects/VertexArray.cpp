@@ -16,7 +16,7 @@ namespace Eis
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLVertexArray>();
 
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<WebGLVertexArray>(); // TODO: check vao extension
 
 		default:

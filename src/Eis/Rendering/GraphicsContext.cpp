@@ -16,7 +16,7 @@ namespace Eis
 		case RendererAPI::API::OpenGL:
 			return CreateScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
 
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateScope<WebGLContext>(static_cast<GLFWwindow*>(window));
 
 		default:

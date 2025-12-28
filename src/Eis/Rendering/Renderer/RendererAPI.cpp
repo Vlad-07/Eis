@@ -10,7 +10,7 @@ namespace Eis
 #ifdef EIS_PLATFORM_WINDOWS
 		RendererAPI::API::OpenGL;
 #elif defined(EIS_PLATFORM_WEB)
-		RendererAPI::API::OpenGLES2;
+		RendererAPI::API::WebGL;
 #endif
 
 	Scope<RendererAPI> RendererAPI::Create()
@@ -18,7 +18,7 @@ namespace Eis
 		switch (s_API)
 		{
 		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateScope<OpenGLRendererAPI>();
 
 		default:

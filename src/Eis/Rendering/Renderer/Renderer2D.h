@@ -29,6 +29,10 @@ namespace Eis
 
 		// Quads
 
+		static void DrawQuad(const glm::mat4x2& vertices, const glm::vec4& color);
+		static void DrawQuad(const glm::mat4x2& vertices, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
+
+
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 
@@ -45,8 +49,10 @@ namespace Eis
 
 		// Circles
 
-		static void DrawCircle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
-		static void DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
+		static void DrawCircle(const glm::vec2& position, float diameter, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
+		static void DrawCircle(const glm::vec2& position, const glm::vec2& diameter, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
+		static void DrawCircle(const glm::vec3& position, float diameter, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
+		static void DrawCircle(const glm::vec3& position, const glm::vec2& diameter, const glm::vec4& color, float thickness = 1.0f, float fade = 0.0f);
 
 		
 		// Lines

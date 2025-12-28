@@ -1,74 +1,62 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Core/Time.h"
+
+#include "Eis/Physics/Objects/Colliders/Collider2D.h"
 
 
 // TODO: better manager interface
-// TODO: separate collider
 // TODO: ecs (transform, renderers, etc.)
-
 
 namespace Eis
 {
-	enum class ColliderType2D : uint8_t
-	{
-		NONE = 0, CIRCLE, POLYGON
-	};
-
-	typedef glm::mat4x2 ColliderVertices2D;
-
-	struct RigidbodyProperties2D
-	{
-		ColliderType2D Type;
-
-		bool Static;
-		float Mass;
-		float InvMass;
-		float Density;
-		float Area;
-		float Restitution;
-		float AngularInertia;
-		float InvAngularInertia;
-		float StaticFriction;
-		float DynamicFriction;
-
-		float Radius;
-
-		glm::vec2 Size;
-		ColliderVertices2D Vertices;
-	};
-
-	struct AlignedBoundingBox2D
-	{
-		glm::vec2 BottomLeft;
-		glm::vec2 TopRight;
-	};
-
-
 	class Rigidbody2D
 	{
+	public:
+		struct Properties
+		{
+			bool Static;
+
+			float Mass;
+			float InvMass;
+			float Density;
+			float Area;
+			float Restitution;
+			float AngularInertia;
+			float InvAngularInertia;
+			float StaticFriction;
+			float DynamicFriction;
+		};
+
 	public:
 		Rigidbody2D() = delete;
 		// Circle constructor
 		Rigidbody2D(glm::vec2 pos, float radius, float density, float restitution, bool isStatic = false);
 		// Box constructor
 		Rigidbody2D(glm::vec2 pos, float rotation, glm::vec2 size, float density, float restitution, bool isStatic = false);
+
+		Rigidbody2D(Rigidbody2D&) = delete;
+		Rigidbody2D& operator=(Rigidbody2D&) = delete;
+
+		Rigidbody2D(Rigidbody2D&&) = default;
+		Rigidbody2D& operator=(Rigidbody2D&&) = default;
+
 		virtual ~Rigidbody2D() = default;
+
+//		Rigidbody2D& operator=(const Rigidbody2D& other);
 
 
 		void Update(float timeScale, const glm::vec2 gravity);
 
 
-		void Move(glm::vec2 pos) { m_Position += pos; m_UpdateTrVert = true; m_UpdateBB = true; }
-		void MoveTo(glm::vec2 pos) { m_Position = pos; m_UpdateTrVert = true; m_UpdateBB = true; }
+		void Move(glm::vec2 pos) { m_Position += pos; m_Collider->Update(); }
+		void MoveTo(glm::vec2 pos) { m_Position = pos; m_Collider->Update(); }
 
-		void Rotate(float deg) { m_Rotation += glm::radians(deg); m_UpdateTrVert = true; m_UpdateBB = true; }
-		void RotateTo(float deg) { m_Rotation = glm::radians(deg); m_UpdateTrVert = true; m_UpdateBB = true; }
+		void Rotate(float deg) { m_Rotation += glm::radians(deg); m_Collider->Update(); }
+		void RotateTo(float deg) { m_Rotation = glm::radians(deg); m_Collider->Update(); }
 
-		void RotateRad(float rad) { m_Rotation += rad; m_UpdateTrVert = true; m_UpdateBB = true; }
-		void RotateToRad(float rad) { m_Rotation = rad; m_UpdateTrVert = true; m_UpdateBB = true; }
+		void RotateRad(float rad) { m_Rotation += rad; m_Collider->Update(); }
+		void RotateToRad(float rad) { m_Rotation = rad; m_Collider->Update(); }
 
 
 		// Force in N
@@ -81,36 +69,18 @@ namespace Eis
 		void AddAngularVel(float angVel) { m_AngVelAdd += angVel; }
 
 		glm::vec2 GetPosition() const { return m_Position; }
+		float GetRotation() const { return m_Rotation; }
 		// Linear velocity in m/s
 		glm::vec2 GetLinearVelocity() const { return m_LinearVelocity; }
 		// Angular velocity in rad/s
 		float GetAngularVelocity() const { return m_AngularVelocity; }
 
-		const RigidbodyProperties2D& GetProperties() const { return m_Properties; }
-		ColliderType2D GetType() const { return m_Properties.Type; }
-		glm::vec2 GetSize() const { return m_Properties.Size; }
-		float GetRadius() const { return m_Properties.Radius; }
-		bool GetStatic() const { return m_Properties.Static; }
-		float GetMass() const { return m_Properties.Mass; }
-		float GetInvMass() const { return m_Properties.InvMass; }
-		float GetInvAngInertia() const { return m_Properties.InvAngularInertia; }
-
-		const ColliderVertices2D& GetTransformedVertices() const;
-		const AlignedBoundingBox2D& GetBoundingBox() const;
-
-
-		void Draw(const glm::vec4& color, bool drawCircleLine = false) const;
-		void Draw(Ref<Texture2D>& tex) const;
-
-		void DrawBoundingBox() const;
-		void DrawVertices() const;
+		const Properties& GetProperties() const { return m_Properties; }
+		const Collider2D& GetCollider() const { return *m_Collider; }
+		const BBox2D& GetBBox() const { return m_Collider->GetBBox(m_Position, m_Rotation); } // Will be expanded for composite colliders
 
 	private:
-		void CalculateTransformedVertices() const;
-		void CalculateBoundingBox() const;
-
-	private:
-		RigidbodyProperties2D m_Properties;
+		Properties m_Properties;
 
 		glm::vec2 m_Position = glm::vec2(); // m
 		float m_Rotation = 0.0f; // rad
@@ -124,10 +94,7 @@ namespace Eis
 
 		float m_AngVelAdd = 0.0f;
 
-		mutable ColliderVertices2D m_TransformedVertices = ColliderVertices2D();
 
-		mutable AlignedBoundingBox2D m_BB{};
-		mutable bool m_UpdateTrVert = true;
-		mutable bool m_UpdateBB = true;
+		Scope<Collider2D> m_Collider;
 	};
 }

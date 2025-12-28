@@ -16,7 +16,7 @@ namespace Eis
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLTexture2D>(path);
 
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<WebGLTexture2D>(path);
 
 		default:
@@ -32,7 +32,7 @@ namespace Eis
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLTexture2D>(width, height);
 
-		case RendererAPI::API::OpenGLES2:
+		case RendererAPI::API::WebGL:
 			return CreateRef<WebGLTexture2D>(width, height);
 
 		default:
