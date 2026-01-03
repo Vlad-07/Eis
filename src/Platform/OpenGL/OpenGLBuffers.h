@@ -3,6 +3,7 @@
 #include "Eis/Rendering/Objects/Buffers.h"
 
 
+// TODO: use GLuint for renderer id's etc
 namespace Eis
 {
 	class OpenGLVertexBuffer : public VertexBuffer

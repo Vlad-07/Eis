@@ -43,8 +43,10 @@ namespace Eis
 	// Possible collision detection
 	void PhysicsManager2D::BroadPhase()
 	{
-		if (m_Bodies.size() < 2) // hackish way to not crash at 0 objects
+		if (m_Bodies.size() <= 1)
 			return;
+
+		// TODO: pruning
 
 		CollisionData2D colData;
 		for (uint32_t b1 = 0; b1 < m_Bodies.size() - 1; b1++)

@@ -19,19 +19,16 @@ namespace Eis
 		static void EndScene();
 
 		// Triangles
+		// TODO: local verts
 
-		static void DrawTriangle(const glm::mat3& vertices, const glm::vec4& color);
-		static void DrawTriangle(const glm::mat3& vertices, const glm::mat3x4& colors);
+		static void DrawTriangle(const glm::mat3& worldVerts, const glm::vec4& color);
+		static void DrawTriangle(const glm::mat3& worldVerts, const glm::mat3x4& colors);
 
-		static void DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::vec4& color);
-		static void DrawRotatedTriangle(const glm::mat3& vertices, float rotation, const glm::mat3x4& colors);
+		static void DrawRotatedTriangle(const glm::mat3& worldVerts, float rotation, const glm::vec4& color);
+		static void DrawRotatedTriangle(const glm::mat3& worldVerts, float rotation, const glm::mat3x4& colors);
 
 
 		// Quads
-
-		static void DrawQuad(const glm::mat4x2& vertices, const glm::vec4& color);
-		static void DrawQuad(const glm::mat4x2& vertices, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
-
 
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
@@ -39,12 +36,15 @@ namespace Eis
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
 
-
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
+
+
+		static void DrawQuad(const glm::mat4x3& worldVerts, const glm::vec4& color);
+		static void DrawQuad(const glm::mat4x3& worldVerts, const Ref<Texture2D>& texture, float tiling = 1.0f, const glm::vec4& tint = glm::vec4(1.0f));
 
 
 		// Circles

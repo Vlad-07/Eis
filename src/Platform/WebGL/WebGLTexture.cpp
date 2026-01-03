@@ -119,9 +119,9 @@ namespace Eis
 
 	bool WebGLTexture2D::operator==(const Texture& other) const
 	{
-		auto* p = dynamic_cast<WebGLTexture2D*>((Texture*)&other);
+		const auto* const p = dynamic_cast<const WebGLTexture2D*>(&other);
 		if (p == nullptr)
 			return false;
-		return m_RendererId == p->m_RendererId;
+		return m_RendererId == p->GetRendererId();
 	}
 }
