@@ -122,6 +122,6 @@ namespace Eis
 		static void NextBatchLines();
 
 		static float GetTextureIndex(const Ref<Texture2D>& texture);
-		static float PushTexture(const Ref<Texture2D>& texture); // Returns texture's index
+		static float PushTexture(const Ref<Texture2D>& texture); // Returns texture's new index
 	};
 }

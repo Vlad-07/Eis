@@ -82,15 +82,15 @@ namespace Eis
 	private:
 		Properties m_Properties;
 
-		glm::vec2 m_Position = glm::vec2(); // m
+		glm::vec2 m_Position = glm::vec2{}; // m
 		float m_Rotation = 0.0f; // rad
 
-		glm::vec2 m_LinearVelocity = glm::vec2(0.0f); // m/s
+		glm::vec2 m_LinearVelocity = glm::vec2{ 0.0f }; // m/s
 		float m_AngularVelocity = 0.0f; // rad/s
 
-		glm::vec2 m_Force = glm::vec2(); // N (kg * m / s^2)
-		glm::vec2 m_Acceleration = glm::vec2(); // m/s^2
-		glm::vec2 m_LinearVelAdd = glm::vec2(); // m/s
+		glm::vec2 m_Force = glm::vec2{}; // N (kg * m / s^2)
+		glm::vec2 m_Acceleration = glm::vec2{}; // m/s^2
+		glm::vec2 m_LinearVelAdd = glm::vec2{}; // m/s
 
 		float m_AngVelAdd = 0.0f;
 

@@ -14,7 +14,7 @@ namespace Eis
 
 	struct CollisionData2D
 	{
-		glm::vec2 Normal = glm::vec2();
+		glm::vec2 Normal = glm::vec2{};
 		float Depth = std::numeric_limits<float>::max();
 	//	float Sign = 1.0f;
 	};
@@ -131,7 +131,7 @@ namespace Eis
 									CollisionData2D& data)
 		{
 			data.Depth = std::numeric_limits<float>::max();
-			data.Normal = glm::vec2();
+			data.Normal = glm::vec2{};
 		//	data.Sign = 1.0f;
 
 			const PolygonCollider2D& collider1 = polygon1.GetCollider().As<PolygonCollider2D>();
@@ -219,7 +219,7 @@ namespace Eis
 										CollisionData2D& data)
 		{
 			data.Depth = std::numeric_limits<float>::max();
-			data.Normal = glm::vec2();
+			data.Normal = glm::vec2{};
 		//	data.Sign = 1.0f;
 
 			const CircleCollider2D& circleCol = circle.GetCollider().As<CircleCollider2D>();

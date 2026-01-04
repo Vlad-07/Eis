@@ -7,14 +7,12 @@
 namespace Eis
 {
 	PolygonCollider2D::PolygonCollider2D(glm::vec2 size)
-		: Collider2D(Type::POLYGON), m_Vertices(4)
+		: Collider2D(Type::POLYGON), m_Vertices(4), m_TransformedVertices(4)
 	{
 		m_Vertices[0] = { -size.x / 2.0f, -size.y / 2.0f };
 		m_Vertices[1] = { size.x / 2.0f, -size.y / 2.0f };
 		m_Vertices[2] = { size.x / 2.0f,  size.y / 2.0f };
 		m_Vertices[3] = { -size.x / 2.0f,  size.y / 2.0f };
-
-		m_TransformedVertices.resize(4);
 	}
 
 	PolygonCollider2D::PolygonCollider2D(const std::vector<glm::vec2>& vertices)

@@ -39,11 +39,6 @@ namespace Eis
 		m_Properties.DynamicFriction = 0.4f;
 		m_Properties.Static = isStatic;
 
-		const glm::vec2 botL = { -size.x / 2.0f, -size.y / 2.0f };
-		const glm::vec2 botR = {  size.x / 2.0f, -size.y / 2.0f };
-		const glm::vec2 topR = {  size.x / 2.0f,  size.y / 2.0f };
-		const glm::vec2 topL = { -size.x / 2.0f,  size.y / 2.0f };
-
 		m_Collider = Collider2D::Create(size);
 	}
 
@@ -61,10 +56,11 @@ namespace Eis
 
 		m_Position += m_LinearVelocity * ts;
 		m_Rotation += m_AngularVelocity * ts;
+		m_Rotation = glm::mod(m_Rotation + 180.0f, 360.0f) - 180.0f;
 
-		m_Force = glm::vec2();
-		m_Acceleration = glm::vec2();
-		m_LinearVelAdd = glm::vec2();
+		m_Force = glm::vec2{};
+		m_Acceleration = glm::vec2{};
+		m_LinearVelAdd = glm::vec2{};
 		m_AngVelAdd = 0.0f;
 
 		m_Collider->Update();
