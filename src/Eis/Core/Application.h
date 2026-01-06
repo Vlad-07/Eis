@@ -35,7 +35,7 @@ namespace Eis
 		void ShouldClose() { s_Instance->m_Running = false; }
 
 	protected:
-		void RegisterLayer(const Layer::Factory& layer, const std::string& name);
+		void RegisterLayer(const Layer::Factory& layer, const std::string& name); // TODO: better as template and no factory
 //		void RegisterOverlay(Layer::Factory overlay, const std::string& name);
 
 	private:

@@ -31,7 +31,14 @@ project "ImGui"
 	includedirs
 	{
 		"./",
-		"../GLFW/include"
+		"../GLFW/include",
+		"../glm",
+		"../../src/Eis/ImGui"
+	}
+
+	defines
+	{
+		"IMGUI_USER_CONFIG=\"ImGuiConfig.h\""
 	}
 
 	filter "system:windows"

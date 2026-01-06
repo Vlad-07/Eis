@@ -5,6 +5,7 @@
 #include <functional>
 #include <random>
 #include <chrono>
+#include <filesystem>
 
 #include <ostream>
 #include <optional>

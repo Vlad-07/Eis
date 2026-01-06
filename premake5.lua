@@ -42,7 +42,8 @@ project "Eis"
 	{
 		"_CRT_SECURE_NO_WARNINGS",
 		"GLM_ENABLE_EXPERIMENTAL",
-		"GLFW_INCLUDE_NONE"
+		"GLFW_INCLUDE_NONE",
+		"IMGUI_USER_CONFIG=\"ImGuiConfig.h\""
 	}
 
 	includedirs

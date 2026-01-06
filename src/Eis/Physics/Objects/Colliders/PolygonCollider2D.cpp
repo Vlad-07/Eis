@@ -15,11 +15,11 @@ namespace Eis
 		m_Vertices[3] = { -size.x / 2.0f,  size.y / 2.0f };
 	}
 
-	PolygonCollider2D::PolygonCollider2D(const std::vector<glm::vec2>& vertices)
+	PolygonCollider2D::PolygonCollider2D(const Vertices& vertices)
 		: Collider2D(Type::POLYGON), m_Vertices(vertices), m_TransformedVertices(vertices.size())
 	{}
 
-	const std::vector<glm::vec2>& PolygonCollider2D::GetTransformedVertices(glm::vec2 pos, float rot) const
+	const Vertices& PolygonCollider2D::GetTransformedVertices(glm::vec2 pos, float rot) const
 	{
 		if (m_UpdateVerts)
 		{

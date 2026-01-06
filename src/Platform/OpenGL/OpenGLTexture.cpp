@@ -11,7 +11,7 @@ namespace Eis
 		: m_Path(path)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
-
+		// TODO: use std::filesystem
 		if (path.find(':') != std::string::npos || path[0] == '\\')
 			EIS_CORE_WARN("Absolute path detected!");
 

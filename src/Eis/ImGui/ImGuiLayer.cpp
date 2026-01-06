@@ -1,13 +1,14 @@
 #include "Eispch.h"
 #include "ImGuiLayer.h"
 
+#include <GLFW/glfw3.h>
+
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_opengl3_loader.h>
 #include <implot.h>
 
-#include <GLFW/glfw3.h>
 
 #include "Eis/Core/Application.h"
 
@@ -41,8 +42,10 @@ namespace Eis
 		io.ConfigDpiScaleViewports = true;
 
 	#ifdef EIS_PLATFORM_WEB
-		io.IniFilename = "assets/imgui.ini";
+		io.IniFilename = "";
 	#endif
+
+		// TODO: load default ini from assets
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();

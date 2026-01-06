@@ -9,6 +9,8 @@ namespace Eis
 {
 	class Rigidbody2D;
 
+	using Vertices = std::vector<glm::vec2>;
+
 	// Axis aligned bounding box
 	struct BBox2D
 	{
