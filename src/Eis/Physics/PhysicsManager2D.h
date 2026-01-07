@@ -19,8 +19,8 @@ namespace Eis
 		static void Update(uint8_t iterations) { s_Instance->UpdateInternal(iterations); }
 
 
-		static void AddBody(glm::vec2 pos, float radius, float density, float restitution, bool isStatic = false);
-		static void AddBody(glm::vec2 pos, float rotation, glm::vec2 size, float density, float restitution, bool isStatic = false);
+		static void AddBody(glm::vec2 pos, float radius, const Rigidbody2D::Descriptor& descriptor);
+		static void AddBody(glm::vec2 pos, float rotation, glm::vec2 size, const Rigidbody2D::Descriptor& descriptor);
 		static void RemoveBody(uint32_t id) { s_Instance->m_Bodies.erase(s_Instance->m_Bodies.begin() + id); }
 
 

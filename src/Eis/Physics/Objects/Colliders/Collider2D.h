@@ -7,8 +7,6 @@
 
 namespace Eis
 {
-	class Rigidbody2D;
-
 	using Vertices = std::vector<glm::vec2>;
 
 	// Axis aligned bounding box
@@ -47,7 +45,7 @@ namespace Eis
 
 		static Scope<Collider2D> Create(float radius);
 		static Scope<Collider2D> Create(glm::vec2 size);
-		static Scope<Collider2D> Create(const std::vector<glm::vec2>& vertices);
+		static Scope<Collider2D> Create(const Vertices& vertices);
 
 	protected:
 		virtual void CalcBBox(glm::vec2 pos, float rot) const = 0;

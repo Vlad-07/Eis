@@ -28,7 +28,7 @@ namespace Eis
     {
         return CreateScope<PolygonCollider2D>(size);
     }
-    Scope<Collider2D> Collider2D::Create(const std::vector<glm::vec2>& vertices)
+    Scope<Collider2D> Collider2D::Create(const Vertices& vertices)
     {
         return CreateScope<PolygonCollider2D>(vertices);
     }

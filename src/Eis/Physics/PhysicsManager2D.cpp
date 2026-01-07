@@ -77,22 +77,16 @@ namespace Eis
 	}
 
 
-	void PhysicsManager2D::AddBody(glm::vec2 pos, float radius, float density, float restitution, bool isStatic)
-	{ s_Instance->m_Bodies.emplace_back(pos, radius, density, restitution, isStatic); }
+	void PhysicsManager2D::AddBody(glm::vec2 pos, float radius, const Rigidbody2D::Descriptor& descriptor)
+	{ s_Instance->m_Bodies.emplace_back(pos, radius, descriptor); }
 
-	void PhysicsManager2D::AddBody(glm::vec2 pos, float rotation, glm::vec2 size, float density, float restitution, bool isStatic)
-	{ s_Instance->m_Bodies.emplace_back(pos, rotation, size, density, restitution, isStatic); }
+	void PhysicsManager2D::AddBody(glm::vec2 pos, float rotation, glm::vec2 size, const Rigidbody2D::Descriptor& descriptor)
+	{ s_Instance->m_Bodies.emplace_back(pos, size, rotation, descriptor); }
 
 
 	Rigidbody2D& PhysicsManager2D::GetBody(uint32_t id)
 	{
-		if (id >= s_Instance->m_Bodies.size())
-		{
-			EIS_CORE_ERROR("Invalid body id requested: {}!", id);
-			static Rigidbody2D b({}, 0, 0, 0);
-			return b;
-		}
-
+		EIS_CORE_ASSERT(id < s_Instance->m_Bodies.size(), "Invalid body id requested: {}!", id);
 		return s_Instance->m_Bodies[id];
 	}
 }

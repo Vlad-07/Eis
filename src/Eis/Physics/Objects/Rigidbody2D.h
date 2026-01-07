@@ -7,33 +7,50 @@
 
 // TODO: better manager interface
 // TODO: ecs (transform, renderers, etc.)
-
+// TODO: maybe a material lib?
 namespace Eis
 {
 	class Rigidbody2D
 	{
 	public:
+		struct Descriptor
+		{
+			Descriptor() = default;
+			Descriptor(bool s, float d, float r, float sf, float df)
+				: Static{ s }, Density{ d }, Restitution{ r },
+				StaticFriction{ sf }, DynamicFriction{ df } {}
+			~Descriptor() = default;
+
+			bool Static{};
+			float Density{}; // kg / m^2
+			float Restitution{};
+			float StaticFriction{};
+			float DynamicFriction{};
+		};
+
 		struct Properties
 		{
-			bool Static;
+			bool Static{};
+			//float Density{}; // kg / m^2
+			float Restitution{};
+			float StaticFriction{};
+			float DynamicFriction{};
 
-			float Mass;
-			float InvMass;
-			float Density;
-			float Area;
-			float Restitution;
-			float AngularInertia;
-			float InvAngularInertia;
-			float StaticFriction;
-			float DynamicFriction;
+			float Mass{}; // kg
+			float InvMass{}; // kg^-1
+			//float Area{}; // m^2
+			//float AngularInertia{}; // kg * m^2
+			float InvAngularInertia{};
 		};
 
 	public:
 		Rigidbody2D() = delete;
 		// Circle constructor
-		Rigidbody2D(glm::vec2 pos, float radius, float density, float restitution, bool isStatic = false);
+		Rigidbody2D(glm::vec2 pos, float radius, const Descriptor& descriptor);
 		// Box constructor
-		Rigidbody2D(glm::vec2 pos, float rotation, glm::vec2 size, float density, float restitution, bool isStatic = false);
+		Rigidbody2D(glm::vec2 pos, glm::vec2 size, float rotation, const Descriptor& descriptor);
+		// Polygon constructor
+		Rigidbody2D(glm::vec2 pos, const Vertices& verts, float rotation, const Descriptor& descriptor);
 
 		Rigidbody2D(Rigidbody2D&) = delete;
 		Rigidbody2D& operator=(Rigidbody2D&) = delete;
@@ -82,17 +99,17 @@ namespace Eis
 	private:
 		Properties m_Properties;
 
-		glm::vec2 m_Position = glm::vec2{}; // m
-		float m_Rotation = 0.0f; // rad
+		glm::vec2 m_Position{}; // m
+		float m_Rotation{}; // rad
 
-		glm::vec2 m_LinearVelocity = glm::vec2{ 0.0f }; // m/s
-		float m_AngularVelocity = 0.0f; // rad/s
+		glm::vec2 m_LinearVelocity{}; // m/s
+		float m_AngularVelocity{}; // rad/s
 
-		glm::vec2 m_Force = glm::vec2{}; // N (kg * m / s^2)
-		glm::vec2 m_Acceleration = glm::vec2{}; // m/s^2
-		glm::vec2 m_LinearVelAdd = glm::vec2{}; // m/s
+		glm::vec2 m_Force{}; // N (kg * m / s^2)
+		glm::vec2 m_Acceleration{}; // m/s^2
+		glm::vec2 m_LinearVelAdd{}; // m/s
 
-		float m_AngVelAdd = 0.0f;
+		float m_AngVelAdd{}; // rad/s
 
 
 		Scope<Collider2D> m_Collider;

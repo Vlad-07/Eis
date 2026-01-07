@@ -409,7 +409,7 @@ namespace Eis
 			float Max = std::numeric_limits<float>::min();
 		};
 
-		static ProjectionResult ProjectVertices(const std::vector<glm::vec2>& vertices, glm::vec2 axis)
+		static ProjectionResult ProjectVertices(const Vertices& vertices, glm::vec2 axis)
 		{
 			ProjectionResult result;
 
@@ -440,7 +440,7 @@ namespace Eis
 			return result;
 		}
 
-		static uint8_t ClosestVertexToPoint(glm::vec2 point, const std::vector<glm::vec2>& vertices)
+		static uint8_t ClosestVertexToPoint(glm::vec2 point, const Vertices& vertices)
 		{
 			uint8_t index = -1;
 			float minDist = std::numeric_limits<float>::max();
