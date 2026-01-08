@@ -137,8 +137,8 @@ namespace Eis
 			const PolygonCollider2D& collider1 = polygon1.GetCollider().As<PolygonCollider2D>();
 			const PolygonCollider2D& collider2 = polygon2.GetCollider().As<PolygonCollider2D>();
 
-			const auto& vertices1 = collider1.GetTransformedVertices(polygon1.GetPosition(), polygon1.GetRotation());
-			const auto& vertices2 = collider2.GetTransformedVertices(polygon2.GetPosition(), polygon2.GetRotation());
+			const auto& vertices1 = collider1.GetTransformedVertices(polygon1.GetPosition(), polygon1.GetRotationRad());
+			const auto& vertices2 = collider2.GetTransformedVertices(polygon2.GetPosition(), polygon2.GetRotationRad());
 			for (uint8_t i = 0; i < vertices1.size(); i++)
 			{
 				const glm::vec2& v1 = vertices1[i];
@@ -225,7 +225,7 @@ namespace Eis
 			const CircleCollider2D& circleCol = circle.GetCollider().As<CircleCollider2D>();
 			const PolygonCollider2D& polyCol = polygon.GetCollider().As<PolygonCollider2D>();
 
-			const auto& vertices = polyCol.GetTransformedVertices(polygon.GetPosition(), polygon.GetRotation());
+			const auto& vertices = polyCol.GetTransformedVertices(polygon.GetPosition(), polygon.GetRotationRad());
 			for (uint8_t i = 0; i < vertices.size(); i++)
 			{
 				const glm::vec2& v1 = vertices[i];
@@ -317,7 +317,7 @@ namespace Eis
 			const PolygonCollider2D& polyCol = polygon.GetCollider().As<PolygonCollider2D>();
 
 			float minDist2 = std::numeric_limits<float>::max();
-			const auto& vertices = polyCol.GetTransformedVertices(polygon.GetPosition(), polygon.GetRotation());
+			const auto& vertices = polyCol.GetTransformedVertices(polygon.GetPosition(), polygon.GetRotationRad());
 			for (uint8_t i = 0; i < vertices.size(); i++)
 			{
 				const glm::vec2& v1 = vertices[i];
@@ -342,8 +342,8 @@ namespace Eis
 			const PolygonCollider2D& collider2 = polygon2.GetCollider().As<PolygonCollider2D>();
 
 			float minDist2 = std::numeric_limits<float>::max();
-			const auto& vertices1 = collider1.GetTransformedVertices(polygon1.GetPosition(), polygon1.GetRotation());
-			const auto& vertices2 = collider2.GetTransformedVertices(polygon2.GetPosition(), polygon2.GetRotation());
+			const auto& vertices1 = collider1.GetTransformedVertices(polygon1.GetPosition(), polygon1.GetRotationRad());
+			const auto& vertices2 = collider2.GetTransformedVertices(polygon2.GetPosition(), polygon2.GetRotationRad());
 			for (uint8_t i = 0; i < vertices1.size(); i++)
 			{
 				const glm::vec2& p = vertices1[i];

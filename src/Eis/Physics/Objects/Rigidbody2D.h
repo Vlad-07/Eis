@@ -15,11 +15,11 @@ namespace Eis
 	public:
 		struct Descriptor
 		{
-			Descriptor() = default;
-			Descriptor(bool s, float d, float r, float sf, float df)
+			constexpr Descriptor() = default;
+			constexpr Descriptor(bool s, float d, float r, float sf, float df)
 				: Static{ s }, Density{ d }, Restitution{ r },
 				StaticFriction{ sf }, DynamicFriction{ df } {}
-			~Descriptor() = default;
+			constexpr ~Descriptor() = default;
 
 			bool Static{};
 			float Density{}; // kg / m^2
@@ -69,11 +69,11 @@ namespace Eis
 		void Move(glm::vec2 pos) { m_Position += pos; m_Collider->Update(); }
 		void MoveTo(glm::vec2 pos) { m_Position = pos; m_Collider->Update(); }
 
-		void Rotate(float deg) { m_Rotation += glm::radians(deg); m_Collider->Update(); }
-		void RotateTo(float deg) { m_Rotation = glm::radians(deg); m_Collider->Update(); }
+		void Rotate(float deg) { RotateRad(glm::radians(deg)); }
+		void RotateTo(float deg) { RotateToRad(glm::radians(deg)); }
 
-		void RotateRad(float rad) { m_Rotation += rad; m_Collider->Update(); }
-		void RotateToRad(float rad) { m_Rotation = rad; m_Collider->Update(); }
+		void RotateRad(float rad);
+		void RotateToRad(float rad);
 
 
 		// Force in N
@@ -86,7 +86,8 @@ namespace Eis
 		void AddAngularVel(float angVel) { m_AngVelAdd += angVel; }
 
 		glm::vec2 GetPosition() const { return m_Position; }
-		float GetRotation() const { return m_Rotation; }
+		float GetRotation() const { return glm::degrees(m_Rotation); }
+		float GetRotationRad() const { return m_Rotation; }
 		// Linear velocity in m/s
 		glm::vec2 GetLinearVelocity() const { return m_LinearVelocity; }
 		// Angular velocity in rad/s

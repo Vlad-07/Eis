@@ -44,8 +44,6 @@ namespace Eis
 		//m_Properties.AngularInertia = !descriptor.Static ? (1.0f / 12.0f) * m_Properties.Mass * (size.x * size.x + size.y * size.y) : 0.0f;
 		float angularInertia = !descriptor.Static ? (1.0f / 12.0f) * m_Properties.Mass * (size.x * size.x + size.y * size.y) : 0.0f;
 
-		EIS_INFO("Angular inertia box: {}", angularInertia);
-
 		m_Properties.InvAngularInertia = !descriptor.Static ? 1.0f / angularInertia : 0.0f;
 
 		m_Collider = Collider2D::Create(size);
@@ -96,8 +94,6 @@ namespace Eis
 		const float iCoM = iArea - area * (com.x * com.x + com.y * com.y);
 		const float angularInertia = iCoM * m_Properties.Mass / area;
 
-		EIS_INFO("Angular inertia polygon: {}", angularInertia);
-
 		m_Properties.InvAngularInertia = !descriptor.Static ? 1.0f / angularInertia : 0.0f;
 
 		m_Collider = Collider2D::Create(verts);
@@ -108,7 +104,7 @@ namespace Eis
 	{
 		// Euler method
 
-		float ts = (float)Time::GetFixedDeltaTime() * timeScale;
+		const float ts = (float)Time::GetFixedDeltaTime() * timeScale;
 
 		if (m_Properties.Static) return;
 
@@ -117,7 +113,7 @@ namespace Eis
 
 		m_Position += m_LinearVelocity * ts;
 		m_Rotation += m_AngularVelocity * ts;
-		m_Rotation = glm::mod(m_Rotation + 180.0f, 360.0f) - 180.0f;
+		m_Rotation = glm::mod(m_Rotation, 360.0f);
 
 		m_Force = glm::vec2{};
 		m_Acceleration = glm::vec2{};
@@ -125,5 +121,15 @@ namespace Eis
 		m_AngVelAdd = 0.0f;
 
 		m_Collider->Update();
+	}
+
+	void Rigidbody2D::RotateRad(float rad)
+	{
+		m_Rotation = glm::mod(m_Rotation + rad, glm::tau<float>()); m_Collider->Update();
+	}
+
+	void Rigidbody2D::RotateToRad(float rad)
+	{
+		m_Rotation = glm::mod(rad, glm::tau<float>()); m_Collider->Update();
 	}
 }
