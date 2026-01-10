@@ -48,9 +48,9 @@ namespace Eis
 		// Circle constructor
 		Rigidbody2D(glm::vec2 pos, float radius, const Descriptor& descriptor);
 		// Box constructor
-		Rigidbody2D(glm::vec2 pos, glm::vec2 size, float rotation, const Descriptor& descriptor);
+		Rigidbody2D(glm::vec2 pos, float rotation, glm::vec2 size, const Descriptor& descriptor);
 		// Polygon constructor
-		Rigidbody2D(glm::vec2 pos, const Vertices& verts, float rotation, const Descriptor& descriptor);
+		Rigidbody2D(glm::vec2 pos, float rotation, const Vertices& verts, const Descriptor& descriptor);
 
 		Rigidbody2D(Rigidbody2D&) = delete;
 		Rigidbody2D& operator=(Rigidbody2D&) = delete;

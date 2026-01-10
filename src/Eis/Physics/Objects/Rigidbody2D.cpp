@@ -28,7 +28,7 @@ namespace Eis
 		m_Collider = Collider2D::Create(radius);
 	}
 
-	Rigidbody2D::Rigidbody2D(glm::vec2 pos, glm::vec2 size, float rotation, const Descriptor& descriptor)
+	Rigidbody2D::Rigidbody2D(glm::vec2 pos, float rotation, glm::vec2 size, const Descriptor& descriptor)
 		: m_Position(pos), m_Rotation(rotation)
 	{
 		m_Properties.Static = descriptor.Static;
@@ -49,7 +49,7 @@ namespace Eis
 		m_Collider = Collider2D::Create(size);
 	}
 
-	Rigidbody2D::Rigidbody2D(glm::vec2 pos, const Vertices& verts, float rotation, const Descriptor& descriptor)
+	Rigidbody2D::Rigidbody2D(glm::vec2 pos, float rotation, const Vertices& verts, const Descriptor& descriptor)
 		: m_Position(pos), m_Rotation(rotation)
 	{
 		m_Properties.Static = descriptor.Static;

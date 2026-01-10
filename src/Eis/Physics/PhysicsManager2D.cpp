@@ -81,7 +81,7 @@ namespace Eis
 	{ s_Instance->m_Bodies.emplace_back(pos, radius, descriptor); }
 
 	void PhysicsManager2D::AddBody(glm::vec2 pos, float rotation, glm::vec2 size, const Rigidbody2D::Descriptor& descriptor)
-	{ s_Instance->m_Bodies.emplace_back(pos, size, rotation, descriptor); }
+	{ s_Instance->m_Bodies.emplace_back(pos, rotation, size, descriptor); }
 
 
 	Rigidbody2D& PhysicsManager2D::GetBody(uint32_t id)
