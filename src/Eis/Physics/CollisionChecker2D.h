@@ -55,71 +55,107 @@ namespace Eis
 
 		static bool CheckCollision(CollisionManifold2D& manifold)
 		{
-			const Rigidbody2D& b1Collider = *manifold.Body1;
-			const Rigidbody2D& b2Collider = *manifold.Body2;
-			const Collider2D::Type& b1Type = b1Collider.GetCollider().GetType();
-			const Collider2D::Type& b2Type = b2Collider.GetCollider().GetType();
+			const Rigidbody2D& rb1 = *manifold.Body1;
+			const Rigidbody2D& rb2 = *manifold.Body2;
+			const Collider2D::Type& b1Type = rb1.GetCollider().GetType();
+			const Collider2D::Type& b2Type = rb2.GetCollider().GetType();
 
 			if (b1Type == Collider2D::Type::CIRCLE)
 			{
 				if (b2Type == Collider2D::Type::CIRCLE)
-					return CollideCircles(b1Collider, b2Collider, manifold.Data);
+					return CollideCircles(rb1, rb2, manifold.Data);
 
 				else if (b2Type == Collider2D::Type::POLYGON)
-					return CollideCirclePolygon(b1Collider, b2Collider, manifold.Data);
+					return CollideCirclePolygon(rb1, rb2, manifold.Data);
 			}
 			else if (b1Type == Collider2D::Type::POLYGON)
 			{
 				if (b2Type == Collider2D::Type::POLYGON)
-					return CollidePolygons(b1Collider, b2Collider, manifold.Data);
+					return CollidePolygons(rb1, rb2, manifold.Data);
 
 				else if (b2Type == Collider2D::Type::CIRCLE)
-					return CollideCirclePolygon(b2Collider, b1Collider, manifold.Data);
+					return CollideCirclePolygon(rb2, rb1, manifold.Data);
 			}
 
-			EIS_CORE_ASSERT(false, "Collision type could not be determined!");
+			EIS_CORE_ASSERT(false, "Collider types could not be determined!");
 			return false;
 		}
 
 		static void FindContactPoints(CollisionManifold2D& manifold)
 		{
-			const Rigidbody2D& b1Collider = *manifold.Body1;
-			const Rigidbody2D& b2Collider = *manifold.Body2;
-			const Collider2D::Type& b1Type = b1Collider.GetCollider().GetType();
-			const Collider2D::Type& b2Type = b2Collider.GetCollider().GetType();
+			const Rigidbody2D& rb1 = *manifold.Body1;
+			const Rigidbody2D& rb2 = *manifold.Body2;
+			const Collider2D::Type& b1Type = rb1.GetCollider().GetType();
+			const Collider2D::Type& b2Type = rb2.GetCollider().GetType();
 
 			if (b1Type == Collider2D::Type::CIRCLE)
 			{
 				if (b2Type == Collider2D::Type::CIRCLE)
-					return FindCPCircles(b1Collider, b2Collider, manifold);
+					return FindCPCircles(rb1, rb2, manifold);
 
 				else if (b2Type == Collider2D::Type::POLYGON)
-					return FindCPCirclePolygon(b1Collider, b2Collider, manifold);
+					return FindCPCirclePolygon(rb1, rb2, manifold);
 			}
 			else if (b1Type == Collider2D::Type::POLYGON)
 			{
 				if (b2Type == Collider2D::Type::POLYGON)
-					return FindCPPolygons(b1Collider, b2Collider, manifold);
+					return FindCPPolygons(rb1, rb2, manifold);
 
 				else if (b2Type == Collider2D::Type::CIRCLE)
-					return FindCPCirclePolygon(b2Collider, b1Collider, manifold);
+					return FindCPCirclePolygon(rb2, rb1, manifold);
 			}
 
 			EIS_CORE_ASSERT(false, "?");
 		}
 
+		static float Distance(const Rigidbody2D& rb1, const Rigidbody2D& rb2)
+		{
+			const Collider2D::Type& b1Type = rb1.GetCollider().GetType();
+			const Collider2D::Type& b2Type = rb2.GetCollider().GetType();
+
+			if (b1Type == Collider2D::Type::CIRCLE)
+			{
+				if (b2Type == Collider2D::Type::CIRCLE)
+					return CirclesDistance(rb1, rb2);
+
+				else if (b2Type == Collider2D::Type::POLYGON)
+					return CirclePolygonDistance(rb1, rb2);
+			}
+			else if (b1Type == Collider2D::Type::POLYGON)
+			{
+				if (b2Type == Collider2D::Type::POLYGON)
+					return PolygonsDistance(rb1, rb2);
+
+				else if (b2Type == Collider2D::Type::CIRCLE)
+					return CirclePolygonDistance(rb2, rb1);
+			}
+
+			EIS_CORE_ASSERT(false, "Collider types could not be determined!");
+			return 0.0f;
+		}
+
+		static bool Adjacent(const Rigidbody2D& rb1, const Rigidbody2D& rb2)
+		{
+			if (Distance(rb1, rb2) <= c_SmallDist)
+				return true;
+
+			return false;
+		}
+
 
 	private:
-		static bool CollideCircles(const Rigidbody2D& b1, const Rigidbody2D& b2, CollisionData2D& data)
+		static bool CollideCircles(const Rigidbody2D& circle1,
+									const Rigidbody2D& circle2,
+									CollisionData2D& data)
 		{
-			const float dist = glm::distance(b1.GetPosition(), b2.GetPosition());
-			const float minDist = b1.GetCollider().As<CircleCollider2D>().GetRadius()
-								+ b2.GetCollider().As<CircleCollider2D>().GetRadius();
+			const float dist = glm::distance(circle1.GetPosition(), circle2.GetPosition());
+			const float minDist = circle1.GetCollider().As<CircleCollider2D>().GetRadius()
+								+ circle2.GetCollider().As<CircleCollider2D>().GetRadius();
 
 			if (dist >= minDist)
 				return false;
 
-			data.Normal = glm::normalize(b2.GetPosition() - b1.GetPosition());
+			data.Normal = glm::normalize(circle2.GetPosition() - circle1.GetPosition());
 			data.Depth = minDist - dist;
 		//	data.Sign = 1.0f;
 
@@ -154,7 +190,7 @@ namespace Eis
 				if (r1.Min >= r2.Max || r2.Min >= r1.Max)
 					return false;
 
-				float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
+				const float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
 
 
 				// faster but rn broken way to do it, maybe consider
@@ -189,7 +225,7 @@ namespace Eis
 				if (r1.Min >= r2.Max || r2.Min >= r1.Max)
 					return false;
 
-				float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
+				const float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
 
 				/*float depth = r1.Max - r2.Min;
 				float sign = -1.0f;
@@ -206,6 +242,10 @@ namespace Eis
 				//	data.Sign = 1.0f;
 				}
 			}
+
+			// Filter rounding errors
+			if (data.Depth <= c_SmallDist)
+				return false;
 
 			const glm::vec2 dir = polygon2.GetPosition() - polygon1.GetPosition();
 			if (glm::dot(dir, data.Normal) < 0.0f)
@@ -241,7 +281,7 @@ namespace Eis
 				if (r1.Min >= r2.Max || r2.Min >= r1.Max)
 					return false;
 
-				float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
+				const float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
 
 				/*float depth = r1.Max - r2.Min;
 				float sign = 1.0f;
@@ -270,7 +310,7 @@ namespace Eis
 			if (r1.Min >= r2.Max || r2.Min >= r1.Max)
 				return false;
 
-			float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
+			const float depth = glm::min(r1.Max - r2.Min, r2.Max - r1.Min);
 
 			/*float depth = r1.Max - r2.Min;
 			float sign = 1.0f;
@@ -286,6 +326,10 @@ namespace Eis
 				data.Normal = axis;
 			//	data.Sign = 1.0f;
 			}
+
+			// Filter rounding errors
+			if (data.Depth <= c_SmallDist)
+				return false;
 
 			const glm::vec2 dir = polygon.GetPosition() - circle.GetPosition();
 			if (glm::dot(dir, data.Normal) < 0.0f)
@@ -324,7 +368,7 @@ namespace Eis
 				const glm::vec2& v2 = vertices[(i + 1) % vertices.size()];
 
 				glm::vec2 contact{};
-				float dist2 = PointSegmentDist2(circle.GetPosition(), v1, v2, contact);
+				const float dist2 = PointSegmentDist2(circle.GetPosition(), v1, v2, contact);
 
 				if (dist2 < minDist2)
 				{
@@ -353,7 +397,7 @@ namespace Eis
 					const glm::vec2& v2 = vertices2[(j + 1) % vertices2.size()];
 
 					glm::vec2 contact{};
-					float dist2 = PointSegmentDist2(p, v1, v2, contact);
+					const float dist2 = PointSegmentDist2(p, v1, v2, contact);
 
 					if (glm::epsilonEqual(dist2, minDist2, c_SmallDist))
 					{
@@ -381,7 +425,7 @@ namespace Eis
 					const glm::vec2& v2 = vertices1[(j + 1) % vertices1.size()];
 
 					glm::vec2 contact{};
-					float dist2 = PointSegmentDist2(p, v1, v2, contact);
+					const float dist2 = PointSegmentDist2(p, v1, v2, contact);
 
 					if (glm::epsilonEqual(dist2, minDist2, c_SmallDist))
 					{
@@ -399,6 +443,78 @@ namespace Eis
 					}
 				}
 			}
+		}
+
+
+		static float CirclesDistance(const Rigidbody2D& circle1, const Rigidbody2D& circle2)
+		{
+			const float dist = glm::distance(circle1.GetPosition(), circle2.GetPosition());
+			const float radiusSum = circle1.GetCollider().As<CircleCollider2D>().GetRadius()
+									+ circle2.GetCollider().As<CircleCollider2D>().GetRadius();
+			return dist - radiusSum;
+		}
+
+		static float CirclePolygonDistance(const Rigidbody2D& circle, const Rigidbody2D& polygon)
+		{
+			const CircleCollider2D& circleCol = circle.GetCollider().As<CircleCollider2D>();
+			const PolygonCollider2D& polyCol = polygon.GetCollider().As<PolygonCollider2D>();
+
+			float minDist2 = std::numeric_limits<float>::max();
+			const auto& vertices = polyCol.GetTransformedVertices(polygon.GetPosition(), polygon.GetRotationRad());
+			for (uint8_t i = 0; i < vertices.size(); i++)
+			{
+				const glm::vec2& v1 = vertices[i];
+				const glm::vec2& v2 = vertices[(i + 1) % vertices.size()];
+
+				glm::vec2 ignore{};
+				const float dist2 = PointSegmentDist2(circle.GetPosition(), v1, v2, ignore);
+
+				if (dist2 < minDist2)
+					minDist2 = dist2;
+			}
+
+			return glm::sqrt(minDist2);
+		}
+
+		static float PolygonsDistance(const Rigidbody2D& polygon1, const Rigidbody2D& polygon2)
+		{
+			const PolygonCollider2D& collider1 = polygon1.GetCollider().As<PolygonCollider2D>();
+			const PolygonCollider2D& collider2 = polygon2.GetCollider().As<PolygonCollider2D>();
+
+			float minDist2 = std::numeric_limits<float>::max();
+			const auto& vertices1 = collider1.GetTransformedVertices(polygon1.GetPosition(), polygon1.GetRotationRad());
+			const auto& vertices2 = collider2.GetTransformedVertices(polygon2.GetPosition(), polygon2.GetRotationRad());
+			for (uint8_t i = 0; i < vertices1.size(); i++)
+			{
+				const glm::vec2& p = vertices1[i];
+				for (uint8_t j = 0; j < vertices2.size(); j++)
+				{
+					const glm::vec2& v1 = vertices2[j];
+					const glm::vec2& v2 = vertices2[(j + 1) % vertices2.size()];
+
+					glm::vec2 ignore{};
+					const float dist2 = PointSegmentDist2(p, v1, v2, ignore);
+					if (dist2 < minDist2)
+						minDist2 = dist2;
+				}
+			}
+
+			for (uint8_t i = 0; i < vertices2.size(); i++)
+			{
+				const glm::vec2& p = vertices2[i];
+				for (uint8_t j = 0; j < vertices1.size(); j++)
+				{
+					const glm::vec2& v1 = vertices1[j];
+					const glm::vec2& v2 = vertices1[(j + 1) % vertices1.size()];
+
+					glm::vec2 ignore{};
+					const float dist2 = PointSegmentDist2(p, v1, v2, ignore);
+					if (dist2 < minDist2)
+						minDist2 = dist2;
+				}
+			}
+
+			return glm::sqrt(minDist2);
 		}
 
 
