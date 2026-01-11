@@ -52,6 +52,10 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
+		// If no entry set, default to first registered layer
+		if (m_LayerStack.GetSize() <= 1)
+			SetEntryLayer(0);
+
 		#ifndef EIS_PLATFORM_WEB
 		while (m_Running)
 		{
@@ -133,18 +137,37 @@ namespace Eis
 		}
 	}
 
-	void Application::RegisterLayer(const Layer::Factory& layer, const std::string& name)
+
+	void Application::SetEntryLayer(uint32_t id)
 	{
-		m_LayerLib.RegisterLayer(layer, name);
-		if (m_LayerStack.GetSize() == 1)
+		if (m_LayerStack.GetSize() > 1)
 		{
-			auto layer = m_LayerLib.MakeLayer(0);
-			m_ActiveLayer.LayerPtr = layer.get();
-			m_ActiveLayer.Id = 0;
-			m_ActiveLayer.Name = layer->GetName();
-			m_LayerStack.PushLayer(std::move(layer));
+			EIS_ERROR("Entry layer already set!");
+			return;
 		}
+
+		auto layer = m_LayerLib.MakeLayer(id);
+		m_ActiveLayer.LayerPtr = layer.get();
+		m_ActiveLayer.Id = 0;
+		m_ActiveLayer.Name = layer->GetName();
+		m_LayerStack.PushLayer(std::move(layer));
 	}
+
+	void Application::SetEntryLayer(const std::string& name)
+	{
+		if (m_LayerStack.GetSize() > 1)
+		{
+			EIS_ERROR("Entry layer already set!");
+			return;
+		}
+
+		auto layer = m_LayerLib.MakeLayer(name);
+		m_ActiveLayer.LayerPtr = layer.get();
+		m_ActiveLayer.Id = m_LayerLib.GetLayerId(name);
+		m_ActiveLayer.Name = name;
+		m_LayerStack.PushLayer(std::move(layer));
+	}
+
 
 	void Application::QueueTransition(uint32_t id)
 	{
@@ -170,6 +193,17 @@ namespace Eis
 		s_Instance->m_QueuedLayerId = -1;
 	}
 
+	void Application::SetTransitionData(const Buffer& buf)
+	{
+		m_QueuedTransitionData.emplace(buf);
+	}
+
+	void Application::ClearTransitionData()
+	{
+		m_QueuedTransitionData.reset();
+	}
+
+
 	void Application::HandleTransition()
 	{
 		// this is needlessly complicated
@@ -178,7 +212,7 @@ namespace Eis
 		{
 			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
 
-			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerId);
+			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerId, m_QueuedTransitionData);
 
 			m_ActiveLayer.LayerPtr = layer.get();
 			m_ActiveLayer.Id = m_QueuedLayerId;
@@ -194,7 +228,7 @@ namespace Eis
 		{
 			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
 
-			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerName);
+			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerName, m_QueuedTransitionData);
 
 			m_ActiveLayer.LayerPtr = layer.get();
 			m_ActiveLayer.Id = m_LayerLib.GetLayerId(m_QueuedLayerName);

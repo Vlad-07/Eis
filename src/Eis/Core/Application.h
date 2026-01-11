@@ -23,20 +23,30 @@ namespace Eis
 
 
 		// Engine only
-
 		static Application& Get() { return *s_Instance; }
 		static Window& GetWindow() { return *s_Instance->m_Window; }
 		static Input& GetInput() { return s_Instance->m_Window->GetInput(); }
+		// -----------
 
 
 		void QueueTransition(uint32_t id);
 		void QueueTransition(const std::string& name);
+		void SetTransitionData(const Buffer& buf);
+		void ClearTransitionData();
 
 		void ShouldClose() { s_Instance->m_Running = false; }
 
 	protected:
-		void RegisterLayer(const Layer::Factory& layer, const std::string& name); // TODO: better as template and no factory
-//		void RegisterOverlay(Layer::Factory overlay, const std::string& name);
+		template<typename T>
+		void RegisterLayer(const std::string& name)
+		{
+			static_assert(std::is_base_of<Layer, T>(), "Registered layers must derive Eis::Layer!");
+			m_LayerLib.RegisterLayer(LayerLib::DefaultFactory<T>, name);
+		};
+//		void RegisterOverlay();
+
+		void SetEntryLayer(uint32_t id);
+		void SetEntryLayer(const std::string& name);
 
 	private:
 		void Run();
@@ -78,6 +88,7 @@ namespace Eis
 		} m_ActiveLayer;
 		std::string m_QueuedLayerName{};
 		int32_t m_QueuedLayerId = -1;
+		std::optional<Buffer> m_QueuedTransitionData;
 
 		bool m_Running = true;
 		Duration m_TargetFrametime;

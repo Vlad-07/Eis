@@ -1,8 +1,10 @@
 #pragma once
 
+#include <optional>
 #include <functional>
 
 #include "Eis/Core/Core.h"
+#include "Eis/Core/Buffer.h"
 #include "Eis/Core/EisContext.h"
 #include "Eis/Events/Event.h"
 
@@ -11,9 +13,6 @@ namespace Eis
 {
 	class Layer
 	{
-	public:
-		using Factory = std::function<Scope<Layer>(const std::string& layerName)>;
-
 	public:
 		Layer(const std::string& name) : m_Name(name) {}
 		virtual ~Layer() = default;
