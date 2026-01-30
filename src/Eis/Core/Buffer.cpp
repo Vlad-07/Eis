@@ -29,6 +29,19 @@ namespace Eis
 		Release();
 	}
 
+	const Buffer& Buffer::operator=(const Buffer& other)
+	{
+		Release();
+
+		m_Size = other.m_Size;
+		if (m_Size == 0) return *this;
+
+		Allocate(m_Size);
+		Write(other.Data(), other.m_Size);
+
+		return *this;
+	}
+
 
 	void Buffer::Allocate(uint64_t size)
 	{

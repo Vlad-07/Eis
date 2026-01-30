@@ -222,7 +222,7 @@ namespace Eis
 
 			m_QueuedLayerId = -1;
 
-			EIS_CORE_INFO("Transitioned to {}.", m_ActiveLayer.Name);
+//			EIS_CORE_INFO("Transitioned to {}.", m_ActiveLayer.Name);
 		}
 		else if (!m_QueuedLayerName.empty())
 		{
@@ -238,7 +238,7 @@ namespace Eis
 
 			m_QueuedLayerName.clear();
 
-			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
+//			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
 		}
 	}
 

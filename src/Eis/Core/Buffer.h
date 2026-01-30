@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 
 namespace Eis
 {
@@ -12,6 +14,8 @@ namespace Eis
 		Buffer(Buffer&& buf) noexcept;
 		~Buffer() noexcept;
 
+		const Buffer& operator=(const Buffer& other);
+
 		void Allocate(uint64_t size);
 		void Resize(uint64_t size);
 		void Release();
@@ -19,7 +23,8 @@ namespace Eis
 		void ZeroInit();
 		void AppendNull();
 
-		void* Data() const { return m_Data; }
+		void* Data() { return m_Data; }
+		const void* Data() const { return static_cast<const void*>(m_Data); }
 
 		template<typename T>
 		T& Read(uint64_t offset = 0)

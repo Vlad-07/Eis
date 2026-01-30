@@ -7,6 +7,7 @@ IncludeDir["ImGui"] = "vendor/imgui"
 IncludeDir["ImPlot"] = "vendor/implot"
 IncludeDir["glm"] = "vendor/glm"
 IncludeDir["spdlog"] = "vendor/spdlog/include"
+IncludeDir["json"] = "vendor/json"
 IncludeDir["stb_image"] = "vendor/stb_image"
 IncludeDir["stb_image_write"] = "vendor/stb_image_write"
 IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
@@ -30,6 +31,7 @@ project "Eis"
 		"src/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+		"vendor/json/**.hpp",
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
 		"vendor/stb_image_resize/**.h",
@@ -55,6 +57,7 @@ project "Eis"
 		"%{IncludeDir.ImPlot}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.json}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.stb_image_resize}",
 		"%{IncludeDir.stb_image_write}",

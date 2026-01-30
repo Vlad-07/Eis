@@ -38,10 +38,10 @@ namespace Eis
 
 	protected:
 		template<typename T>
-		void RegisterLayer(const std::string& name)
+		void RegisterLayer(const std::string& name, const LayerLib::LayerFactory& factory = LayerLib::DefaultFactory<T>)
 		{
 			static_assert(std::is_base_of<Layer, T>(), "Registered layers must derive Eis::Layer!");
-			m_LayerLib.RegisterLayer(LayerLib::DefaultFactory<T>, name);
+			m_LayerLib.RegisterLayer(factory, name);
 		};
 //		void RegisterOverlay();
 
