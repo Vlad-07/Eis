@@ -146,10 +146,13 @@ namespace Eis
 			return;
 		}
 
-		auto layer = m_LayerLib.MakeLayer(id);
+		auto layer = m_LayerLib.MakeLayer(id, m_QueuedTransitionData);
+		ClearTransitionData();
+
 		m_ActiveLayer.LayerPtr = layer.get();
-		m_ActiveLayer.Id = 0;
+		m_ActiveLayer.Id = id;
 		m_ActiveLayer.Name = layer->GetName();
+
 		m_LayerStack.PushLayer(std::move(layer));
 	}
 
@@ -161,10 +164,13 @@ namespace Eis
 			return;
 		}
 
-		auto layer = m_LayerLib.MakeLayer(name);
+		auto layer = m_LayerLib.MakeLayer(name, m_QueuedTransitionData);
+		ClearTransitionData();
+
 		m_ActiveLayer.LayerPtr = layer.get();
 		m_ActiveLayer.Id = m_LayerLib.GetLayerId(name);
 		m_ActiveLayer.Name = name;
+
 		m_LayerStack.PushLayer(std::move(layer));
 	}
 
@@ -193,9 +199,9 @@ namespace Eis
 		s_Instance->m_QueuedLayerId = -1;
 	}
 
-	void Application::SetTransitionData(const Buffer& buf)
+	void Application::SetTransitionData(Buffer&& buf)
 	{
-		m_QueuedTransitionData.emplace(buf);
+		m_QueuedTransitionData.emplace(std::move(buf));
 	}
 
 	void Application::ClearTransitionData()
@@ -213,6 +219,7 @@ namespace Eis
 			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
 
 			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerId, m_QueuedTransitionData);
+			ClearTransitionData();
 
 			m_ActiveLayer.LayerPtr = layer.get();
 			m_ActiveLayer.Id = m_QueuedLayerId;
@@ -229,6 +236,7 @@ namespace Eis
 			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
 
 			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerName, m_QueuedTransitionData);
+			ClearTransitionData();
 
 			m_ActiveLayer.LayerPtr = layer.get();
 			m_ActiveLayer.Id = m_LayerLib.GetLayerId(m_QueuedLayerName);

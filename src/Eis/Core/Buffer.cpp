@@ -4,7 +4,7 @@
 
 namespace Eis
 {
-	Buffer::Buffer(const void* data, uint64_t size) noexcept : m_Data(nullptr), m_Size(size)
+	Buffer::Buffer(const void* data, uint64_t size) noexcept : m_Size{ size }
 	{
 		if (m_Size == 0) return;
 		EIS_CORE_ASSERT(data, "Invalid data provided!");
@@ -12,16 +12,23 @@ namespace Eis
 		Write(data, m_Size);
 	}
 
-	Buffer::Buffer(const Buffer& buf) noexcept : m_Data(nullptr), m_Size(buf.m_Size)
+	Buffer::Buffer(uint64_t size) noexcept : m_Size{ size }
+	{
+		if (m_Size == 0) return;
+		Allocate(m_Size);
+	}
+
+	Buffer::Buffer(const Buffer& buf) noexcept : m_Size{ buf.m_Size }
 	{
 		if (m_Size == 0) return;
 		Allocate(m_Size);
 		Write(buf.m_Data, buf.m_Size);
 	}
 
-	Buffer::Buffer(Buffer&& buf) noexcept : m_Data(buf.m_Data), m_Size(buf.m_Size)
+	Buffer::Buffer(Buffer&& buf) noexcept : m_Data{ buf.m_Data }, m_Size{ buf.m_Size }
 	{
-		buf.Release();
+		buf.m_Data = nullptr;
+		buf.m_Size = 0;
 	}
 
 	Buffer::~Buffer() noexcept

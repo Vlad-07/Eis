@@ -10,6 +10,7 @@ namespace Eis
 	public:
 		Buffer() noexcept : m_Data(nullptr), m_Size(0) {}
 		Buffer(const void* data, uint64_t size) noexcept;
+		Buffer(uint64_t size) noexcept;
 		Buffer(const Buffer& buf) noexcept;
 		Buffer(Buffer&& buf) noexcept;
 		~Buffer() noexcept;
@@ -46,7 +47,7 @@ namespace Eis
 		T* As() const { return (T*)m_Data; }
 
 	private:
-		void* m_Data;
-		uint64_t m_Size;
+		void* m_Data{ nullptr };
+		uint64_t m_Size{ 0 };
 	};
 }

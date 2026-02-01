@@ -11,14 +11,14 @@ namespace Eis
 	class LayerLib
 	{
 	public:
-		using LayerFactory = std::function<Scope<Layer>(const std::optional<Buffer>&)>;
+		using LayerFactory = std::function<Scope<Layer>(std::optional<Buffer>&)>;
 
 		// Default factory for default constructible or Buffer recieving layers
 		template<typename T>
-		static Scope<Layer> DefaultFactory(const std::optional<Buffer>& data = std::nullopt)
+		static Scope<Layer> DefaultFactory(std::optional<Buffer>& data)
 		{
 			static_assert(std::is_base_of<Layer, T>(), "Registered layers must derive Eis::Layer!");
-			if constexpr (std::is_constructible<T, Buffer>::value)
+			if constexpr (std::is_constructible<T, Buffer&>::value)
 			{
 				if (data)
 					return Eis::CreateScope<T>(data.value());
@@ -42,8 +42,8 @@ namespace Eis
 
 		void RegisterLayer(const LayerFactory& factory, const std::string& name);
 
-		Scope<Layer> MakeLayer(const std::string& name, std::optional<Buffer> data = std::nullopt) const;
-		Scope<Layer> MakeLayer(int32_t id, std::optional<Buffer> data = std::nullopt) const;
+		Scope<Layer> MakeLayer(const std::string& name, std::optional<Buffer>& data) const;
+		Scope<Layer> MakeLayer(int32_t id, std::optional<Buffer>& data) const;
 
 		int32_t GetLayerId(const std::string& name) const;
 

@@ -10,13 +10,13 @@ namespace Eis
 	}
 
 
-	Scope<Layer> LayerLib::MakeLayer(const std::string& name, std::optional<Buffer> data) const
+	Scope<Layer> LayerLib::MakeLayer(const std::string& name, std::optional<Buffer>& data) const
 	{
 		const int32_t id = GetLayerId(name);
 		return MakeLayer(id, data);
 	}
 
-	Scope<Layer> LayerLib::MakeLayer(int32_t id, std::optional<Buffer> data) const
+	Scope<Layer> LayerLib::MakeLayer(int32_t id, std::optional<Buffer>& data) const
 	{
 		EIS_CORE_ASSERT(m_LayerFactories.size(), "No layers registered!");
 		EIS_CORE_ASSERT(0 <= id && id < m_LayerFactories.size(), "Invalid layer id requested: {}!", id);

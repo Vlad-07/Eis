@@ -13,20 +13,16 @@ namespace Eis
 		PhysicsManager2D(const PhysicsManager2D&) = delete;
 		PhysicsManager2D& operator=(const PhysicsManager2D&) = delete;
 
-		static PhysicsManager2D& Get() { return *s_Instance; }
-
-
 		static void Update(uint8_t iterations) { s_Instance->UpdateInternal(iterations); }
 
 
-		static void AddBody(glm::vec2 pos, float radius, const Rigidbody2D::Descriptor& descriptor);
-		static void AddBody(glm::vec2 pos, float rotation, glm::vec2 size, const Rigidbody2D::Descriptor& descriptor);
-		static void RemoveBody(uint32_t id) { s_Instance->m_Bodies.erase(s_Instance->m_Bodies.begin() + id); }
+		// Rigidbodies must NOT be realicated!!!
+		static void RegisterBody(Scope<Rigidbody2D>& rb) { EIS_ASSERT(rb, "Invalid rb!"); s_Instance->m_Bodies.emplace_back(*rb); }
 
 
-		static Rigidbody2D& GetBody(uint32_t id);
+		static Rigidbody2D& GetBody(size_t id);
 		static auto& GetBodies() { return s_Instance->m_Bodies; }
-		static uint32_t GetBodyCount() { return (uint32_t)s_Instance->m_Bodies.size(); }
+		static size_t GetBodyCount() { return s_Instance->m_Bodies.size(); }
 		static void ClearBodies() { s_Instance->m_Bodies.clear(); }
 
 	private:
@@ -38,7 +34,7 @@ namespace Eis
 	private:
 		static Scope<PhysicsManager2D> s_Instance;
 
-		std::vector<Rigidbody2D> m_Bodies;
+		std::vector<std::reference_wrapper<Rigidbody2D>> m_Bodies;
 		std::vector<std::pair<uint32_t, uint32_t>> m_Contacts;
 
 	private:

@@ -31,7 +31,7 @@ namespace Eis
 
 		void QueueTransition(uint32_t id);
 		void QueueTransition(const std::string& name);
-		void SetTransitionData(const Buffer& buf);
+		void SetTransitionData(Buffer&& buf);
 		void ClearTransitionData();
 
 		void ShouldClose() { s_Instance->m_Running = false; }
@@ -82,9 +82,9 @@ namespace Eis
 		// Might not be the best thing to do
 		struct ActiveLayerData
 		{
-			Layer* LayerPtr; // Tehnically unsafe
+			Layer* LayerPtr{}; // Tehnically unsafe
 			std::string Name;
-			int32_t Id;
+			int32_t Id{};
 		} m_ActiveLayer;
 		std::string m_QueuedLayerName{};
 		int32_t m_QueuedLayerId = -1;
