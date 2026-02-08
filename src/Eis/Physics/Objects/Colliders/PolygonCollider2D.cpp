@@ -30,11 +30,11 @@ namespace Eis
 	}
 
 
-	void PolygonCollider2D::CalcTransformedVertices(glm::vec2 pos, float rot) const
+	void PolygonCollider2D::CalcTransformedVertices(glm::vec2 pos, float rad) const
 	{
-		const float sin = glm::sin(rot);
-		const float cos = glm::cos(rot);
-		for (uint8_t i = 0; i < 4; i++)
+		const float sin = glm::sin(rad);
+		const float cos = glm::cos(rad);
+		for (uint8_t i = 0; i < m_Vertices.size(); i++)
 		{
 			const glm::vec2& vertex = m_Vertices[i];
 			m_TransformedVertices[i] = { cos * vertex.x - sin * vertex.y + pos.x,

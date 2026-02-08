@@ -34,7 +34,7 @@ namespace Eis
 		Rigidbody2D* Body2;
 		CollisionData2D Data{}; 
 		glm::vec2 Contact1{}, Contact2{};
-		uint8_t ContactCount = 0;
+		uint8_t ContactCount{};
 	};
 
 
@@ -134,12 +134,14 @@ namespace Eis
 			return 0.0f;
 		}
 
-		static bool Adjacent(const Rigidbody2D& rb1, const Rigidbody2D& rb2)
+		static uint8_t Adjacent(const Rigidbody2D& rb1, const Rigidbody2D& rb2)
 		{
-			if (Distance(rb1, rb2) <= c_SmallDist)
-				return true;
+			if (Distance(rb1, rb2) > c_SmallDist)
+				return 0;
 
-			return false;
+			CollisionManifold2D manifold{ (Rigidbody2D*)&rb1, (Rigidbody2D*)&rb2 };
+			FindContactPoints(manifold);
+			return manifold.ContactCount;
 		}
 
 

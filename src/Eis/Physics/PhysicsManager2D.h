@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "Eis/Debug/Assert.h"
 #include "Eis/Physics/Objects/Rigidbody2D.h"
 
 
@@ -16,8 +17,11 @@ namespace Eis
 		static void Update(uint8_t iterations) { s_Instance->UpdateInternal(iterations); }
 
 
-		// Rigidbodies must NOT be realicated!!!
+		// Rigidbodies must NOT be realocated!!!
 		static void RegisterBody(Scope<Rigidbody2D>& rb) { EIS_ASSERT(rb, "Invalid rb!"); s_Instance->m_Bodies.emplace_back(*rb); }
+
+
+		static void SetGravity(glm::vec2 gravity) { m_Gravity = gravity; }
 
 
 		static Rigidbody2D& GetBody(size_t id);
@@ -37,8 +41,8 @@ namespace Eis
 		std::vector<std::reference_wrapper<Rigidbody2D>> m_Bodies;
 		std::vector<std::pair<uint32_t, uint32_t>> m_Contacts;
 
+		static inline glm::vec2 m_Gravity{ 0.0f, -9.81f };
 	private:
-		static constexpr glm::vec2 c_Gravity = glm::vec2(0.0f, -9.81f);
 		static constexpr uint8_t c_MaxIterations = 64;
 	};
 }

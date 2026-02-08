@@ -23,6 +23,7 @@ namespace Eis
 
 			bool Static{};
 			float Density{}; // kg / m^2
+			float Mass{}; // Overrides density
 			float Restitution{};
 			float StaticFriction{};
 			float DynamicFriction{};
@@ -95,7 +96,7 @@ namespace Eis
 
 		const Properties& GetProperties() const { return m_Properties; }
 		const Collider2D& GetCollider() const { return *m_Collider; }
-		const BBox2D& GetBBox() const { return m_Collider->GetBBox(m_Position, m_Rotation); } // Will be expanded for composite colliders
+		const BBox2D& GetBBox() const { return m_Collider->GetBBox(m_Position, m_Rotation); }
 
 	private:
 		Properties m_Properties;
@@ -109,7 +110,6 @@ namespace Eis
 		glm::vec2 m_Force{}; // N (kg * m / s^2)
 		glm::vec2 m_Acceleration{}; // m/s^2
 		glm::vec2 m_LinearVelAdd{}; // m/s
-
 		float m_AngVelAdd{}; // rad/s
 
 

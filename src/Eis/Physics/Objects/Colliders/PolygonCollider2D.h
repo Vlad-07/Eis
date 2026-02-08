@@ -14,6 +14,7 @@ namespace Eis
 		PolygonCollider2D(const Vertices& vertices);
 		virtual ~PolygonCollider2D() = default;
 
+		const Vertices& GetVertices() const { return m_Vertices; }
 		const Vertices& GetTransformedVertices(glm::vec2 pos, float rot) const;
 
 	protected:

@@ -37,7 +37,7 @@ namespace Eis
 	void PhysicsManager2D::UpdateBodies(float timeScale)
 	{
 		for (Rigidbody2D& b : m_Bodies)
-			b.Update(timeScale, c_Gravity);
+			b.Update(timeScale, m_Gravity);
 	}
 
 	// Possible collision detection
