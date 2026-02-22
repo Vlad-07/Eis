@@ -2,8 +2,8 @@
 #include "OrthoCameraController.h"
 
 #include "Eis/Core/Application.h"
-#include "Eis/Input/Input.h"
 #include "Eis/Core/Time.h"
+#include "Eis/Input/Input.h"
 
 
 namespace Eis
@@ -11,7 +11,7 @@ namespace Eis
 	OrthoCameraController::OrthoCameraController(float aspectRatio)
 	{
 		// TODO: fixed aspect ratio
-		// might be best handled by the window sistem and keep this as is (free aspect)
+		// might be best handled by the window system and keep this free aspect
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
 		m_AspectRatio = static_cast<float>(Eis::Application::GetWindow().GetWidth()) / Eis::Application::GetWindow().GetHeight();

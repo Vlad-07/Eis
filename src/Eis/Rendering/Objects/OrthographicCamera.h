@@ -39,7 +39,7 @@ namespace Eis
 		glm::mat4 m_ViewMatrix{};
 		glm::mat4 m_ViewProjectionMatrix{};
 
-		glm::vec3 m_Position = glm::vec3(0.0f);
-		float m_Rotation = 0.0f; // Degrees, anti-clockwise
+		glm::vec3 m_Position{};
+		float m_Rotation{}; // Degrees, anti-clockwise
 	};
 }

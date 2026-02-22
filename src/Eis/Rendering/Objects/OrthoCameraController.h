@@ -40,7 +40,8 @@ namespace Eis
 		void SetPoseLock(bool lock) { m_PoseLock = lock; }
 		void SetZoomLock(bool lock) { m_ZoomLock = lock; }
 		void SetRotationLock(bool lock) { m_RotationLock = lock; }
-		void SetZoomSpeedEffect(bool use) { m_ZoomSpeedEffect = use; }
+		void SetZoomSpeedEffect(bool enabled) { m_ZoomSpeedEffect = enabled; }
+		void SetMousePAnning(bool enabled) { m_MousePanning = enabled; }
 
 
 		OrthographicCamera& GetCamera() { return m_Camera; }
@@ -56,19 +57,20 @@ namespace Eis
 
 	private:
 		OrthographicCamera m_Camera;
-		float m_AspectRatio;
+		float m_AspectRatio{};
 
-		float m_CameraSpeed = 1.0f,
-			  m_CameraRotationSpeed = 90.0f,
-			  m_ZoomSensitivity = 0.1f;
+		float m_CameraSpeed{ 1.0f },
+			  m_CameraRotationSpeed{ 90.0f },
+			  m_ZoomSensitivity{ 0.1f };
 
-		float m_Zoom = 2.0f,
-			  m_MinZoom = 0.5f,
-			  m_MaxZoom = 10.0f;
+		float m_Zoom{ 2.0f },
+			  m_MinZoom{ 0.5f },
+			  m_MaxZoom{ 10.0f };
 
-		bool m_PoseLock = false;
-		bool m_ZoomLock = false;
-		bool m_RotationLock = true;
-		bool m_ZoomSpeedEffect = true;
+		bool m_PoseLock{ false };
+		bool m_ZoomLock{ false };
+		bool m_RotationLock{ true };
+		bool m_ZoomSpeedEffect{ true };
+		bool m_MousePanning{ true };
 	};
 }

@@ -8,7 +8,7 @@ namespace Eis
 	class Buffer
 	{
 	public:
-		Buffer() noexcept : m_Data(nullptr), m_Size(0) {}
+		Buffer() noexcept = default;
 		Buffer(const void* data, uint64_t size) noexcept;
 		Buffer(uint64_t size) noexcept;
 		Buffer(const Buffer& buf) noexcept;
@@ -31,10 +31,17 @@ namespace Eis
 		T& Read(uint64_t offset = 0)
 		{ return *(T*)((uint8_t*)m_Data + offset); }
 		template<typename T>
-		T Read(uint64_t offset = 0) const
+		const T& Read(uint64_t offset = 0) const
 		{ return *(T*)((uint8_t*)m_Data + offset); }
 
 		void Write(const void* data, uint64_t size, uint64_t offset = 0);
+
+		template<typename T>
+		void SetObjectPtr(T* ptr)
+		{
+			m_Data = static_cast<void*>(ptr);
+			m_Size = sizeof(T);
+		}
 
 
 		uint64_t GetSize() const { return m_Size; }
@@ -47,7 +54,7 @@ namespace Eis
 		T* As() const { return (T*)m_Data; }
 
 	private:
-		void* m_Data{ nullptr };
-		uint64_t m_Size{ 0 };
+		void* m_Data{};
+		uint64_t m_Size{};
 	};
 }

@@ -34,7 +34,7 @@ namespace Eis
 	}
 
 	Rigidbody2D::Rigidbody2D(glm::vec2 pos, float rotation, glm::vec2 size, const Descriptor& descriptor)
-		: m_Position{ pos }, m_Rotation{ rotation }
+		: m_Position{ pos }, m_Rotation{ glm::radians(rotation) }
 	{
 		m_Properties.Static = descriptor.Static;
 		//m_Properties.Density = descriptor.Density;
@@ -60,7 +60,7 @@ namespace Eis
 	}
 
 	Rigidbody2D::Rigidbody2D(glm::vec2 pos, float rotation, const Vertices& verts, const Descriptor& descriptor)
-		: m_Position{ pos }, m_Rotation{ rotation }
+		: m_Position{ pos }, m_Rotation{ glm::radians(rotation) }
 	{
 		m_Properties.Static = descriptor.Static;
 		//m_Properties.Density = descriptor.Density;
