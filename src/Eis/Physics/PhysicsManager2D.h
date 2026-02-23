@@ -18,8 +18,8 @@ namespace Eis
 
 
 		// Rigidbodies must NOT be realocated!!!
-		static void RegisterBody(Scope<Rigidbody2D>& rb) { EIS_ASSERT(rb, "Invalid rb!"); s_Instance->m_Bodies.emplace_back(*rb); }
-
+		static void RegisterBody(Scope<Rigidbody2D>& rb) { EIS_ASSERT(rb, "Invalid rb!"); s_Instance->m_Bodies.emplace_back(rb.get()); }
+		static void RemoveBody(Scope<Rigidbody2D>& rb);
 
 		static void SetGravity(glm::vec2 gravity) { m_Gravity = gravity; }
 
@@ -38,7 +38,7 @@ namespace Eis
 	private:
 		static Scope<PhysicsManager2D> s_Instance;
 
-		std::vector<std::reference_wrapper<Rigidbody2D>> m_Bodies;
+		std::vector<Rigidbody2D*> m_Bodies;
 		std::vector<std::pair<uint32_t, uint32_t>> m_Contacts;
 
 		static inline glm::vec2 m_Gravity{ 0.0f, -9.81f };

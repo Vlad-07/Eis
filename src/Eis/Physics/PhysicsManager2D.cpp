@@ -36,8 +36,8 @@ namespace Eis
 
 	void PhysicsManager2D::UpdateBodies(float timeScale)
 	{
-		for (Rigidbody2D& b : m_Bodies)
-			b.Update(timeScale, m_Gravity);
+		for (Rigidbody2D* b : m_Bodies)
+			b->Update(timeScale, m_Gravity);
 	}
 
 	// Possible collision detection
@@ -52,8 +52,8 @@ namespace Eis
 		{
 			for (uint32_t b2 = b1 + 1; b2 < m_Bodies.size(); b2++)
 			{
-				if (m_Bodies[b1].get().GetProperties().Static && m_Bodies[b2].get().GetProperties().Static) continue;
-				if (!CollisionChecker2D::CheckBBIntersection(m_Bodies[b1], m_Bodies[b2])) continue;
+				if (m_Bodies[b1]->GetProperties().Static && m_Bodies[b2]->GetProperties().Static) continue;
+				if (!CollisionChecker2D::CheckBBIntersection(*m_Bodies[b1], *m_Bodies[b2])) continue;
 
 				m_Contacts.emplace_back(b1, b2);
 			}
@@ -65,7 +65,7 @@ namespace Eis
 	{
 		for (auto& [b1, b2] : m_Contacts)
 		{
-			CollisionManifold2D manifold(&m_Bodies[b1].get(), &m_Bodies[b2].get());
+			CollisionManifold2D manifold(m_Bodies[b1], m_Bodies[b2]);
 			if (CollisionChecker2D::CheckCollision(manifold))
 			{
 				CollisionSolver2D::SeparateBodies(manifold);
@@ -79,6 +79,20 @@ namespace Eis
 	Rigidbody2D& PhysicsManager2D::GetBody(size_t id)
 	{
 		EIS_CORE_ASSERT(id < s_Instance->m_Bodies.size(), "Invalid body id requested: {}!", id);
-		return s_Instance->m_Bodies[id];
+		return *s_Instance->m_Bodies[id];
+	}
+
+
+	void PhysicsManager2D::RemoveBody(Scope<Rigidbody2D>& rb)
+	{
+		EIS_ASSERT(rb, "Invalid rb!");
+		for (auto it{ s_Instance->m_Bodies.begin() }; it != s_Instance->m_Bodies.end(); it++)
+		{
+			if (*it == rb.get())
+			{
+				s_Instance->m_Bodies.erase(it);
+				return;
+			}
+		}
 	}
 }
