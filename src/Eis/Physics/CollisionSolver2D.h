@@ -128,8 +128,8 @@ namespace Eis
 				r1List[i] = contacts[i] - b1.GetPosition();
 				r2List[i] = contacts[i] - b2.GetPosition();
 
-				const glm::vec2 r1 = { -r1List[i].y, r1List[i].x };
-				const glm::vec2 r2 = { -r2List[i].y, r2List[i].x };
+				const glm::vec2 r1{ -r1List[i].y, r1List[i].x };
+				const glm::vec2 r2{ -r2List[i].y, r2List[i].x };
 
 				const glm::vec2 localAngVel1 = r1 * b1.GetAngularVelocity();
 				const glm::vec2 localAngVel2 = r2 * b2.GetAngularVelocity();
@@ -174,8 +174,8 @@ namespace Eis
 				r1List[i] = contacts[i] - b1.GetPosition();
 				r2List[i] = contacts[i] - b2.GetPosition();
 
-				const glm::vec2 r1 = { -r1List[i].y, r1List[i].x };
-				const glm::vec2 r2 = { -r2List[i].y, r2List[i].x };
+				const glm::vec2 r1{ -r1List[i].y, r1List[i].x };
+				const glm::vec2 r2{ -r2List[i].y, r2List[i].x };
 
 				const glm::vec2 localAngVel1 = r1 * b1.GetAngularVelocity();
 				const glm::vec2 localAngVel2 = r2 * b2.GetAngularVelocity();

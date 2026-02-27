@@ -94,6 +94,6 @@ namespace Eis
 		static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
 
 		inline static uint32_t s_BoolBits = 2;
-		static constexpr uint32_t s_SentinelBit = (1 << (sizeof(s_BoolBits) * 8 - 1));
+		static constexpr uint32_t s_SentinelBit = (1u << (sizeof(s_BoolBits) * 8 - 1));
 	};
 }

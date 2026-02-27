@@ -359,7 +359,6 @@ namespace Eis
 		{
 			manifold.ContactCount = 1;
 
-			const CircleCollider2D& circleCol = circle.GetCollider().As<CircleCollider2D>();
 			const PolygonCollider2D& polyCol = polygon.GetCollider().As<PolygonCollider2D>();
 
 			float minDist2 = std::numeric_limits<float>::max();
@@ -458,7 +457,6 @@ namespace Eis
 
 		static float CirclePolygonDistance(const Rigidbody2D& circle, const Rigidbody2D& polygon)
 		{
-			const CircleCollider2D& circleCol = circle.GetCollider().As<CircleCollider2D>();
 			const PolygonCollider2D& polyCol = polygon.GetCollider().As<PolygonCollider2D>();
 
 			float minDist2 = std::numeric_limits<float>::max();
@@ -560,7 +558,7 @@ namespace Eis
 
 		static uint8_t ClosestVertexToPoint(glm::vec2 point, const Vertices& vertices)
 		{
-			uint8_t index = -1;
+			uint8_t index = std::numeric_limits<uint8_t>::max();
 			float minDist = std::numeric_limits<float>::max();
 			for (uint8_t i = 0; i < vertices.size(); i++)
 			{

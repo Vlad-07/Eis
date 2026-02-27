@@ -130,7 +130,7 @@ namespace Eis
 		s_Data.TriangleVertexArray->AddVertexBuffer(s_Data.TriangleVertexBuffer);
 
 		uint32_t* triIndices = new uint32_t[s_Data.MaxTriVertices];
-		for (uint32_t i = 0, off = 0; i < s_Data.MaxTriIndices; i++)
+		for (uint32_t i = 0; i < s_Data.MaxTriIndices; i++)
 			triIndices[i] = i;
 
 		Ref<IndexBuffer> triIb = IndexBuffer::Create(triIndices, s_Data.MaxTriIndices);

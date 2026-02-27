@@ -9,7 +9,7 @@ namespace Eis
 	static Server* s_ServerInstance = nullptr;
 
 
-	Server::Server(int port) : m_Port(port), m_Running(false)
+	Server::Server(uint16_t port) : m_Port(port), m_Running(false)
 	{
 		EIS_CORE_ASSERT(!s_ServerInstance, "Server already exists!");
 		s_ServerInstance = this;

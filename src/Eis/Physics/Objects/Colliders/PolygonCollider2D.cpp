@@ -19,6 +19,11 @@ namespace Eis
 		: Collider2D(Type::POLYGON), m_Vertices(vertices), m_TransformedVertices(vertices.size())
 	{}
 
+	const Vertices& PolygonCollider2D::GetTransformedVertices() const
+	{
+		return m_TransformedVertices;
+	}
+
 	const Vertices& PolygonCollider2D::GetTransformedVertices(glm::vec2 pos, float rot) const
 	{
 		if (m_UpdateVerts)

@@ -34,7 +34,7 @@ namespace Eis
 		using ClientDisconnectedCallback = std::function<void(const ClientInfo&)>;
 
 	public:
-		Server(int port);
+		Server(uint16_t port);
 		~Server();
 
 		void Start();
@@ -72,7 +72,7 @@ namespace Eis
 
 		bool IsRunning() const { return m_Running; }
 
-		void SetPort(int port) { if (!m_Running) m_Port = port; }
+		void SetPort(uint16_t port) { if (!m_Running) m_Port = port; }
 
 	private:
 		void NetworkThreadFunc();
@@ -93,7 +93,7 @@ namespace Eis
 		ClientConnectedCallback m_ClientConnectedCallback;
 		ClientDisconnectedCallback m_ClientDisconnectedCallback;
 
-		int m_Port;
+		uint16_t m_Port;
 		bool m_Running;
 		std::map<HSteamNetConnection, ClientInfo> m_ConnectedClients;
 

@@ -75,6 +75,7 @@ project "Eis"
 
 	filter "toolset:msc*"
 		buildoptions { "/utf-8" }
+		multiprocessorcompile "on"
 
 	filter "system:windows"
 		systemversion "latest"
