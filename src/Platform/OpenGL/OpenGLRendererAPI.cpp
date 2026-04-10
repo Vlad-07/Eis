@@ -12,8 +12,8 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -31,14 +31,20 @@ namespace Eis
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndex(const Ref<VertexArray>& va, uint32_t indexCount)
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount)
 	{
 		va->Bind();
 		uint32_t count = indexCount ? indexCount : va->GetIndexBuffer()->GetCount();
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); // TODO: mode api
 	}
 
-	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount)
+	void OpenGLRendererAPI::DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)
+	{
+		va->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+	}
+
+	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount) // TODO: stupid???
 	{
 		va->Bind();
 		uint32_t count = vertexCount ? vertexCount : va->GetIndexBuffer()->GetCount();

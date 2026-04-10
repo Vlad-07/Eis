@@ -101,8 +101,6 @@ namespace Eis
 
 		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
 
-		static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-
 	private:
 		static void StartBatch();
 		static void StartBatchTris();

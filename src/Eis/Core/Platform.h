@@ -8,7 +8,7 @@ namespace Eis
 	class Platform
 	{
 	public:
-		enum class PlatformType : uint8_t
+		enum class PlatformType
 		{
 			NONE = 0, WINDOWS, WEB
 		};

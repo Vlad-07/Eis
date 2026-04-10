@@ -2,8 +2,9 @@
 
 #include "Eis/Rendering/Objects/Buffers.h"
 
+typedef unsigned int GLuint;
 
-// TODO: use GLuint for renderer id's etc
+// TODO: centralize RendererAPI types
 namespace Eis
 {
 	class OpenGLVertexBuffer : public VertexBuffer
@@ -22,7 +23,7 @@ namespace Eis
 		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
 
 	private:
-		uint32_t m_RendererId;
+		GLuint m_RendererId{};
 		BufferLayout m_Layout;
 	};
 
@@ -38,7 +39,7 @@ namespace Eis
 		virtual uint32_t GetCount() const override { return m_Count; }
 
 	private:
-		uint32_t m_RendererId;
-		uint32_t m_Count;
+		GLuint m_RendererId{};
+		uint32_t m_Count{};
 	};
 }

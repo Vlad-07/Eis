@@ -21,7 +21,10 @@ namespace Eis
 		{ s_RenderAPI->Clear(); }
 
 		static void DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount = 0)
-		{ s_RenderAPI->DrawIndex(va, indexCount); }
+		{ s_RenderAPI->DrawIndexed(va, indexCount); }
+
+		static void DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)
+		{ s_RenderAPI->DrawArrays(va, vertexCount); }
 
 		static void DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount = 0)
 		{ s_RenderAPI->DrawLines(va, vertexCount); }

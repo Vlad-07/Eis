@@ -1,7 +1,7 @@
 #include "Eispch.h"
 #include "Shader.h"
 
-#include "Eis/Rendering/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -9,28 +9,28 @@ namespace Eis
 {
 	Ref<Shader> Shader::Create(const std::string& filepath)
 	{
-		switch (Renderer2D::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
 		case RendererAPI::API::WebGL:
 			return CreateRef<OpenGLShader>(filepath);
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
 			return nullptr;
 		}
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
 	{
-		switch (Renderer2D::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
 		case RendererAPI::API::WebGL:
 			return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
 
 		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)Renderer2D::GetAPI());
+			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
 			return nullptr;
 		}
 	}

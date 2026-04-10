@@ -3,6 +3,8 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 
 
+typedef unsigned int GLuint;
+
 namespace Eis
 {
 	class OpenGLVertexArray : public VertexArray
@@ -21,8 +23,8 @@ namespace Eis
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
 
 	private:
-		uint32_t m_RendererId;
-		uint32_t m_VertexBufferIndex = 0;
+		GLuint m_RendererId{};
+		uint32_t m_VertexBufferIndex{};
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 	};

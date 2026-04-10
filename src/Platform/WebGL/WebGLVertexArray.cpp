@@ -28,18 +28,6 @@ namespace Eis
 	}
 
 
-	WebGLVertexArray::WebGLVertexArray()
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-		
-		m_RendererId = 0;
-	}
-
-	WebGLVertexArray::~WebGLVertexArray()
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-	}
-
 	void WebGLVertexArray::Bind() const
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();

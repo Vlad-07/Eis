@@ -19,7 +19,7 @@ namespace Eis
 	class Collider2D
 	{
 	public:
-		enum class Type : uint8_t
+		enum class Type
 		{
 			NONE = 0, CIRCLE, POLYGON
 		};

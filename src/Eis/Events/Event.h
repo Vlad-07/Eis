@@ -7,7 +7,7 @@
 
 namespace Eis
 {
-	enum class EventType : uint8_t
+	enum class EventType
 	{
 		None = 0,
 		WindowClose, WindowIconify, WindowDeiconify, WindowFocus, WindowLostFocus,
@@ -21,7 +21,7 @@ namespace Eis
 	};
 
 	// Filter for certain categories (ex. log only mouse events)
-	enum EventCategory : uint8_t
+	enum EventCategory
 	{
 		None = 0,
 		EventCategoryApplication	= BIT(1),

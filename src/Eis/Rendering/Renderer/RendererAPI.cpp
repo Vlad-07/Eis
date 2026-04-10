@@ -11,6 +11,8 @@ namespace Eis
 		RendererAPI::API::OpenGL;
 #elif defined(EIS_PLATFORM_WEB)
 		RendererAPI::API::WebGL;
+#else
+		RendererAPI::API::None;
 #endif
 
 	Scope<RendererAPI> RendererAPI::Create()

@@ -9,8 +9,8 @@ namespace Eis
 	class WebGLVertexArray : public VertexArray
 	{
 	public:
-		WebGLVertexArray();
-		virtual ~WebGLVertexArray();
+		WebGLVertexArray() = default;
+		virtual ~WebGLVertexArray() = default;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
@@ -22,8 +22,6 @@ namespace Eis
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
 
 	private:
-		uint32_t m_RendererId;
-//		uint32_t m_VertexBufferIndex = 0;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 	};

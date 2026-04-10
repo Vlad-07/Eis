@@ -14,7 +14,8 @@ namespace Eis
 		virtual void SetClearColor(const glm::vec4& color) override;
 		virtual void Clear() override;
 
-		virtual void DrawIndex(const Ref<VertexArray>& va, uint32_t indexCount = 0) override;
+		virtual void DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount = 0) override;
+		virtual void DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount) override;
 		virtual void DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount = 0) override;
 
 		virtual void SetLineWidth(float width) override;

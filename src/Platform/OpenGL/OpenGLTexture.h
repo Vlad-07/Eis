@@ -3,6 +3,7 @@
 #include "Eis/Rendering/Objects/Texture.h"
 
 
+typedef unsigned int GLuint;
 typedef unsigned int GLenum;
 
 namespace Eis
@@ -27,8 +28,8 @@ namespace Eis
 
 	private:
 		std::string m_Path;
-		uint32_t m_Width = 0, m_Height = 0;
-		uint32_t m_RendererId = 0;
-		GLenum m_InternalFormat = 0, m_DataFormat = 0;
+		GLuint m_RendererId{};
+		uint32_t m_Width{}, m_Height{};
+		GLenum m_InternalFormat{}, m_DataFormat{};
 	};
 }

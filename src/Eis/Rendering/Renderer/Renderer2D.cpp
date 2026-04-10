@@ -68,31 +68,35 @@ namespace Eis
 		Ref<VertexBuffer> TriangleVertexBuffer;
 		Ref<Shader> TriangleShader;
 
-		Ref<VertexArray> QuadVertexArray;
-		Ref<VertexBuffer> QuadVertexBuffer;
-		Ref<Shader> QuadShader;
-
-		Ref<VertexArray> CircleVertexArray;
-		Ref<VertexBuffer> CircleVertexBuffer;
-		Ref<Shader> CircleShader;
-
-		Ref<VertexArray> LineVertexArray;
-		Ref<VertexBuffer> LineVertexBuffer;
-		Ref<Shader> LineShader;
-
-		Ref<Texture2D> WhiteTexture;
-
 		uint32_t TriangleIndexCount = 0;
 		TriangleVertex* TriangleVertexBufferBase = nullptr;
 		TriangleVertex* TriangleVertexBufferPtr = nullptr;
+
+
+		Ref<VertexArray> QuadVertexArray;
+		Ref<VertexBuffer> QuadVertexBuffer;
+		Ref<Shader> QuadShader;
 
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
 
+		glm::mat4 QuadVertexPositions{};
+		glm::mat4x2 QuadVertexTexCoords{};
+
+
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
+
 		uint32_t CircleIndexCount = 0;
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
+
+
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Shader> LineShader;
 
 		uint32_t LineIndexCount = 0;
 		LineVertex* LineVertexBufferBase = nullptr;
@@ -100,11 +104,11 @@ namespace Eis
 
 		float LineWidth = 1.5f;
 
-		uint16_t TextureSlotIndex = 0;
-		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
 
-		glm::mat4 QuadVertexPositions{};
-		glm::mat4x2 QuadVertexTexCoords{};
+		Ref<Texture2D> WhiteTexture;
+
+		uint16_t TextureSlotIndex = 1; // 0 is WhiteTex
+		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
 
 		Renderer2D::Statistics Stats;
 	};
@@ -212,6 +216,9 @@ namespace Eis
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		s_Data.WhiteTexture->SetData(static_cast<void*>(&whiteTexData), sizeof(whiteTexData));
 
+		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+		s_Data.TextureSlotIndex = 1;
+
 
 		// Init Shaders
 
@@ -298,7 +305,7 @@ namespace Eis
 	{
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.TextureSlotIndex = 0;
+		s_Data.TextureSlotIndex = 1;
 	}
 	void Renderer2D::StartBatchCircles()
 	{
@@ -333,7 +340,9 @@ namespace Eis
 		s_Data.TriangleVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
 
 		s_Data.TriangleShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, dataSize);
+		RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
+
+		s_Data.Stats.DrawCalls++;
 	}
 	void Renderer2D::FlushQuads()
 	{
@@ -480,7 +489,7 @@ namespace Eis
 	}
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint)
 	{
-		DrawRotatedQuad(glm::vec3(position, 1.0f), size, rotation, texture, tiling, tint);
+		DrawRotatedQuad(glm::vec3(position, 0.0f), size, rotation, texture, tiling, tint);
 	}
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint)
 	{
@@ -624,7 +633,9 @@ namespace Eis
 
 	float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture)
 	{
-		for (uint8_t i = 0; i < s_Data.TextureSlotIndex; i++)
+		if (!texture) return 0.0f; // white tex
+
+		for (size_t i{}; i < s_Data.TextureSlotIndex; i++)
 		{
 			if (*s_Data.TextureSlots[i] == *texture)
 				return static_cast<float>(i);
@@ -635,11 +646,13 @@ namespace Eis
 
 	float Renderer2D::PushTexture(const Ref<Texture2D>& texture)
 	{
+		EIS_CORE_ASSERT(texture, "Invalid texture!");
+
 		if (s_Data.TextureSlotIndex >= s_Data.MaxTextureSlots)
 			NextBatchQuads();
 
 		const float textureIndex = static_cast<float>(s_Data.TextureSlotIndex);
-		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture ? texture : s_Data.WhiteTexture;
+		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 		s_Data.TextureSlotIndex++;
 
 		return textureIndex;
