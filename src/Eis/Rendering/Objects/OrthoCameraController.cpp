@@ -14,7 +14,7 @@ namespace Eis
 		// might be best handled by the window system and keep this free aspect
 		if (aspectRatio != 0) EIS_CORE_WARN("Fixed aspect ratio not implemented!");
 
-		m_AspectRatio = static_cast<float>(Eis::Application::GetWindow().GetWidth()) / Eis::Application::GetWindow().GetHeight();
+		m_AspectRatio = static_cast<float>(Application::GetWindow().GetWidth()) / Application::GetWindow().GetHeight();
 		m_Camera = OrthographicCamera(m_AspectRatio, m_Zoom);
 	}
 
@@ -27,22 +27,22 @@ namespace Eis
 		glm::vec3 delta(0.0f);
 		const float sinRot = sin(glm::radians(m_Camera.GetRotation())),
 					cosRot = cos(glm::radians(m_Camera.GetRotation()));
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_W) || Application::GetInput().IsKeyPressed(EIS_KEY_UP))
+		if (Input::IsKeyPressed(EIS_KEY_W) || Input::IsKeyPressed(EIS_KEY_UP))
 		{
 			delta.x += -sinRot;
 			delta.y +=  cosRot;
 		}
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_S) || Application::GetInput().IsKeyPressed(EIS_KEY_DOWN))
+		if (Input::IsKeyPressed(EIS_KEY_S) || Input::IsKeyPressed(EIS_KEY_DOWN))
 		{
 			delta.x -= -sinRot;
 			delta.y -=  cosRot;
 		}
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_A) || Application::GetInput().IsKeyPressed(EIS_KEY_LEFT))
+		if (Input::IsKeyPressed(EIS_KEY_A) || Input::IsKeyPressed(EIS_KEY_LEFT))
 		{
 			delta.x -=  cosRot;
 			delta.y -=  sinRot;
 		}
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_D) || Application::GetInput().IsKeyPressed(EIS_KEY_RIGHT))
+		if (Input::IsKeyPressed(EIS_KEY_D) || Input::IsKeyPressed(EIS_KEY_RIGHT))
 		{
 			delta.x +=  cosRot;
 			delta.y +=  sinRot;
@@ -59,9 +59,9 @@ namespace Eis
 
 		if (m_RotationLock) return;
 
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_Q))
+		if (Input::IsKeyPressed(EIS_KEY_Q))
 			m_Camera.AddRotation(m_CameraRotationSpeed * (float)Time::GetDeltaTime());
-		if (Application::GetInput().IsKeyPressed(EIS_KEY_E))
+		if (Input::IsKeyPressed(EIS_KEY_E))
 			m_Camera.AddRotation(-m_CameraRotationSpeed * (float)Time::GetDeltaTime());
 	}
 
@@ -86,7 +86,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		glm::vec2 mousePos = Eis::Application::GetInput().GetMousePos();
+		glm::vec2 mousePos = Eis::Input::GetMousePos();
 
 		mousePos /= glm::vec2(Application::GetWindow().GetWidth(), Application::GetWindow().GetHeight());
 		mousePos = mousePos * 2.0f - glm::vec2(1.0f);

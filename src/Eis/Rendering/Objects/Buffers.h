@@ -51,17 +51,18 @@ namespace Eis
 		{
 			switch (Type)
 			{
-			case Eis::ShaderDataType::Bool:		return 1;
-			case Eis::ShaderDataType::Int:		return 1;
-			case Eis::ShaderDataType::Int2:		return 2;
-			case Eis::ShaderDataType::Int3:		return 3;
-			case Eis::ShaderDataType::Int4:		return 4;
-			case Eis::ShaderDataType::Float:	return 1;
-			case Eis::ShaderDataType::Float2:	return 2;
-			case Eis::ShaderDataType::Float3:	return 3;
-			case Eis::ShaderDataType::Float4:	return 4;
-			case Eis::ShaderDataType::Mat3:		return 3 * 3;
-			case Eis::ShaderDataType::Mat4:		return 4 * 4;
+				case Eis::ShaderDataType::Bool:		return 1;
+				case Eis::ShaderDataType::Int:		return 1;
+				case Eis::ShaderDataType::Int2:		return 2;
+				case Eis::ShaderDataType::Int3:		return 3;
+				case Eis::ShaderDataType::Int4:		return 4;
+				case Eis::ShaderDataType::Float:	return 1;
+				case Eis::ShaderDataType::Float2:	return 2;
+				case Eis::ShaderDataType::Float3:	return 3;
+				case Eis::ShaderDataType::Float4:	return 4;
+
+				case Eis::ShaderDataType::Mat3:		return 3; // 3 * float3
+				case Eis::ShaderDataType::Mat4:		return 4; // 4 * float4
 			}
 
 			EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");

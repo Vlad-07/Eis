@@ -10,6 +10,9 @@
 #include <GLFW/glfw3.h>
 
 
+#ifdef EIS_PLATFORM_WINDOWS
+
+
 namespace Eis
 {
 	WindowsWindow::WindowsWindow(const WindowProps& props)
@@ -212,10 +215,6 @@ namespace Eis
 				MouseScrolledEvent event(static_cast<float>(xoffset), static_cast<float>(yoffset));
 				data.EventCallback(event);
 			});
-
-		// Init input
-
-		m_Input.Init(m_Window);
 	}
 
 	WindowsWindow::~WindowsWindow()
@@ -272,3 +271,5 @@ namespace Eis
 		m_Data.Title = title;
 	}
 }
+
+#endif // EIS_PLATFORM_WINDOWS

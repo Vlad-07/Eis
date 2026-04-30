@@ -9,32 +9,17 @@
 
 namespace Eis
 {
-	class InputContext;
-
-	// Pimpl (should use oo factory?)
-
 	class Input
 	{
 	public:
-		Input();
-		~Input();
-		Input& operator=(const Input&) = delete;
+		Input() = delete;
 
-		// Only called by engine
-		void Init(void* window);
+		static bool IsKeyPressed(KeyCode key);
 
+		static bool IsMouseButtonPressed(MouseCode button);
+		static glm::vec2 GetMousePos();
 
-		bool IsKeyPressed(KeyCode key) const;
-
-		bool IsMouseButtonPressed(MouseCode button) const;
-		glm::vec2 GetMousePos() const;
-
-		EIS_DEPRECATED
-		float GetMouseX() const;
-		EIS_DEPRECATED
-		float GetMouseY() const;
-
-	private:
-		Scope<InputContext> m_Context;
+		static float GetMouseX();
+		static float GetMouseY();
 	};
 }

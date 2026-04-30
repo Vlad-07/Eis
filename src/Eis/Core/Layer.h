@@ -1,11 +1,5 @@
 #pragma once
 
-#include <optional>
-#include <functional>
-
-#include "Eis/Core/Core.h"
-#include "Eis/Core/Buffer.h"
-#include "Eis/Core/EisContext.h"
 #include "Eis/Events/Event.h"
 
 
@@ -32,8 +26,5 @@ namespace Eis
 
 	protected:
 		std::string m_Name;
-		EisContext Eis{};
-
-		friend class LayerLib;
 	};
 }

@@ -230,11 +230,6 @@ namespace Eis
 			{
 				return mods == 0 && action == GLFW_PRESS && key == GLFW_KEY_F12;
 			});
-
-
-		// Init input
-
-		m_Input.Init(m_Window);
 	}
 
 	WebWindow::~WebWindow()

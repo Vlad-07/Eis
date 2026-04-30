@@ -23,7 +23,7 @@ namespace Eis
 
 		const auto& NamedFactory = m_LayerFactories[id];
 		auto layer = NamedFactory.Factory(data);
-		layer->Eis = m_Context;
+
 		return layer;
 	}
 
