@@ -9,7 +9,7 @@
 
 namespace Eis
 {
-	static constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // should check
+	static constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // should querry gpu
 
 
 	static bool IsDepthFormat(FramebufferTexFormat format)
@@ -183,6 +183,9 @@ namespace Eis
 
 	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
+		if (width == m_Spec.Width && height == m_Spec.Height)
+			return;
+
 		if (width >= c_MaxFramebufferSize || height >= c_MaxFramebufferSize)
 		{
 			EIS_CORE_ERROR("Requested framebuffer size too large!");
@@ -192,6 +195,8 @@ namespace Eis
 		m_Spec.Width  = width;
 		m_Spec.Height = height;
 
+
+		// maybe only resize attachments
 		InvalidateAttachments();
 	}
 }

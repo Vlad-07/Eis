@@ -27,12 +27,6 @@ namespace Eis
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
 		Renderer2D::Init();
 
-		// Init engine context
-		EisContext context{};
-		context.m_App = this;
-		context.m_Window = m_Window.get();
-		context.m_Input = &m_Window->GetInput();
-		m_LayerLib.SetContext(context);
 
 		// Init ImGui overlay
 		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();

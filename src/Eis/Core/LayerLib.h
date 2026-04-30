@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <optional>
 
 #include "Eis/Core/Layer.h"
+#include "Eis/Core/Buffer.h"
 #include "Eis/Debug/Assert.h"
 
 
@@ -38,8 +40,6 @@ namespace Eis
 		LayerLib() = default;
 		~LayerLib() = default;
 
-		void SetContext(const EisContext& context) { m_Context = context; }
-
 		void RegisterLayer(const LayerFactory& factory, const std::string& name);
 
 		Scope<Layer> MakeLayer(const std::string& name, std::optional<Buffer>& data) const;
@@ -56,6 +56,5 @@ namespace Eis
 
 	private:
 		std::vector<NamedFactory> m_LayerFactories;
-		EisContext m_Context;
 	};
 }

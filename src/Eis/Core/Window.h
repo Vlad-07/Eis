@@ -20,7 +20,7 @@ namespace Eis
 			: Title(title), Width(width), Height(height) {}
 
 		inline static constexpr uint32_t DefaultWidth = 1280;
-		inline static constexpr uint32_t DefaultHeight= 720;
+		inline static constexpr uint32_t DefaultHeight = 720;
 	};
 
 
@@ -49,8 +49,6 @@ namespace Eis
 
 		virtual void* GetNativeWindow() const = 0;
 
-		Input& GetInput() { return m_Input; }
-
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 
 	protected:
@@ -64,8 +62,6 @@ namespace Eis
 
 			EventCallbackFn EventCallback;
 		} m_Data;
-
-		Input m_Input;
 
 	protected:
 		// Maybe handle this using a window manager?

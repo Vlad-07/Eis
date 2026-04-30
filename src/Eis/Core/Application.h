@@ -25,7 +25,6 @@ namespace Eis
 		// Engine only
 		static Application& Get() { return *s_Instance; }
 		static Window& GetWindow() { return *s_Instance->m_Window; }
-		static Input& GetInput() { return s_Instance->m_Window->GetInput(); }
 		// -----------
 
 

@@ -68,15 +68,54 @@ namespace Eis
 
 		for (const auto& element : vbLayout)
 		{
-			glEnableVertexAttribArray(m_VertexBufferIndex);
-			glVertexAttribPointer(m_VertexBufferIndex,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				vbLayout.GetStride(),
-				(const void*)element.Offset);
+			switch (element.Type)
+			{
+				case ShaderDataType::Bool:
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(m_VertexBufferIndex);
+					glVertexAttribPointer(m_VertexBufferIndex,
+						element.GetComponentCount(),
+						ShaderDataTypeToOpenGLType(element.Type),
+						element.Normalized ? GL_TRUE : GL_FALSE,
+						vbLayout.GetStride(),
+						(const void*)element.Offset);
 
-			m_VertexBufferIndex++;
+					m_VertexBufferIndex++;
+
+					break;
+				}
+
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.GetComponentCount();
+					for (uint8_t i{}; i < count; i++)
+					{
+						glEnableVertexAttribArray(m_VertexBufferIndex);
+						glVertexAttribPointer(m_VertexBufferIndex,
+							count,
+							ShaderDataTypeToOpenGLType(element.Type),
+							element.Normalized ? GL_TRUE : GL_FALSE,
+							vbLayout.GetStride(),
+							(const void*)(element.Offset + sizeof(float) * count * i));
+						glVertexAttribDivisor(m_VertexBufferIndex, 1);
+						m_VertexBufferIndex++;
+					}
+
+					break;
+				}
+
+				default:
+					EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
+			}
 		}
 
 		m_VertexBuffers.push_back(vb);
