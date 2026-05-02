@@ -5,6 +5,8 @@
 #include "Eis/Core/Random.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
+#include "Eis/RenderingExp/ExpRenderer.h"
+
 #include "Eis/ImGui/ImGuiLayer.h"
 
 
@@ -268,6 +270,7 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
+		ExpRenderer::OnWindowResized(e.GetSize().x, e.GetSize().y);
 
 		return false;
 	}

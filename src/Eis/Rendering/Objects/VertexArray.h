@@ -16,7 +16,7 @@ namespace Eis
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vb) = 0;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& ib) = 0;
 
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
+		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0; // why?
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
 
