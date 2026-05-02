@@ -1,56 +1,81 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLFW"] = "vendor/GLFW/include"
-IncludeDir["Glad"] = "vendor/Glad/include"
-IncludeDir["ImGui"] = "vendor/imgui"
-IncludeDir["ImPlot"] = "vendor/implot"
-IncludeDir["glm"] = "vendor/glm"
-IncludeDir["spdlog"] = "vendor/spdlog/include"
-IncludeDir["json"] = "vendor/json"
-IncludeDir["stb_image"] = "vendor/stb_image"
-IncludeDir["stb_image_write"] = "vendor/stb_image_write"
-IncludeDir["stb_image_resize"] = "vendor/stb_image_resize"
-IncludeDir["GameNetworkingSockets"] = "vendor/GameNetworkingSockets/include"
+IncludeDir["Eis"] = "Eis/src"
+IncludeDir["GLFW"] = "Eis/vendor/GLFW/include"
+IncludeDir["Glad"] = "Eis/vendor/Glad/include"
+IncludeDir["ImGui"] = "Eis/vendor/imgui"
+IncludeDir["ImPlot"] = "Eis/vendor/implot"
+IncludeDir["glm"] = "Eis/vendor/glm"
+IncludeDir["spdlog"] = "Eis/vendor/spdlog/include"
+IncludeDir["json"] = "Eis/vendor/json/include"
+IncludeDir["entt"] = "Eis/vendor/entt/include"
+IncludeDir["stb_image"] = "Eis/vendor/stb_image"
+IncludeDir["GameNetworkingSockets"] = "Eis/vendor/GameNetworkingSockets/include"
+
+Defines = {}
+Defines["CRT"] = "_CRT_SECURE_NO_WARNINGS"
+Defines["ImGuiCfg"] = "IMGUI_USER_CONFIG=\"Eis/ImGui/ImGuiConfig.h\""
+
+
+workspace "Eis"
+	startproject "Editor"
+	architecture "x86_64"
+
+	configurations
+	{
+		"Debug",
+		"Release"
+	}
+
+	group "Dependencies"
+		include "Eis/vendor/GLFW"
+		include "Eis/vendor/Glad"
+		include "Eis/vendor/imgui"
+		include "Eis/vendor/implot"
+	group ""
+
 
 project "Eis"
+	location "Eis"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("Eis/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("Eis/bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "Eispch.h"
-	pchsource "src/Eispch.cpp"
+	pchsource "Eis/src/Eispch.cpp"
 
 	files
 	{
-		"src/**.h",
-		"src/**.cpp",
-		"vendor/glm/glm/**.hpp",
-		"vendor/glm/glm/**.inl",
-		"vendor/json/**.hpp",
-		"vendor/stb_image/**.h",
-		"vendor/stb_image/**.cpp",
-		"vendor/stb_image_resize/**.h",
-		"vendor/stb_image_resize/**.cpp",
-		"vendor/stb_image_write/**.h",
-		"vendor/stb_image_write/**.cpp"
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
+
+		"%{prj.name}/vendor/json/include/json.hpp",
+		"%{prj.name}/vendor/json/include/json_fwd.hpp",
+
+		"%{prj.name}/vendor/entt/include/entt.hpp",
+
+		"%{prj.name}/vendor/stb_image/stb_image.h",
+		"%{prj.name}/vendor/stb_image/stb_image.cpp",
 	}
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS",
-		"GLM_ENABLE_EXPERIMENTAL",
+		"%{Defines.CRT}",
+		"%{Defines.ImGuiCfg}",
 		"GLFW_INCLUDE_NONE",
-		"IMGUI_USER_CONFIG=\"ImGuiConfig.h\""
+		"GLM_ENABLE_EXPERIMENTAL"
 	}
 
 	includedirs
 	{
-		"src",
+		"%{IncludeDir.Eis}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -58,9 +83,8 @@ project "Eis"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.json}",
+		"%{IncludeDir.entt}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.stb_image_resize}",
-		"%{IncludeDir.stb_image_write}",
 		"%{IncludeDir.GameNetworkingSockets}"
 	}
 
@@ -84,14 +108,72 @@ project "Eis"
 	filter { "system:windows", "configurations:Debug" }	
 		links
 		{
-			"vendor/GameNetworkingSockets/.bin/Windows/Debug/GameNetworkingSockets.lib"
+			"Eis/vendor/GameNetworkingSockets/.bin/Windows/Debug/GameNetworkingSockets.lib"
 		}
 
 	filter { "system:windows", "configurations:Release" }	
 		links
 		{
-			"vendor/GameNetworkingSockets/.bin/Windows/Release/GameNetworkingSockets.lib"
+			"Eis/vendor/GameNetworkingSockets/.bin/Windows/Release/GameNetworkingSockets.lib"
 		}
+
+	filter "configurations:Debug"
+		defines "EIS_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "EIS_RELEASE"
+		runtime "Release"
+		optimize "on"
+		linktimeoptimization "on"
+
+
+project "Editor"
+	location "Editor" 
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.hpp"
+	}
+
+	includedirs
+	{
+		"%{prj.name}/src",
+		"%{IncludeDir.Eis}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImPlot}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
+	}
+
+	links
+	{
+		"Eis"
+	}
+
+	defines
+	{
+		"%{Defines.CRT}",
+		"%{Defines.ImGuiCfg}"
+	}
+
+	filter "toolset:msc*"
+		buildoptions { "/utf-8" }
+		multiprocessorcompile "on"
+
+	filter "system:windows"
+		systemversion "latest"
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"
