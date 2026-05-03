@@ -29,7 +29,6 @@ namespace Eis
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
 		Renderer2D::Init();
 
-
 		// Init ImGui overlay
 		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();
 		m_ImGuiLayer = static_cast<ImGuiLayer*>(imlayer.get());
@@ -47,10 +46,6 @@ namespace Eis
 	void Application::Run()
 	{
 		EIS_PROFILE_FUNCTION();
-
-		// If no entry set, default to first registered layer
-		if (m_LayerStack.GetSize() <= 1)
-			SetEntryLayer(0);
 
 		#ifndef EIS_PLATFORM_WEB
 		while (m_Running)
@@ -105,145 +100,20 @@ namespace Eis
 		}
 
 		m_Window->SwapBuffers();
-
-		HandleTransition();
-
-		WaitFPSLimit();
 	}
 
-
-	void Application::WaitFPSLimit() const
+	void Application::PushLayer(Scope<Layer> layer)
 	{
-		// Prioritise vsync except in background
-		if (m_Window->IsVSync() && m_Window->IsFocused())
-			return;
-
-		while (true)
-		{
-			Duration remaining = ChronoDuration(Time::Now() - Time::GetFrameStart());
-			if (remaining >= m_TargetFrametime)
-				break;
-
-			// TODO: find a way to sleep more precise
-
-			if (remaining > Duration::FromMs(2.0))
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			else if (remaining > Duration::FromMs(1.0))
-				std::this_thread::yield();
-		}
-	}
-
-
-	void Application::SetEntryLayer(uint32_t id)
-	{
-		if (m_LayerStack.GetSize() > 1)
-		{
-			EIS_ERROR("Entry layer already set!");
-			return;
-		}
-
-		auto layer = m_LayerLib.MakeLayer(id, m_QueuedTransitionData);
-		ClearTransitionData();
-
-		m_ActiveLayer.LayerPtr = layer.get();
-		m_ActiveLayer.Id = id;
-		m_ActiveLayer.Name = layer->GetName();
+		EIS_PROFILE_FUNCTION();
 
 		m_LayerStack.PushLayer(std::move(layer));
 	}
 
-	void Application::SetEntryLayer(const std::string& name)
+	void Application::PushOverlay(Scope<Layer> overlay)
 	{
-		if (m_LayerStack.GetSize() > 1)
-		{
-			EIS_ERROR("Entry layer already set!");
-			return;
-		}
+		EIS_PROFILE_FUNCTION();
 
-		auto layer = m_LayerLib.MakeLayer(name, m_QueuedTransitionData);
-		ClearTransitionData();
-
-		m_ActiveLayer.LayerPtr = layer.get();
-		m_ActiveLayer.Id = m_LayerLib.GetLayerId(name);
-		m_ActiveLayer.Name = name;
-
-		m_LayerStack.PushLayer(std::move(layer));
-	}
-
-
-	void Application::QueueTransition(uint32_t id)
-	{
-		if (s_Instance->m_ActiveLayer.Id == id)
-		{
-			EIS_CORE_WARN("Request to transition to active layer ignored!");
-			return;
-		}
-
-		s_Instance->m_QueuedLayerId = id;
-		s_Instance->m_QueuedLayerName.clear();
-	}
-
-	void Application::QueueTransition(const std::string& name)
-	{
-		if (s_Instance->m_ActiveLayer.Name == name)
-		{
-			EIS_CORE_WARN("Request to transition to active layer ignored!");
-			return;
-		}
-
-		s_Instance->m_QueuedLayerName = name;
-		s_Instance->m_QueuedLayerId = -1;
-	}
-
-	void Application::SetTransitionData(Buffer&& buf)
-	{
-		m_QueuedTransitionData.emplace(std::move(buf));
-	}
-
-	void Application::ClearTransitionData()
-	{
-		m_QueuedTransitionData.reset();
-	}
-
-
-	void Application::HandleTransition()
-	{
-		// this is needlessly complicated
-
-		if (m_QueuedLayerId != -1)
-		{
-			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
-
-			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerId, m_QueuedTransitionData);
-			ClearTransitionData();
-
-			m_ActiveLayer.LayerPtr = layer.get();
-			m_ActiveLayer.Id = m_QueuedLayerId;
-			m_ActiveLayer.Name = m_ActiveLayer.LayerPtr->GetName();
-
-			m_LayerStack.PushLayer(std::move(layer));
-
-			m_QueuedLayerId = -1;
-
-//			EIS_CORE_INFO("Transitioned to {}.", m_ActiveLayer.Name);
-		}
-		else if (!m_QueuedLayerName.empty())
-		{
-			m_LayerStack.PopLayer(m_ActiveLayer.LayerPtr);
-
-			auto layer = m_LayerLib.MakeLayer(m_QueuedLayerName, m_QueuedTransitionData);
-			ClearTransitionData();
-
-			m_ActiveLayer.LayerPtr = layer.get();
-			m_ActiveLayer.Id = m_LayerLib.GetLayerId(m_QueuedLayerName);
-			m_ActiveLayer.Name = m_QueuedLayerName;
-
-			m_LayerStack.PushLayer(std::move(layer));
-
-			m_QueuedLayerName.clear();
-
-//			EIS_INFO("Transitioned to {}.", m_ActiveLayer.Name);
-		}
+		m_LayerStack.PushOverlay(std::move(overlay));
 	}
 
 
@@ -252,10 +122,8 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(Application::OnWindowResize));
-		dispatcher.Dispatch<WindowFocusEvent>(EIS_BIND_EVENT_FN(Application::OnWindowFocused));
-		dispatcher.Dispatch<WindowLostFocusEvent>(EIS_BIND_EVENT_FN(Application::OnWindowLostFocus));
+		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
@@ -267,23 +135,9 @@ namespace Eis
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		EIS_PROFILE_FUNCTION();
-
 		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
 		//ExpRenderer::OnWindowResized(e.GetSize().x, e.GetSize().y);
 
-		return false;
-	}
-
-	bool Application::OnWindowFocused(WindowFocusEvent& e)
-	{
-		m_TargetFrametime = Duration::FromMs(0.0);
-		return false;
-	}
-
-	bool Application::OnWindowLostFocus(WindowLostFocusEvent& e)
-	{
-		m_TargetFrametime = Duration::FromMs(30.0);
 		return false;
 	}
 

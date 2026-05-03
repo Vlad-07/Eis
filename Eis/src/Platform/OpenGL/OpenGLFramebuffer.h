@@ -29,13 +29,16 @@ namespace Eis
 
 		virtual const std::vector<GLuint>& GetColorAttachmentsIds() const override { return m_ColorIds; }
 
+		virtual const FramebufferSpec& GetSpec() const override { return m_Spec; }
+
 	private:
 		void InvalidateAttachments();
 
 	private:
+		FramebufferSpec m_Spec;
+
 		GLuint m_RendererId{};
 
-		FramebufferSpec m_Spec;
 		std::vector<FramebufferTexSpec> m_ColorAttachmentSpecs;
 		FramebufferTexSpec m_DepthAttachmentSpec{};
 

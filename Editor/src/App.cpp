@@ -11,7 +11,7 @@ namespace Eis
 	public:
 		EditorApp()
 		{
-			RegisterLayer<EditorLayer>("EditorLayer");
+			PushLayer(CreateScope<EditorLayer>());
 		}
 
 		virtual ~EditorApp() = default;

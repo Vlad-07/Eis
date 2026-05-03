@@ -40,9 +40,6 @@ namespace Eis
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width != 0 ? props.Width : WindowProps::DefaultWidth;
 		m_Data.Height = props.Height != 0 ? props.Height : WindowProps::DefaultHeight;
-		m_Data.Focused = true;
-		m_Data.Iconified = false;
-		m_Data.VSync = true;
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -68,7 +65,8 @@ namespace Eis
 
 		// Set window settings
 
-		SetVSync(true);
+		SetVSync(m_Data.VSync);
+
 		glfwGetFramebufferSize(m_Window, (int*)&m_Data.Width, (int*)&m_Data.Height); // Ensure correct size on high dpi displays
 		glfwGetWindowContentScale(m_Window, &m_Data.Scale.x, &m_Data.Scale.y);
 
@@ -233,7 +231,10 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		glfwPollEvents();
+		if (m_Data.Focused)
+			glfwPollEvents();
+		else
+			glfwWaitEventsTimeout(1.0f / m_Data.UnfocusedMinFPS);
 	}
 
 	void WindowsWindow::SwapBuffers()
@@ -256,10 +257,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		if (enabled)
-			glfwSwapInterval(1);
-		else
-			glfwSwapInterval(0);
+		glfwSwapInterval(enabled ? 1 : 0);
 		m_Data.VSync = enabled;
 	}
 

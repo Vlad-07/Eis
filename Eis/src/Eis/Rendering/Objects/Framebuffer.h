@@ -75,6 +75,8 @@ namespace Eis
 
 		virtual const std::vector<uint32_t>& GetColorAttachmentsIds() const = 0;
 
+		virtual const FramebufferSpec& GetSpec() const = 0;
+
 
 		static Ref<Framebuffer> Create(const FramebufferSpec& fbSpec);
 	};

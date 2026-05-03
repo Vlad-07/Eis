@@ -3,6 +3,8 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include "Eis/Rendering/Objects/Camera.h"
+
 
 namespace Eis
 {
@@ -25,5 +27,16 @@ namespace Eis
 		TransformComponent(const glm::mat4& tr) : Transform{ tr } {}
 
 		operator glm::mat4() const { return Transform; }
+	};
+
+	struct CameraComponent
+	{
+		Camera Camera;
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection) : Camera{ projection } {}
+
+		operator Eis::Camera() const { return Camera; }
 	};
 }

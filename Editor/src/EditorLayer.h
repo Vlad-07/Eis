@@ -26,5 +26,6 @@ namespace Eis
 		Ref<Scene> m_ActiveScene;
 
 		Ref<Framebuffer> m_Framebuffer;
+		glm::vec2 m_ViewportSize{};
 	};
 }

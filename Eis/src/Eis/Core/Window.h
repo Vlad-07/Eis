@@ -47,6 +47,8 @@ namespace Eis
 		virtual void SetTitle(const std::string& title) = 0;
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
+		void SetUnfocusedMinFPS(float minFps) { m_Data.UnfocusedMinFPS = minFps; }
+
 		virtual void* GetNativeWindow() const = 0;
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
@@ -55,13 +57,14 @@ namespace Eis
 		struct WindowData
 		{
 			std::string Title;
-			uint32_t Width, Height;
-			glm::fvec2 Scale;
-			bool Focused, Iconified;
-			bool VSync;
+			uint32_t Width{}, Height{};
+			glm::fvec2 Scale{};
+			bool Focused{ true }, Iconified{ false };
+			bool VSync{ true };
+			float UnfocusedMinFPS{ 5.0f };
 
 			EventCallbackFn EventCallback;
-		} m_Data;
+		} m_Data{};
 
 	protected:
 		// Maybe handle this using a window manager?

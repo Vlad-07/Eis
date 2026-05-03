@@ -6,8 +6,7 @@ namespace Eis
 {
 	EditorLayer::EditorLayer()
 		: Layer{ "EditorLayer" }
-	{
-	}
+	{}
 
 
 	void EditorLayer::Attach()
@@ -33,20 +32,32 @@ namespace Eis
 
 	void EditorLayer::Render()
 	{
+		// Resize framebuffer
+		if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f
+			&& m_Framebuffer->GetSpec().Width != m_ViewportSize.x
+			&& m_Framebuffer->GetSpec().Height != m_ViewportSize.y)
+		{
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+
+			WindowResizeEvent e{ (int32_t)m_ViewportSize.x, (int32_t)m_ViewportSize.y };
+			m_CameraController.OnEvent(e);
+		}
+
+
 		Renderer2D::SetClearColor(glm::vec3{});
-		Eis::Renderer2D::Clear();
+		Renderer2D::Clear();
 
 		m_Framebuffer->Bind();
 
 		Renderer2D::SetClearColor(glm::vec3{ 35, 45, 61 } / 255.0f);
-		Eis::Renderer2D::Clear();
+		Renderer2D::Clear();
 
 
-		Eis::Renderer2D::BeginScene(m_CameraController.GetCamera());
+		Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-		Eis::Renderer2D::DrawQuad(glm::vec2{}, glm::vec2{ 1.0f }, glm::vec4{1.0f});
+		Renderer2D::DrawQuad(glm::vec2{}, glm::vec2{ 1.0f }, glm::vec4{1.0f});
 
-		Eis::Renderer2D::EndScene();
+		Renderer2D::EndScene();
 
 		m_Framebuffer->Unbind();
 	}
@@ -59,18 +70,10 @@ namespace Eis
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, glm::vec2{});
 		ImGui::Begin("Viewport");
 
-		glm::vec2 viewportSize = ImGui::GetContentRegionAvail();
-		if (viewportSize.x > 0 && viewportSize.y > 0)
-		{
-			m_Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-
-			// hacky
-			WindowResizeEvent e{ (int32_t)viewportSize.x, (int32_t)viewportSize.y };
-			m_CameraController.OnEvent(e);
-		}
+		m_ViewportSize = ImGui::GetContentRegionAvail();
 
 		uint32_t texId{ m_Framebuffer->GetColorAttachmentsIds()[0] };
-		ImGui::Image(texId, viewportSize, glm::vec2{0, 1}, glm::vec2{1, 0});
+		ImGui::Image(texId, m_ViewportSize, glm::vec2{0, 1}, glm::vec2{1, 0});
 
 		ImGui::End();
 		ImGui::PopStyleVar();
