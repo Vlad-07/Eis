@@ -280,6 +280,27 @@ namespace Eis
 		StartBatch();
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		const glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
+
+		s_Data.TriangleShader->Bind();
+		s_Data.TriangleShader->SetMat4("u_VP", viewProj);
+
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("u_VP", viewProj);
+
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->SetMat4("u_VP", viewProj);
+
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->SetMat4("u_VP", viewProj);
+
+		StartBatch();
+	}
+
 	void Renderer2D::EndScene()
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -630,11 +651,6 @@ namespace Eis
 	void Renderer2D::ResetStats()
 	{
 		memset(&s_Data.Stats, 0, sizeof(s_Data.Stats));
-	}
-
-	Ref<Shader> Renderer2D::GetQuadShader()
-	{
-		return s_Data.QuadShader;
 	}
 
 

@@ -11,6 +11,7 @@ workspace "Eis"
 	}
 
 	group "Dependencies"
+		include "Eis/vendor/premake"
 		includeexternal "Eis/vendor/GLFW"
 		includeexternal "Eis/vendor/Glad"
 		includeexternal "Eis/vendor/imgui"
@@ -58,7 +59,6 @@ project "Editor"
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS",
 		"IMGUI_USER_CONFIG=\"Eis/ImGui/ImGuiConfig.h\""
 	}
 

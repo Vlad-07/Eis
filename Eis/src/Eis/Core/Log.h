@@ -7,6 +7,24 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/ostr.h>
 
+
+namespace Eis
+{
+	class Log
+	{
+	public:
+		static void Init();
+
+		static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+		static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+
+	private:
+		static Ref<spdlog::logger> s_CoreLogger;
+		static Ref<spdlog::logger> s_ClientLogger;
+	};
+}
+
+// TODO: consider
 // Consider compiled spdlog, not header only
 // Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 
@@ -25,19 +43,3 @@
 #define EIS_WARN(...)			::Eis::Log::GetClientLogger()->warn(__VA_ARGS__);
 #define EIS_ERROR(...)			::Eis::Log::GetClientLogger()->error(__VA_ARGS__);
 #define EIS_CRITICAL(...)		::Eis::Log::GetClientLogger()->critical(__VA_ARGS__);
-
-namespace Eis
-{
-	class Log
-	{
-	public:
-		static void Init();
-
-		static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
-
-	private:
-		static Ref<spdlog::logger> s_CoreLogger;
-		static Ref<spdlog::logger> s_ClientLogger;
-	};
-}

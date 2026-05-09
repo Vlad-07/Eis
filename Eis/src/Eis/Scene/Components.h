@@ -2,8 +2,10 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include "Eis/Rendering/Objects/Camera.h"
+#include "SceneCamera.h"
+#include "ScriptableEntity.h"
 
 
 namespace Eis
@@ -20,23 +22,58 @@ namespace Eis
 
 	struct TransformComponent
 	{
-		glm::mat4 Transform{};
+		glm::vec3 Translation{};
+		glm::vec3 Rotation{};
+		glm::vec3 Scale{ 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::mat4& tr) : Transform{ tr } {}
+		TransformComponent(const glm::vec3& tr) : Translation{ tr } {}
 
-		operator glm::mat4() const { return Transform; }
+		glm::mat4 GetTransform() const
+		{
+			const glm::mat4 rotation = glm::rotate(glm::mat4{ 1.0f }, Rotation.x, glm::vec3{ 1.0f, 0.0f, 0.0f })
+				* glm::rotate(glm::mat4{ 1.0f }, Rotation.y, glm::vec3{ 0.0f, 1.0f, 0.0f })
+				* glm::rotate(glm::mat4{ 1.0f }, Rotation.z, glm::vec3{ 0.0f, 0.0f, 1.0f });
+
+			return glm::translate(glm::mat4{1.0f}, Translation)
+				* rotation
+				* glm::scale(glm::mat4{1.0f}, Scale);
+		}
+	};
+
+	struct SpriteRendererComponent
+	{
+		//...
+		glm::vec4 Tint{ 1.0f };
+
+		SpriteRendererComponent() = default;
+		SpriteRendererComponent(const SpriteRendererComponent&) = default;
+		SpriteRendererComponent(const glm::vec4& tint) : Tint{ tint } {}
 	};
 
 	struct CameraComponent
 	{
-		Camera Camera;
+		SceneCamera Camera;
+		bool FixedAspectRatio{};
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		CameraComponent(const glm::mat4& projection) : Camera{ projection } {}
+	};
 
-		operator Eis::Camera() const { return Camera; }
+	struct NativeScriptComponent
+	{
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = [&]() { Instance = new T{}; };
+			DestroyScript = [&]() { delete Instance; };
+		}
+
+	//private:
+		ScriptableEntity* Instance;
+
+		std::function<void()> InstantiateScript;
+		std::function<void()> DestroyScript;
 	};
 }

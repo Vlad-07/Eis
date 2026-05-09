@@ -74,7 +74,6 @@ namespace Eis
 				result.resize(size);
 				in.seekg(0, std::ios::beg);
 				in.read(&result[0], size);
-				in.close();
 			}
 			else
 				EIS_CORE_ERROR("Could not read from file '{}'", filePath);

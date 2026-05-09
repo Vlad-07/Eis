@@ -9,7 +9,7 @@
 #include "Eis/Core/Log.h"
 #include "Eis/Core/Time.h"
 #include "Eis/Core/Random.h"
-// TODO: asset system
+
 // Debug
 #include "Eis/Debug/Assert.h"
 
@@ -24,11 +24,13 @@
 #include "Eis/Events/ApplicationEvent.h"
 
 // ECS
-#include "Eis/Scene/Scene.h"
-#include "Eis/Scene/Entity.h"
+#include "Eis/Scene/ScriptableEntity.h"
 #include "Eis/Scene/Components.h"
+#include "Eis/Scene/Entity.h"
+#include "Eis/Scene/Scene.h"
 
 // Rendering
+#include "Eis/Rendering/Renderer/RenderCommands.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
 #include "Eis/Rendering/Objects/OrthoCameraController.h"

@@ -16,5 +16,7 @@ namespace Eis
 
 		void Begin();
 		void End();
+
+		void SetDarkThemeColors();
 	};
 }

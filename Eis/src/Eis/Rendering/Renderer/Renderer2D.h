@@ -3,6 +3,7 @@
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 
 #include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Rendering/Objects/Camera.h"
 #include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
@@ -16,6 +17,7 @@ namespace Eis
 	// Called by app
 
 		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform);
 		static void EndScene();
 
 		// Triangles
@@ -85,15 +87,6 @@ namespace Eis
 	// Commands
 
 		static void SetLineWidth(float width);
-
-		static void SetClearColor(const glm::vec3& col) { SetClearColor(glm::vec4(col, 1.0f)); }
-		static void SetClearColor(const glm::vec4& col) { RenderCommands::SetClearColor(col); }
-
-		static void Clear() { RenderCommands::Clear(); }
-
-		// HACK: hijack quad shader for custom shaders
-		// TODO: custom shader support
-		static Ref<Shader> GetQuadShader();
 
 
 	// Only called by engine

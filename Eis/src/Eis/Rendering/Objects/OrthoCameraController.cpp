@@ -27,22 +27,22 @@ namespace Eis
 		glm::vec3 delta(0.0f);
 		const float sinRot = sin(glm::radians(m_Camera.GetRotation())),
 					cosRot = cos(glm::radians(m_Camera.GetRotation()));
-		if (Input::IsKeyPressed(EIS_KEY_W) || Input::IsKeyPressed(EIS_KEY_UP))
+		if (Input::IsKeyPressed(Key::W) || Input::IsKeyPressed(Key::Up))
 		{
 			delta.x += -sinRot;
 			delta.y +=  cosRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_S) || Input::IsKeyPressed(EIS_KEY_DOWN))
+		if (Input::IsKeyPressed(Key::S) || Input::IsKeyPressed(Key::Down))
 		{
 			delta.x -= -sinRot;
 			delta.y -=  cosRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_A) || Input::IsKeyPressed(EIS_KEY_LEFT))
+		if (Input::IsKeyPressed(Key::A) || Input::IsKeyPressed(Key::Left))
 		{
 			delta.x -=  cosRot;
 			delta.y -=  sinRot;
 		}
-		if (Input::IsKeyPressed(EIS_KEY_D) || Input::IsKeyPressed(EIS_KEY_RIGHT))
+		if (Input::IsKeyPressed(Key::D) || Input::IsKeyPressed(Key::Right))
 		{
 			delta.x +=  cosRot;
 			delta.y +=  sinRot;
@@ -59,9 +59,9 @@ namespace Eis
 
 		if (m_RotationLock) return;
 
-		if (Input::IsKeyPressed(EIS_KEY_Q))
+		if (Input::IsKeyPressed(Key::Q))
 			m_Camera.AddRotation(m_CameraRotationSpeed * (float)Time::GetDeltaTime());
-		if (Input::IsKeyPressed(EIS_KEY_E))
+		if (Input::IsKeyPressed(Key::E))
 			m_Camera.AddRotation(-m_CameraRotationSpeed * (float)Time::GetDeltaTime());
 	}
 

@@ -14,6 +14,9 @@ namespace Eis
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 		{ s_RenderAPI->SetViewport(x, y, width, height); }
 
+		static void SetClearColor(const glm::vec3& color)
+		{ SetClearColor(glm::vec4{ color, 1.0f }); }
+
 		static void SetClearColor(const glm::vec4& color)
 		{ s_RenderAPI->SetClearColor(color); }
 

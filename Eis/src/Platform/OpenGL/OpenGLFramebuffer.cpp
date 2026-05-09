@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Eis/Debug/Assert.h>
+#include "Eis/Debug/Assert.h"
 
 
 namespace Eis

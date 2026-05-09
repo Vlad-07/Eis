@@ -2,6 +2,8 @@
 
 #include <Eis.h>
 
+#include "Panels/Hierarchy.h"
+
 
 namespace Eis
 {
@@ -15,17 +17,16 @@ namespace Eis
 		virtual void Detach() override;
 
 		virtual void Update() override;
-		virtual void Render() override;
 		virtual void ImGuiRender() override;
 
 		virtual void OnEvent(Event& event) override;
 
 	private:
-		OrthoCameraController m_CameraController;
-
 		Ref<Scene> m_ActiveScene;
 
 		Ref<Framebuffer> m_Framebuffer;
-		glm::vec2 m_ViewportSize{};
+		glm::uvec2 m_ViewportSize{};
+
+		HierarchyPanel m_HierarchyPanel;
 	};
 }

@@ -41,7 +41,6 @@ project "Eis"
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS",
 		"IMGUI_USER_CONFIG=\"Eis/ImGui/ImGuiConfig.h\"",
 		"GLFW_INCLUDE_NONE",
 		"GLM_ENABLE_EXPERIMENTAL"

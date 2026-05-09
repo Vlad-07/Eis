@@ -67,9 +67,6 @@ namespace Eis
 
 		// Commands
 
-		static void SetClearColor(const glm::vec3& col) { SetClearColor(glm::vec4{ col, 1.0f }); }
-		static void SetClearColor(const glm::vec4& col) { RenderCommands::SetClearColor(col); }
-
 
 		static void Init();
 		static void Shutdown();
