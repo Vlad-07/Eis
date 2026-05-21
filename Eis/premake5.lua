@@ -14,10 +14,12 @@ project "Eis"
 	{
 		"src/**.h",
 		"src/**.cpp",
+
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
 
-		"vendor/entt/include/entt.hpp",
+		"vendor/imguizmo/ImGuizmo.h",
+		"vendor/imguizmo/ImGuizmo.cpp",
 
 		"vendor/stb_image/stb_image.h",
 		"vendor/stb_image/stb_image.cpp",
@@ -33,9 +35,11 @@ project "Eis"
 		"vendor/GLFW/include",
 		"vendor/Glad/include",
 		"vendor/imgui",
+		"vendor/imguizmo",
 		"vendor/glm",
 		"vendor/spdlog/include",
 		"vendor/entt/include",
+		"vendor/json/include",
 		"vendor/stb_image"
 	}
 
@@ -53,6 +57,9 @@ project "Eis"
 		"ImGui",
 		"opengl32.lib"
 	}
+
+	filter "files:vendor/ImGuizmo/**.cpp"
+		enablepch "off"
 
 	filter "toolset:msc*"
 		buildoptions { "/utf-8" }

@@ -4,6 +4,7 @@
 #include <Eis/Scene/Scene.h>
 #include <Eis/Scene/Entity.h>
 
+
 namespace Eis
 {
 	class HierarchyPanel
@@ -16,6 +17,9 @@ namespace Eis
 		void SetScene(const Ref<Scene>& scene);
 
 		void OnImGuiRender();
+
+		Entity GetSelectedEntity() { return m_Selection; }
+		void SetSelectedEntity(Entity entity = Entity{});
 
 	private:
 		void DrawEntityNode(Entity entity);

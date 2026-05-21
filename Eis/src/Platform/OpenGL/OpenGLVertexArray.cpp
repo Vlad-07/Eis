@@ -75,6 +75,19 @@ namespace Eis
 				case ShaderDataType::Int2:
 				case ShaderDataType::Int3:
 				case ShaderDataType::Int4:
+				{
+					glEnableVertexAttribArray(m_VertexBufferIndex);
+					glVertexAttribIPointer(m_VertexBufferIndex,
+						element.GetComponentCount(),
+						ShaderDataTypeToOpenGLType(element.Type),
+						vbLayout.GetStride(),
+						(const void*)element.Offset);
+
+					m_VertexBufferIndex++;
+
+					break;
+				}
+
 				case ShaderDataType::Float:
 				case ShaderDataType::Float2:
 				case ShaderDataType::Float3:

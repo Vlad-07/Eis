@@ -5,6 +5,7 @@
 
 #include "Eis/Debug/Assert.h"
 #include "Scene.h"
+#include "Components.h"
 
 
 namespace Eis
@@ -24,6 +25,14 @@ namespace Eis
 			EIS_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
 			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+		}
+
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			EIS_CORE_ASSERT(m_Scene, "Invalid entity!");
+
+			return m_Scene->m_Registry.emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
 		}
 
 		template<typename T>
@@ -52,7 +61,12 @@ namespace Eis
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
-		operator bool() const { return m_EntityHandle != entt::null; }
+
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		std::string_view GetName() { return GetComponent<TagCompontent>().Tag; }
+
+
+		operator bool() const { return m_Scene != nullptr ? m_Scene->m_Registry.valid(m_EntityHandle) : false; }
 		operator uint32_t() const { return static_cast<uint32_t>(m_EntityHandle); }
 		operator entt::entity() const { return m_EntityHandle; }
 

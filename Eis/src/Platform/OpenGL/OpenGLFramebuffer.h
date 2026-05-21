@@ -27,6 +27,9 @@ namespace Eis
 		virtual void BindTextures(uint32_t offset = 0) override;
 		virtual uint32_t GetAttachmentsNumber() const override { return static_cast<uint32_t>(m_ColorIds.size()); }
 
+		// Only for R32I!
+		virtual int ReadPixel(uint32_t attachmentId, int x, int y) override;
+
 		virtual const std::vector<GLuint>& GetColorAttachmentsIds() const override { return m_ColorIds; }
 
 		virtual const FramebufferSpec& GetSpec() const override { return m_Spec; }

@@ -27,9 +27,8 @@ namespace Eis
 		EIS_CORE_INFO("    Device:  {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 		EIS_CORE_INFO("    Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
-#ifdef EIS_ENABLE_ASSERTS
-		EIS_CORE_ASSERT(GLVersion.major == 4 && GLVersion.minor >= 5, "OpenGL version 4.5 or newer is required!");
-#endif
+		if (!(GLVersion.major == 4 && GLVersion.minor >= 5))
+			EIS_CORE_CRITICAL("OpenGL version 4.5 or newer is required!");
 	}
 
 	void OpenGLContext::SwapBuffers()

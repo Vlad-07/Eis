@@ -1,0 +1,102 @@
+{
+    "Scene": "",
+    "Entities": [
+        {
+            "Entity": 15496284966266719668,
+            "TagComponent": {
+                "Tag": "Square2"
+            },
+            "TransformComponent": {
+                "Translation": [
+                    -3.299999952316284,
+                    1.399999976158142,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "SpriteRendererComponent": {
+                "Tint": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Entity": 11762513409682576707,
+            "TagComponent": {
+                "Tag": "Cam"
+            },
+            "TransformComponent": {
+                "Translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "CameraComponent": {
+                "Camera": {
+                    "ProjectionType": 1,
+                    "PerspectiveFOV": 1.3962633609771729,
+                    "PerspectiveNear": 0.10000000149011612,
+                    "PerspectiveFar": 1000.0,
+                    "OrthoSize": 10.0,
+                    "OrthoNear": -1.0,
+                    "OrthoFar": 1.0
+                },
+                "FixedAspect": false
+            }
+        },
+        {
+            "Entity": 9575750589947905502,
+            "TagComponent": {
+                "Tag": "Square"
+            },
+            "TransformComponent": {
+                "Translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "SpriteRendererComponent": {
+                "Tint": [
+                    0.0,
+                    1.0,
+                    0.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}

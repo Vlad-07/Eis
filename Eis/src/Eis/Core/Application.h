@@ -28,7 +28,7 @@ namespace Eis
 		// -----------
 
 
-		void ShouldClose() { s_Instance->m_Running = false; }
+		void Close() { s_Instance->m_Running = false; }
 
 	protected:
 		void PushLayer(Scope<Layer> layer);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 #include "Eis/Events/Event.h"
 #include "Eis/Input/MouseCodes.h"
 

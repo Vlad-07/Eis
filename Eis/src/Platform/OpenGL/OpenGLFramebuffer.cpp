@@ -26,6 +26,8 @@ namespace Eis
 	{
 		switch (format)
 		{
+			case FramebufferTexFormat::R32I:
+				return GL_R32I;
 			case FramebufferTexFormat::RGB8:
 				return GL_RGB8;
 			case FramebufferTexFormat::RGBA8:
@@ -159,6 +161,13 @@ namespace Eis
 		{
 			switch (m_ColorAttachmentSpecs[i].Format)
 			{
+				case FramebufferTexFormat::R32I:
+				{
+					GLint clearVal = static_cast<GLint>(std::get<int>(m_ColorAttachmentSpecs[i].ClearValue));
+					glClearNamedFramebufferiv(m_RendererId, GL_COLOR, i, &clearVal);
+					break;
+				}
+
 				case FramebufferTexFormat::RGB8:
 				case FramebufferTexFormat::RGBA8:
 				{
@@ -201,8 +210,27 @@ namespace Eis
 		m_Spec.Width  = width;
 		m_Spec.Height = height;
 
-
-		// maybe only resize attachments
 		InvalidateAttachments();
+	}
+
+
+	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentId, int x, int y)
+	{
+		EIS_CORE_ASSERT(attachmentId < m_ColorIds.size(), "Invald attachment id!");
+
+		if (x < 0 || y < 0 || x >= m_Spec.Width || y > m_Spec.Height)
+		{
+			EIS_CORE_WARN("Invalid pixel requested: {}, {}!", x, y);
+			return 0;
+		}
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererId);
+		glNamedFramebufferReadBuffer(m_RendererId, GL_COLOR_ATTACHMENT0 + attachmentId);
+
+		int pixelData{};
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, static_cast<void*>(&pixelData));
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+		return pixelData;
 	}
 }

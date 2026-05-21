@@ -19,8 +19,8 @@ namespace Eis
 		WindowProps(const std::string& title = "Default Window", uint32_t width = 0, uint32_t height = 0)
 			: Title(title), Width(width), Height(height) {}
 
-		inline static constexpr uint32_t DefaultWidth = 1600;
-		inline static constexpr uint32_t DefaultHeight = 900;
+		inline static constexpr uint32_t DefaultWidth = 1280;
+		inline static constexpr uint32_t DefaultHeight = 720;
 	};
 
 

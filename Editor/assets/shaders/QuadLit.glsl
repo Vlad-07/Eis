@@ -13,7 +13,7 @@ uniform mat4 u_VP;
 
 out vec4 v_Color;
 out vec2 v_TexCoord;
-out float v_TexIndex;
+out flat float v_TexIndex;
 out float v_TilingFactor;
 
 out vec2 v_Normal;
@@ -38,7 +38,7 @@ layout(location = 1) out vec4 o_Color;
 
 in vec4 v_Color;
 in vec2 v_TexCoord;
-in float v_TexIndex;
+in flat float v_TexIndex;
 in float v_TilingFactor;
 
 in vec2 v_Normal;

@@ -48,6 +48,7 @@ project "Editor"
 	{
 		"Eis/vendor/glm",
 		"Eis/vendor/imgui",
+		"Eis/vendor/imguizmo",
 		"Eis/vendor/spdlog/include",
 		"Eis/vendor/entt/include"
 	}
@@ -59,7 +60,8 @@ project "Editor"
 
 	defines
 	{
-		"IMGUI_USER_CONFIG=\"Eis/ImGui/ImGuiConfig.h\""
+		"IMGUI_USER_CONFIG=\"Eis/ImGui/ImGuiConfig.h\"",
+		"GLM_ENABLE_EXPERIMENTAL"
 	}
 
 	filter "toolset:msc*"

@@ -12,6 +12,8 @@ namespace Eis
 	{
 		NONE = 0,
 
+		R32I,
+
 		RGB8,
 		RGBA8,
 
@@ -24,7 +26,7 @@ namespace Eis
 		uint32_t Stencil{};
 	};
 
-	using FramebufferClearValue = std::variant<uint32_t, float, DepthStencilClear, glm::vec4>;
+	using FramebufferClearValue = std::variant<int, uint32_t, float, DepthStencilClear, glm::vec4>;
 
 	struct FramebufferTexSpec
 	{
@@ -72,6 +74,9 @@ namespace Eis
 
 		virtual void BindTextures(uint32_t offset = 0) = 0;
 		virtual uint32_t GetAttachmentsNumber() const = 0;
+
+		// Only for R32I!
+		virtual int ReadPixel(uint32_t attachmentId, int x, int y) = 0;
 
 		virtual const std::vector<uint32_t>& GetColorAttachmentsIds() const = 0;
 

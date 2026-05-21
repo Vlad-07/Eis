@@ -24,6 +24,7 @@ namespace Eis
 		glm::vec2 TexCoord;
 		float TexIndex;
 		float TilingFactor;
+		int32_t EntityId;
 	};
 
 	struct CircleVertex
@@ -152,7 +153,8 @@ namespace Eis
 				{ ShaderDataType::Float4, "a_Color" },
 				{ ShaderDataType::Float2, "a_TexCoord" },
 				{ ShaderDataType::Float,  "a_TexIndex" },
-				{ ShaderDataType::Float,  "a_TilingFactor" }
+				{ ShaderDataType::Float,  "a_TilingFactor" },
+				{ ShaderDataType::Int, "a_EntityId" }
 			});
 
 		s_Data.QuadVertexArray = VertexArray::Create();
@@ -276,6 +278,27 @@ namespace Eis
 
 		s_Data.LineShader->Bind();
 		s_Data.LineShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
+
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		EIS_PROFILE_RENDERER_FUNCTION();
+
+		const glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.TriangleShader->Bind();
+		s_Data.TriangleShader->SetMat4("u_VP", viewProj);
+
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("u_VP", viewProj);
+
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->SetMat4("u_VP", viewProj);
+
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->SetMat4("u_VP", viewProj);
 
 		StartBatch();
 	}
@@ -522,22 +545,22 @@ namespace Eis
 		DrawQuad(glm::mat4x3{ transformed }, texture, tiling, tint);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int32_t entityId)
 	{
-		DrawQuad(transform, nullptr, 1.0f, color);
+		DrawQuad(transform, nullptr, 1.0f, color, entityId);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint, int32_t entityId)
 	{
 		const glm::mat4 transformed{ transform * s_Data.QuadVertexPositions };
-		DrawQuad(glm::mat4x3{ transformed }, texture, tiling, tint);
+		DrawQuad(glm::mat4x3{ transformed }, texture, tiling, tint, entityId);
 	}
 
 
-	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const glm::vec4& color, int32_t entityId)
 	{
-		DrawQuad(worldVerts, nullptr, 1.0f, color);
+		DrawQuad(worldVerts, nullptr, 1.0f, color, entityId);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint)
+	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint, int32_t entityId)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -552,6 +575,7 @@ namespace Eis
 			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.QuadVertexTexCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
+			s_Data.QuadVertexBufferPtr->EntityId = entityId;
 
 			s_Data.QuadVertexBufferPtr++;
 		}

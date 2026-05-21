@@ -15,40 +15,53 @@ namespace Eis
 	void HierarchyPanel::SetScene(const Ref<Scene>& scene)
 	{
 		m_Scene = scene;
+		m_Selection = {};
 	}
 
 	void HierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Hierarchy");
 
-		m_Scene->m_Registry.view<entt::entity>().each([&](entt::entity entityId)
+		ImGuiTreeNodeFlags flags{};
+		flags |= ImGuiTreeNodeFlags_Framed;
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+		flags |= ImGuiTreeNodeFlags_DefaultOpen;
+		flags |= ImGuiTreeNodeFlags_DrawLinesFull;
+		if (ImGui::TreeNodeEx(m_Scene->GetName().data(), flags))
 		{
-			Entity entity{ entityId, m_Scene.get() };
-			DrawEntityNode(entity);
-		});
+			m_Scene->m_Registry.view<entt::entity>().each([&](entt::entity entityId)
+			{
+				Entity entity{ entityId, m_Scene.get() };
+				DrawEntityNode(entity);
+			});
 
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-			m_Selection = {};
+			if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+				m_Selection = {};
 
-		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
-		{
-			if (ImGui::MenuItem("Create Entity"))
-				m_Scene->CreateEntity({});
+			if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+			{
+				if (ImGui::MenuItem("Create Entity"))
+					m_Scene->CreateEntity({});
 
-			ImGui::EndPopup();
+				ImGui::EndPopup();
+			}
+
+			ImGui::TreePop();
 		}
-
 		ImGui::End();
 
 		// should make its own class
 		ImGui::Begin("Properties");
 
 		if (m_Selection)
-		{
 			DrawComponents(m_Selection);
-		}
 
 		ImGui::End();
+	}
+
+	void HierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_Selection = entity;
 	}
 
 	void HierarchyPanel::DrawEntityNode(Entity entity)
@@ -57,8 +70,11 @@ namespace Eis
 
 		ImGuiTreeNodeFlags flags{};
 		flags |= ImGuiTreeNodeFlags_OpenOnArrow;
+		flags |= ImGuiTreeNodeFlags_OpenOnDoubleClick;
+		flags |= ImGuiTreeNodeFlags_DrawLinesFull;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		flags |= (m_Selection == entity ? ImGuiTreeNodeFlags_Selected : 0);
+		flags |= ImGuiTreeNodeFlags_Leaf; // if no children // no parenting yet
 
 		bool open = ImGui::TreeNodeEx((void*)(uintptr_t)(uint32_t)entity, flags, tag.Tag.c_str());
 
@@ -75,7 +91,11 @@ namespace Eis
 		}
 
 		if (open)
+		{
+			// draw children...
+
 			ImGui::TreePop();
+		}
 		
 		if (deleted)
 		{
@@ -93,7 +113,6 @@ namespace Eis
 	{
 		ImGui::PushID(label.data());
 
-		// TODO: see ImGui::Tablexxx
 		ImGui::Columns(2);
 		ImGui::SetColumnWidth(0, columnWidth);
 		ImGui::Text(label.data());
@@ -101,10 +120,11 @@ namespace Eis
 		ImGui::NextColumn();
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, glm::vec2{});
 
-		float lineHeight = GImGui->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		glm::vec2 buttonSize{ lineHeight + 3.0f, lineHeight };
+		const float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
+		const glm::vec2 buttonSize{ lineHeight + 3.0f, lineHeight };
 
 		if (ImGui::Button("X", buttonSize))
 			values.x = resetValue;
@@ -149,7 +169,7 @@ namespace Eis
 		float contentRegionAvail = ImGui::GetContentRegionAvail().x;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, glm::vec2{ 4.0f, 4.0f });
-		float lineHeight = GImGui->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f;
 		ImGui::Separator();
 		bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeFlags, name.data());
 		ImGui::PopStyleVar();
@@ -181,12 +201,18 @@ namespace Eis
 	{
 		if (entity.HasComponent<TagCompontent>())
 		{
+			// BUG: having the input text selected and clicking
+			// on another entity in the hierarchy renames the clicked entity
+
 			auto& tag = entity.GetComponent<TagCompontent>().Tag;
+			UUID uuid = entity.GetComponent<IDComponent>().ID;
 
 			char buff[256]{};
 			strcpy_s(buff, sizeof(buff), tag.c_str());
 			if (ImGui::InputText("##Tag", buff, sizeof(buff)))
 				tag = std::string{ buff };
+
+			ImGui::SetItemTooltip("ID: %llu", uuid);
 		}
 
 		ImGui::SameLine();
@@ -196,16 +222,22 @@ namespace Eis
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
-			if (ImGui::MenuItem("Sprite Renderer"))
+			if (!m_Selection.HasComponent<SpriteRendererComponent>())
 			{
-				m_Selection.AddComponent<SpriteRendererComponent>();
-				ImGui::CloseCurrentPopup();
+				if (ImGui::MenuItem("Sprite Renderer"))
+				{
+					m_Selection.AddComponent<SpriteRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 
-			if (ImGui::MenuItem("Camera"))
+			if (!m_Selection.HasComponent<CameraComponent>())
 			{
-				m_Selection.AddComponent<CameraComponent>();
-				ImGui::CloseCurrentPopup();
+				if (ImGui::MenuItem("Camera"))
+				{
+					m_Selection.AddComponent<CameraComponent>();
+					ImGui::CloseCurrentPopup();
+				}
 			}
 
 			ImGui::EndPopup();
