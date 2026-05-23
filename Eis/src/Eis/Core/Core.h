@@ -39,9 +39,7 @@
 #endif
 
 // TODO: this should not be a macro
-#ifdef EIS_PLATFORM_WINDOWS
-	#define EIS_LOG_FILE
-#elif defined(EIS_PLATFORM_WEB)
+#ifdef EIS_PLATFORM_WEB
 	#define EIS_LOG_NOFILE
 #endif
 

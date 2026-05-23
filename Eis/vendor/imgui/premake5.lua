@@ -25,7 +25,10 @@ project "ImGui"
         "backends/imgui_impl_glfw.cpp",
         "backends/imgui_impl_opengl3.h",
         "backends/imgui_impl_opengl3.cpp",
-        "backends/imgui_impl_opengl3_loader.h"
+        "backends/imgui_impl_opengl3_loader.h",
+
+        "../imguizmo/ImGuizmo.h",
+		"../imguizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
@@ -56,3 +59,4 @@ project "ImGui"
 		runtime "Release"
 		optimize "on"
 		linktimeoptimization "on"
+	filter ""

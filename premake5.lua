@@ -12,9 +12,9 @@ workspace "Eis"
 
 	group "Dependencies"
 		include "Eis/vendor/premake"
-		includeexternal "Eis/vendor/GLFW"
-		includeexternal "Eis/vendor/Glad"
-		includeexternal "Eis/vendor/imgui"
+		include "Eis/vendor/GLFW"
+		include "Eis/vendor/Glad"
+		include "Eis/vendor/imgui"
 	group ""
 
 
@@ -34,8 +34,8 @@ project "Editor"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.hpp"
+		"%{prj.name}/src/**.hpp",
+		"%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
@@ -81,3 +81,4 @@ project "Editor"
 		runtime "Release"
 		optimize "on"
 		linktimeoptimization "on"
+	filter ""

@@ -13,16 +13,14 @@ project "Eis"
 	files
 	{
 		"src/**.h",
+		"src/**.hpp",
 		"src/**.cpp",
 
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
 
-		"vendor/imguizmo/ImGuizmo.h",
-		"vendor/imguizmo/ImGuizmo.cpp",
-
 		"vendor/stb_image/stb_image.h",
-		"vendor/stb_image/stb_image.cpp",
+		"vendor/stb_image/stb_image.cpp"
 	}
 
 	includedirs
@@ -58,9 +56,6 @@ project "Eis"
 		"opengl32.lib"
 	}
 
-	filter "files:vendor/ImGuizmo/**.cpp"
-		enablepch "off"
-
 	filter "toolset:msc*"
 		buildoptions { "/utf-8" }
 		multiprocessorcompile "on"
@@ -79,3 +74,4 @@ project "Eis"
 		runtime "Release"
 		optimize "on"
 		linktimeoptimization "on"
+	filter ""

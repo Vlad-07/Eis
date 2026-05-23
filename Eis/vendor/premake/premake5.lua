@@ -14,3 +14,8 @@ project "Premake"
 	{
 		"%{prj.location}bin/premake5 %{_ACTION} --file=\"%{wks.location}premake5.lua\""
 	}
+
+	filter "action:vs*"
+		fastuptodate "off"
+		excludefrombuild "on"
+	filter ""

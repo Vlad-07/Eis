@@ -218,7 +218,9 @@ namespace Eis
 	{
 		EIS_CORE_ASSERT(attachmentId < m_ColorIds.size(), "Invald attachment id!");
 
-		if (x < 0 || y < 0 || x >= m_Spec.Width || y > m_Spec.Height)
+		if (x < 0 || y < 0
+			|| static_cast<uint32_t>(x) >= m_Spec.Width
+			|| static_cast<uint32_t>(y) >= m_Spec.Height)
 		{
 			EIS_CORE_WARN("Invalid pixel requested: {}, {}!", x, y);
 			return 0;
