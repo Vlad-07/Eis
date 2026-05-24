@@ -3,6 +3,7 @@
 #include "Eis/Core/Core.h"
 #include "Eis/Core/Log.h"
 
+// __VA_ARGS__ is compiler specific...
 
 #ifdef EIS_ENABLE_ASSERTS
 	#define EIS_CORE_ASSERT(x, ...) { if(!(x)) { EIS_CORE_CRITICAL("Assertion Failed: {}", __VA_ARGS__); EIS_DEBUGBREAK(); } }

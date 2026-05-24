@@ -1,27 +1,33 @@
 #pragma once
 
 #include "Core.h"
+
+// maybe move define to build system?
+#define SPDLOG_COMPILED_LIB
 #include <spdlog/spdlog.h>
 
+
+int main(int argc, char** args);
 
 namespace Eis
 {
 	class Log
 	{
 	public:
-		static void Init();
-
 		static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 		static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
 	private:
+		static void Init();
+
 		static inline Ref<spdlog::logger> s_CoreLogger{};
 		static inline Ref<spdlog::logger> s_ClientLogger{};
+
+		friend int ::main(int argc, char** args);
 	};
 }
 
-// TODO: consider
-// Consider compiled spdlog, not header only
+// TODO: try to remove spdlog include dependency
 // Consider stdarg.h over compiler specific "__VA_ARGS__" ?
 
 // Core log macros

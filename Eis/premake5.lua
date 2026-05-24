@@ -53,6 +53,7 @@ project "Eis"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"Spdlog",
 		"opengl32.lib"
 	}
 

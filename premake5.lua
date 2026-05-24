@@ -11,10 +11,11 @@ workspace "Eis"
 	}
 
 	group "Dependencies"
-		include "Eis/vendor/premake"
 		include "Eis/vendor/GLFW"
 		include "Eis/vendor/Glad"
 		include "Eis/vendor/imgui"
+		include "Eis/vendor/spdlog"
+		include "Eis/vendor/premake"
 	group ""
 
 
