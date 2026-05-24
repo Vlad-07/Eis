@@ -63,11 +63,16 @@ namespace Eis
 
 
 
-		glm::uvec2 m_ViewportSize{};
 
 		bool m_ViewportHovered{};
 		bool m_ViewportFocused{};
 
+
+		glm::uvec2 m_ViewportSize{};
+		glm::vec2 m_ViewportScreenPos{};
 		glm::ivec2 m_MousePosInViewport{};
+
+
+		Ref<Texture2D> m_PlayIcon, m_StopIcon;
 	};
 }

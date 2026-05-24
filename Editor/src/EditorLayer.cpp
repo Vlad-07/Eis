@@ -1,5 +1,7 @@
 #include "EditorLayer.h"
 #include <imgui.h>
+#include <imgui_internal.h>
+
 #include <ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -17,6 +19,9 @@ namespace Eis
 
 	void EditorLayer::Attach()
 	{
+		m_PlayIcon = Texture2D::Create("resources/icons/play.png");
+		m_StopIcon = Texture2D::Create("resources/icons/stop.png");
+
 		FramebufferSpec fbSpec;
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
@@ -104,14 +109,30 @@ namespace Eis
 		// Viewport Window
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, glm::vec2{});
-			ImGui::Begin("Viewport");
+			ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
+
+			if (ImGui::BeginMenuBar())
+			{
+				if (ImGui::BeginMenu("Cam"))
+				{
+					ImGui::Text("TODO");
+					// TODO: better editor camera
+					// TODO: camera settings
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMenuBar();
+			}
+
 
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			m_ViewportFocused = ImGui::IsWindowFocused();
 
 			m_ViewportSize = glm::vec2{ ImGui::GetContentRegionAvail() };
 
-			m_MousePosInViewport = glm::vec2{ ImGui::GetMousePos() } - glm::vec2{ ImGui::GetCursorScreenPos() };
+			m_ViewportScreenPos = ImGui::GetCursorScreenPos();
+			m_MousePosInViewport = glm::vec2{ ImGui::GetMousePos() } - m_ViewportScreenPos;
 			// OpenGL has (0,0) at bottom left, ImGui at top left
 			m_MousePosInViewport.y = m_ViewportSize.y - m_MousePosInViewport.y;
 
@@ -138,7 +159,7 @@ namespace Eis
 					ImGuizmo::SetOrthographic(false);
 					ImGuizmo::SetDrawlist();
 
-					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)m_ViewportSize.x, (float)m_ViewportSize.y);
+					ImGuizmo::SetRect(m_ViewportScreenPos.x, m_ViewportScreenPos.y, (float)m_ViewportSize.x, (float)m_ViewportSize.y);
 
 					// Camera...
 					glm::mat4 camProj = m_EditorCam.GetProjection();
@@ -183,22 +204,30 @@ namespace Eis
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, glm::vec2{ 0, 3 });
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, glm::vec2{});
+		ImGui::PushStyleColor(ImGuiCol_Button, glm::vec4{});
 
 		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
-		const glm::vec2 size{ ImGui::GetWindowHeight() - ImGui::GetStyle().WindowPadding.y * 2.0f };
+
+		ImGui::DockBuilderGetNode(ImGui::GetWindowDockID())->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+
+		const glm::vec2 size{ ImGui::GetWindowHeight() - ImGui::GetStyle().WindowPadding.y * 3.0f }; // why 3?
 		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x - size.x) * 0.5f);
 		if (m_State == EditorState::EDIT)
 		{
-			if (ImGui::Button("Play", size))
+			if (ImGui::ImageButton("Play", m_PlayIcon->GetRendererId(), size))
 				ScenePlay();
 		}
 		else if (m_State == EditorState::PLAY)
 		{
-			if (ImGui::Button("Stop", size))
+			if (ImGui::ImageButton("Stop", m_StopIcon->GetRendererId(), size))
 				SceneStop();
 		}
+
+		// TODO: pause button
+
 		ImGui::End();
 		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor();
 	}
 
 
@@ -272,6 +301,8 @@ namespace Eis
 		m_ActiveScene = m_EditedScene;
 
 		m_EditedScenePath = path;
+
+		// TODO: reset editor camera
 	}
 
 
