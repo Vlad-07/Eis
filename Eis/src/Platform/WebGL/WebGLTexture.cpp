@@ -117,11 +117,11 @@ namespace Eis
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+
 	bool WebGLTexture2D::operator==(const Texture& other) const
 	{
-		const auto* const p = dynamic_cast<const WebGLTexture2D*>(&other);
-		if (p == nullptr)
-			return false;
-		return m_RendererId == p->GetRendererId();
+		if (const auto* p = dynamic_cast<const WebGLTexture2D*>(&other))
+			return m_RendererId == p->GetRendererId();
+		return false;
 	}
 }

@@ -1,6 +1,7 @@
 #include "Hierarchy.h"
 #include <imgui.h>
-#include <imgui_internal.h>
+#include <imgui_internal.h> // ImGui::PushMultiItemsWidths
+#include <misc/cpp/imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <Eis/Scene/Components.h>
 
@@ -197,6 +198,20 @@ namespace Eis
 	}
 
 
+	template<typename T>
+	void DrawAddComponent(Entity e, std::string_view name)
+	{
+		if (!e.HasComponent<T>())
+		{
+			if (ImGui::MenuItem(name.data()))
+			{
+				e.AddComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+	}
+
+
 	void HierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (entity.HasComponent<TagCompontent>())
@@ -207,42 +222,22 @@ namespace Eis
 			auto& tag = entity.GetComponent<TagCompontent>().Tag;
 			UUID uuid = entity.GetComponent<IDComponent>().ID;
 
-			char buff[256]{};
-			strcpy_s(buff, sizeof(buff), tag.c_str());
-			if (ImGui::InputText("##Tag", buff, sizeof(buff)))
-				tag = std::string{ buff };
+			ImGui::InputText("##Tag", &tag);
 
 			ImGui::SetItemTooltip("ID: %llu", uuid);
 		}
 
 		ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
 		if (ImGui::Button("Add Component"))
 			ImGui::OpenPopup("AddComponent");
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
-			if (!m_Selection.HasComponent<SpriteRendererComponent>())
-			{
-				if (ImGui::MenuItem("Sprite Renderer"))
-				{
-					m_Selection.AddComponent<SpriteRendererComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!m_Selection.HasComponent<CameraComponent>())
-			{
-				if (ImGui::MenuItem("Camera"))
-				{
-					m_Selection.AddComponent<CameraComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
+			DrawAddComponent<SpriteRendererComponent>(m_Selection, "Sprite Renderer");
+			DrawAddComponent<CameraComponent>(m_Selection, "Camera");
 
 			ImGui::EndPopup();
 		}
-		ImGui::PopItemWidth();
 
 
 		if (entity.HasComponent<TransformComponent>())

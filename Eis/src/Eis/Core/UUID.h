@@ -20,12 +20,14 @@ namespace Eis
 
 namespace std
 {
+	template<typename T> struct hash;
+
 	template<>
 	struct hash<Eis::UUID>
 	{
 		std::size_t operator()(const Eis::UUID& uuid) const
 		{
-			return hash<uint64_t>()(static_cast<uint64_t>(uuid));
+			return static_cast<uint64_t>(uuid);
 		}
 	};
 }

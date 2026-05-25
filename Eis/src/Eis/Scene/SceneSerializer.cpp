@@ -97,6 +97,8 @@ namespace Eis
 
 	void SceneSerializer::Serialize(const std::filesystem::path& path)
 	{
+		EIS_CORE_ASSERT(m_Scene, "Invalid scene!");
+
 		m_Scene->m_Name = path.stem().string();
 
 		json j;
@@ -122,6 +124,8 @@ namespace Eis
 
 	bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
+		EIS_CORE_ASSERT(m_Scene, "Invalid scene!");
+
 		if (!std::filesystem::exists(path))
 		{
 			EIS_CORE_ERROR("Could not find scene: '{}'", path.string());

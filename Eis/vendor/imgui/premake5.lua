@@ -27,6 +27,12 @@ project "ImGui"
         "backends/imgui_impl_opengl3.cpp",
         "backends/imgui_impl_opengl3_loader.h",
 
+        "misc/cpp/imgui_stdlib.h",
+        "misc/cpp/imgui_stdlib.cpp",
+
+        "misc/debuggers/imgui.natvis",
+        "misc/debuggers/imgui.natstepfilter",
+
         "../imguizmo/ImGuizmo.h",
 		"../imguizmo/ImGuizmo.cpp"
 	}

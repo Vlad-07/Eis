@@ -5,6 +5,9 @@
 // maybe move define to build system?
 #define SPDLOG_COMPILED_LIB
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+
+#include <glm/gtx/string_cast.hpp>
 
 
 int main(int argc, char** args);

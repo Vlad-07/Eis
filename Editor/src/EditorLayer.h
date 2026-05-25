@@ -62,8 +62,6 @@ namespace Eis
 		EditorCamera m_EditorCam;
 
 
-
-
 		bool m_ViewportHovered{};
 		bool m_ViewportFocused{};
 

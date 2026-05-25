@@ -19,14 +19,14 @@ namespace Eis
 
 	bool Input::IsKeyPressed(const KeyCode keycode)
 	{
-		auto state = glfwGetKey(GetNativeWindow(), static_cast<int32_t>(keycode));
+		int state = glfwGetKey(GetNativeWindow(), static_cast<int32_t>(keycode));
 
-		return state == GLFW_PRESS || state == GLFW_REPEAT;
+		return state == GLFW_PRESS;
 	}
 
 	bool Input::IsMouseButtonPressed(const MouseCode button)
 	{
-		auto state = glfwGetMouseButton(GetNativeWindow(), static_cast<int32_t>(button));
+		int state = glfwGetMouseButton(GetNativeWindow(), static_cast<int32_t>(button));
 
 		return state == GLFW_PRESS;
 	}

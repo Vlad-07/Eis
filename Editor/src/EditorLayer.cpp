@@ -291,18 +291,20 @@ namespace Eis
 		if (m_State != EditorState::EDIT)
 			return;
 
-		m_EditedScene = CreateRef<Scene>();
-		m_EditedScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-		m_HierarchyPanel.SetScene(m_EditedScene);
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer{ newScene };
+		if (serializer.Deserialize(path))
+		{
+			m_EditedScene = newScene;
+			m_EditedScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_HierarchyPanel.SetScene(m_EditedScene);
 
-		SceneSerializer serializer{ m_EditedScene };
-		serializer.Deserialize(path);
+			m_EditedScenePath = path;
 
-		m_ActiveScene = m_EditedScene;
+			m_ActiveScene = m_EditedScene;
 
-		m_EditedScenePath = path;
-
-		// TODO: reset editor camera
+			// TODO: reset editor camera
+		}
 	}
 
 

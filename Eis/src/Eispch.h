@@ -28,7 +28,3 @@
 #include "Eis/Core/Log.h"
 #include "Eis/Debug/Assert.h"
 #include "Eis/Debug/Instrumentor.h"
-
-#ifdef EIS_PLATFORM_WINDOWS
-	#include <Windows.h>
-#endif

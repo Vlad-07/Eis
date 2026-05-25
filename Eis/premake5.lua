@@ -63,7 +63,6 @@ project "Eis"
 
 	filter "system:windows"
 		systemversion "latest"
-		links { "Ws2_32.lib" }
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"
