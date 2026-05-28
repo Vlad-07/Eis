@@ -59,15 +59,16 @@ namespace Eis
 		static constexpr uint32_t MaxLines        = 10'000;
 		static constexpr uint32_t MaxLineVertices = MaxLines * 2;
 
-	#ifndef EIS_PLATFORM_WEB // HACK: check max tex slots at runtime
-		static constexpr uint8_t MaxTextureSlots = 32;
+	#ifndef EIS_PLATFORM_WEB
+		static constexpr uint8_t MaxTextureSlots = 32; // TODO: check max tex slots at runtime
 	#else
 		static constexpr uint8_t MaxTextureSlots = 16;
 	#endif
 
+		Ref<Shader> ColorShader;
+
 		Ref<VertexArray> TriangleVertexArray;
 		Ref<VertexBuffer> TriangleVertexBuffer;
-		Ref<Shader> TriangleShader;
 
 		uint32_t TriangleIndexCount = 0;
 		TriangleVertex* TriangleVertexBufferBase = nullptr;
@@ -97,7 +98,6 @@ namespace Eis
 
 		Ref<VertexArray> LineVertexArray;
 		Ref<VertexBuffer> LineVertexBuffer;
-		Ref<Shader> LineShader;
 
 		uint32_t LineIndexCount = 0;
 		LineVertex* LineVertexBufferBase = nullptr;
@@ -214,9 +214,9 @@ namespace Eis
 
 		// Init WhiteTexture
 
-		uint32_t whiteTexData = 0xffffffff;
-		s_Data.WhiteTexture = Texture2D::Create(1, 1);
-		s_Data.WhiteTexture->SetData(static_cast<void*>(&whiteTexData), sizeof(whiteTexData));
+		const uint32_t whiteTexData = 0xffffffff;
+		Buffer data{ static_cast<const void*>(&whiteTexData), sizeof(whiteTexData) };
+		s_Data.WhiteTexture = Texture2D::Create(TextureSpec{}, data);
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 		s_Data.TextureSlotIndex = 1;
@@ -228,18 +228,13 @@ namespace Eis
 		for (uint8_t i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_Data.TriangleShader = Shader::Create("assets/shaders/Triangle.glsl");
-		s_Data.TriangleShader->Bind();
+		s_Data.ColorShader = Shader::Create("resources/shaders/Color.glsl");
 
-		s_Data.QuadShader = Shader::Create("assets/shaders/Quad.glsl");
+		s_Data.QuadShader = Shader::Create("resources/shaders/Quad.glsl");
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.CircleShader = Shader::Create("assets/shaders/Circle.glsl");
-		s_Data.CircleShader->Bind();
-
-		s_Data.LineShader = Shader::Create("assets/shaders/Line.glsl");
-		s_Data.LineShader->Bind();
+		s_Data.CircleShader = Shader::Create("resources/shaders/Circle.glsl");
 
 		// Init QuadVertex
 		s_Data.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
@@ -267,17 +262,14 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		s_Data.TriangleShader->Bind();
-		s_Data.TriangleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
+		s_Data.ColorShader->Bind();
+		s_Data.ColorShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
-
-		s_Data.LineShader->Bind();
-		s_Data.LineShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -288,17 +280,14 @@ namespace Eis
 
 		const glm::mat4 viewProj = camera.GetViewProjection();
 
-		s_Data.TriangleShader->Bind();
-		s_Data.TriangleShader->SetMat4("u_VP", viewProj);
+		s_Data.ColorShader->Bind();
+		s_Data.ColorShader->SetMat4("u_VP", viewProj);
 
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetMat4("u_VP", viewProj);
 
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->SetMat4("u_VP", viewProj);
-
-		s_Data.LineShader->Bind();
-		s_Data.LineShader->SetMat4("u_VP", viewProj);
 
 		StartBatch();
 	}
@@ -309,17 +298,14 @@ namespace Eis
 
 		const glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
 
-		s_Data.TriangleShader->Bind();
-		s_Data.TriangleShader->SetMat4("u_VP", viewProj);
+		s_Data.ColorShader->Bind();
+		s_Data.ColorShader->SetMat4("u_VP", viewProj);
 
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetMat4("u_VP", viewProj);
 
 		s_Data.CircleShader->Bind();
 		s_Data.CircleShader->SetMat4("u_VP", viewProj);
-
-		s_Data.LineShader->Bind();
-		s_Data.LineShader->SetMat4("u_VP", viewProj);
 
 		StartBatch();
 	}
@@ -383,7 +369,7 @@ namespace Eis
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TriangleVertexBufferPtr - (uint8_t*)s_Data.TriangleVertexBufferBase);
 		s_Data.TriangleVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
 
-		s_Data.TriangleShader->Bind();
+		s_Data.ColorShader->Bind();
 		RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
 
 		s_Data.Stats.DrawCalls++;
@@ -432,7 +418,7 @@ namespace Eis
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
 		s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
 
-		s_Data.LineShader->Bind();
+		s_Data.ColorShader->Bind();
 		RenderCommands::SetLineWidth(s_Data.LineWidth);
 		RenderCommands::DrawLines(s_Data.LineVertexArray, s_Data.LineIndexCount);
 
@@ -537,31 +523,21 @@ namespace Eis
 	}
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint)
 	{
-		const glm::mat4 transformed = glm::translate(glm::mat4{ 1.0f }, position)
+		const glm::mat4 transform = glm::translate(glm::mat4{ 1.0f }, position)
 									* (rotation != 0.0f ? glm::rotate(glm::mat4{ 1.0f }, glm::radians(rotation), glm::vec3{ 0.0f, 0.0f, 1.0f }) : 1.0f)
-									* glm::scale(glm::mat4{ 1.0f }, glm::vec3{ size.x, size.y, 1.0f })
-									* s_Data.QuadVertexPositions;
+									* glm::scale(glm::mat4{ 1.0f }, glm::vec3{ size.x, size.y, 1.0f });
 
-		DrawQuad(glm::mat4x3{ transformed }, texture, tiling, tint);
+		DrawQuad(transform, texture, tint, tiling);
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int32_t entityId)
 	{
-		DrawQuad(transform, nullptr, 1.0f, color, entityId);
+		DrawQuad(transform, nullptr, color, 1.0f, entityId);
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint, int32_t entityId)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& tint, float tiling, int32_t entityId)
 	{
-		const glm::mat4 transformed{ transform * s_Data.QuadVertexPositions };
-		DrawQuad(glm::mat4x3{ transformed }, texture, tiling, tint, entityId);
-	}
+		const glm::mat4 verts{ transform * s_Data.QuadVertexPositions };
 
-
-	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const glm::vec4& color, int32_t entityId)
-	{
-		DrawQuad(worldVerts, nullptr, 1.0f, color, entityId);
-	}
-	void Renderer2D::DrawQuad(const glm::mat4x3& worldVerts, const Ref<Texture2D>& texture, float tiling, const glm::vec4& tint, int32_t entityId)
-	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
@@ -570,7 +546,7 @@ namespace Eis
 		const float textureIndex = GetTextureIndex(texture);
 		for (uint8_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = worldVerts[i];
+			s_Data.QuadVertexBufferPtr->Position = verts[i];
 			s_Data.QuadVertexBufferPtr->Color = tint;
 			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.QuadVertexTexCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
@@ -689,6 +665,7 @@ namespace Eis
 				return static_cast<float>(i);
 		}
 
+		// First use
 		return PushTexture(texture);
 	}
 

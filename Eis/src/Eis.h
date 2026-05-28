@@ -29,6 +29,15 @@
 #include "Eis/Scene/Entity.h"
 #include "Eis/Scene/Scene.h"
 
+// Asset manager
+#include "Eis/Assets/Asset.h"
+#include "Eis/Assets/AssetMetadata.h"
+#include "Eis/Assets/AssetManager.h"
+#include "Eis/Assets/AssetManagerEditor.h"
+
+// Project
+#include "Eis/Project/Project.h"
+
 // Rendering
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"

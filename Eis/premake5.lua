@@ -58,7 +58,7 @@ project "Eis"
 	}
 
 	filter "toolset:msc*"
-		buildoptions { "/utf-8" }
+		buildoptions { "/utf-8", "/Zc:preprocessor" }
 		multiprocessorcompile "on"
 
 	filter "system:windows"

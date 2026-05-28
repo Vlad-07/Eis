@@ -21,6 +21,7 @@
 #include <string>
 #include <sstream>
 #include <ostream>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 

@@ -1,13 +1,16 @@
 #include "EditorLayer.h"
+
+#include "Eis/Assets/Importers.h"
+#include "Eis/Utils/PlatformUtils.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
 #include <ImGuizmo.h>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-#include "Eis/Scene/SceneSerializer.h"
-#include "Eis/Utils/PlatformUtils.h"
 
 
 namespace Eis
@@ -19,8 +22,8 @@ namespace Eis
 
 	void EditorLayer::Attach()
 	{
-		m_PlayIcon = Texture2D::Create("resources/icons/play.png");
-		m_StopIcon = Texture2D::Create("resources/icons/stop.png");
+		m_PlayIcon = TextureImporter::LoadTexture2D("resources/icons/play.png");
+		m_StopIcon = TextureImporter::LoadTexture2D("resources/icons/stop.png");
 
 		FramebufferSpec fbSpec;
 		fbSpec.Width = 1280;
@@ -31,9 +34,14 @@ namespace Eis
 		};
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
+		m_HierarchyPanel = CreateScope<HierarchyPanel>();
+
 		m_EditorCam = EditorCamera{ 80.0f, 16.0f / 9.0f, 0.1f, 1000.0f };
 
-		OpenScene("assets/scenes/Scene.eis");
+		m_ProjectPath = FileDialogs::OpenFile("Eis Project (.eproj)\0*.eproj\0");
+		OpenProject(m_ProjectPath);
+
+		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 	}
 
 	void EditorLayer::Detach()
@@ -90,7 +98,7 @@ namespace Eis
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Save", "Ctrl+S"))
-					SaveScene(m_EditedScenePath);
+					SaveScene();
 				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					SaveSceneAs();
 
@@ -144,8 +152,8 @@ namespace Eis
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
 				{
-					std::filesystem::path path = std::string{ (const char*)payload->Data, (size_t)payload->DataSize };
-					OpenScene(path);
+					AssetHandle handle = *(AssetHandle*)payload->Data;
+					OpenScene(handle);
 				}
 
 				ImGui::EndDragDropTarget();
@@ -153,7 +161,7 @@ namespace Eis
 
 			// Gizmos
 			{
-				Entity selected = m_HierarchyPanel.GetSelectedEntity();
+				Entity selected = m_HierarchyPanel->GetSelectedEntity();
 				if (selected && m_GizmoType != -1 && m_State == EditorState::EDIT)
 				{
 					ImGuizmo::SetOrthographic(false);
@@ -196,8 +204,8 @@ namespace Eis
 		}
 
 		UIToolbar();
-		m_HierarchyPanel.OnImGuiRender();
-		m_AssetBrowserPanel.OnImGuiRender();
+		m_HierarchyPanel->OnImGuiRender();
+		m_AssetBrowserPanel->OnImGuiRender();
 	}
 
 	void EditorLayer::UIToolbar()
@@ -232,33 +240,53 @@ namespace Eis
 
 
 
+	void EditorLayer::NewProject()
+	{
+		// TODO: prompt for path, etc
+		Project::New();
+	}
+
+	void EditorLayer::SaveProject()
+	{
+		Project::SaveActive(m_ProjectPath);
+	}
+
+	void EditorLayer::OpenProject(const std::filesystem::path& path)
+	{
+		if (Project::Load(path))
+		{
+			m_ProjectPath = path;
+			OpenScene(Project::GetActive()->GetConfig().StartingScene);
+			m_AssetBrowserPanel = CreateScope<AssetBrowser>();
+		}
+	}
+
+
+
 	void EditorLayer::NewScene()
 	{
 		if (m_State != EditorState::EDIT)
 			return;
 
-		m_EditedScene = CreateRef<Scene>();
-		m_EditedScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-		m_HierarchyPanel.SetScene(m_EditedScene);
+		// maybe don't force scene on disk?
+		const std::filesystem::path path = FileDialogs::SaveFile("Eis Scene (.eis)\0*.eis\0");
 
-		m_EditedScenePath.clear();
+		if (path.empty())
+			return;
 
-		m_ActiveScene = m_EditedScene;
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneImporter::SaveScene(newScene, path);
+		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
+		OpenScene(newSceneHandle);
 	}
 
 
-	void EditorLayer::SaveScene(const std::filesystem::path& path)
+	void EditorLayer::SaveScene()
 	{
 		if (m_State != EditorState::EDIT)
 			return;
 
-		if (!path.empty())
-		{
-			SceneSerializer serializer{ m_EditedScene };
-			serializer.Serialize(path);
-		}
-		else
-			SaveSceneAs();
+		SceneImporter::SaveScene(m_EditedScene, m_EditedScenePath);
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -266,14 +294,14 @@ namespace Eis
 		if (m_State != EditorState::EDIT)
 			return;
 
-		auto filepath = FileDialogs::SaveFile("Eis Scene (.eis)\0*.eis\0");
-		if (!filepath.empty())
-		{
-			SceneSerializer serializer{ m_EditedScene };
-			serializer.Serialize(filepath);
+		const std::filesystem::path path = FileDialogs::OpenFile("Eis Scene (.eis)\0*.eis\0");
 
-			m_EditedScenePath = filepath;
-		}
+		if (path.empty())
+			return;
+
+		SceneImporter::SaveScene(m_EditedScene, path);
+		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
+		OpenScene(newSceneHandle);
 	}
 
 
@@ -283,23 +311,29 @@ namespace Eis
 			return;
 
 		const std::filesystem::path path = FileDialogs::OpenFile("Eis Scene (.eis)\0*.eis\0");
-		OpenScene(path);
+
+		if (path.empty())
+			return;
+
+		AssetHandle sceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
+		OpenScene(sceneHandle);
 	}
 
-	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	void EditorLayer::OpenScene(AssetHandle handle)
 	{
+		EIS_CORE_ASSERT(handle);
+
 		if (m_State != EditorState::EDIT)
 			return;
 
-		Ref<Scene> newScene = CreateRef<Scene>();
-		SceneSerializer serializer{ newScene };
-		if (serializer.Deserialize(path))
+		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);
+		if (readOnlyScene)
 		{
-			m_EditedScene = newScene;
+			m_EditedScene = Scene::Copy(readOnlyScene);
 			m_EditedScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_HierarchyPanel.SetScene(m_EditedScene);
+			m_HierarchyPanel->SetScene(m_EditedScene);
 
-			m_EditedScenePath = path;
+			m_EditedScenePath = Project::GetEditorAssetManager()->GetFilePath(handle);
 
 			m_ActiveScene = m_EditedScene;
 
@@ -315,7 +349,7 @@ namespace Eis
 		m_ActiveScene = Scene::Copy(m_EditedScene);
 		m_ActiveScene->OnStartRuntime();
 
-		m_HierarchyPanel.SetScene(m_ActiveScene);
+		m_HierarchyPanel->SetScene(m_ActiveScene);
 	}
 
 	void EditorLayer::SceneStop()
@@ -325,7 +359,7 @@ namespace Eis
 		m_ActiveScene = m_EditedScene;
 		m_ActiveScene->OnEndRuntime();
 
-		m_HierarchyPanel.SetScene(m_ActiveScene);
+		m_HierarchyPanel->SetScene(m_ActiveScene);
 	}
 
 
@@ -364,7 +398,7 @@ namespace Eis
 				if (ctrl)
 				{
 					if (!shift)
-						SaveScene(m_EditedScenePath);
+						SaveScene();
 					else
 						SaveSceneAs();
 				}
@@ -404,17 +438,17 @@ namespace Eis
 				if (m_MousePosInViewport.x >= 0 && m_MousePosInViewport.y >= 0
 					&& m_MousePosInViewport.x < (int)m_ViewportSize.x && m_MousePosInViewport.y < (int)m_ViewportSize.y
 					&& m_ViewportHovered
-					&& (!ImGuizmo::IsOver() || !m_HierarchyPanel.GetSelectedEntity()) // IsOver is buggy, not enough alone
+					&& (!ImGuizmo::IsOver() || !m_HierarchyPanel->GetSelectedEntity()) // IsOver is buggy, not enough alone
 					&& !Input::IsKeyPressed(Key::LeftShift))
 				{
 					const int pixelData = m_Framebuffer->ReadPixel(1, m_MousePosInViewport.x, m_MousePosInViewport.y);
 					if (pixelData != -1)
 					{
 						Entity selected{ (entt::entity)pixelData, m_ActiveScene.get() };
-						m_HierarchyPanel.SetSelectedEntity(selected);
+						m_HierarchyPanel->SetSelectedEntity(selected);
 					}
 					else
-						m_HierarchyPanel.SetSelectedEntity();
+						m_HierarchyPanel->SetSelectedEntity();
 				}
 				break;
 		}

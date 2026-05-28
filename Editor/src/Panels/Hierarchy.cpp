@@ -1,9 +1,12 @@
 #include "Hierarchy.h"
+
+#include "Eis/Scene/Components.h"
+#include "Eis/Project/Project.h"
+
 #include <imgui.h>
-#include <imgui_internal.h> // ImGui::PushMultiItemsWidths
+#include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <Eis/Scene/Components.h>
 
 
 namespace Eis
@@ -83,7 +86,7 @@ namespace Eis
 			m_Selection = entity;
 
 		bool deleted{};
-		if (ImGui::BeginPopupContextItem(0, ImGuiPopupFlags_MouseButtonRight))
+		if (ImGui::BeginPopupContextItem())
 		{
 			if (ImGui::MenuItem("Delete Entity"))
 				deleted = true;
@@ -314,10 +317,40 @@ namespace Eis
 
 		if (entity.HasComponent<SpriteRendererComponent>())
 		{
-			DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
+			DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component)
 			{
 				ImGui::ColorEdit4("Tint", glm::value_ptr(component.Tint));
+
+				ImGui::Text("Texture: ");
+				ImGui::SameLine();
+
+				std::string label{ "None" };
+				if (component.Texture != 0)
+				{
+					if (Project::GetEditorAssetManager()->GetAssetType(component.Texture) == AssetType::Texture2D)
+						label = Project::GetEditorAssetManager()->GetFilePath(component.Texture).filename().string();
+					else
+						label = "Invalid";
+				}
+
+				glm::vec2 size = ImGui::CalcTextSize(label.c_str());
+				size += glm::vec2{ ImGui::GetStyle().FramePadding } * 2.0f;
+				size.x += 20.0f;
+				if (ImGui::ButtonEx(label.c_str(), size, ImGuiButtonFlags_PressedOnDoubleClick))
+					component.Texture = 0;
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+					{
+						AssetHandle handle = *(AssetHandle*)payload->Data;
+						component.Texture = handle;
+					}
+
+					ImGui::EndDragDropTarget();
+				}
 			});
+			
 		}
 	}
 }

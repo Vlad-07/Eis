@@ -41,7 +41,7 @@ namespace Eis
 		io.ConfigDpiScaleViewports = true;
 
 	#ifdef EIS_PLATFORM_WEB
-		io.IniFilename = "";
+		io.IniFilename = NULL;
 	#endif
 
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("resources/fonts/geist/Geist-Regular.ttf", 17.0f);

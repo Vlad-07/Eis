@@ -12,20 +12,21 @@
 
 namespace Eis
 {
-	Application* Application::s_Instance = nullptr;
-
-
-	Application::Application(WindowProps props)
+	Application::Application(const ApplicationSpecification& spec)
+		: m_Spec{ spec }
 	{
 		EIS_PROFILE_FUNCTION();
 
 		EIS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		if (!spec.WorkingDirectory.empty())
+			std::filesystem::current_path(spec.WorkingDirectory);
+
 		// Init sub-systems
 		Time::Init();
 		Random::Init();
-		m_Window = Window::Create(props);
+		m_Window = Window::Create(WindowProps{ spec.Name });
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
 		Renderer2D::Init();
 

@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Eis/Core/UUID.h"
+#include "Eis/Assets/Asset.h"
+#include "SceneCamera.h"
+
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-
-#include "Eis/Core/UUID.h"
-#include "SceneCamera.h"
 
 
 namespace Eis
@@ -53,12 +54,11 @@ namespace Eis
 
 	struct SpriteRendererComponent
 	{
-		//...
+		AssetHandle Texture{ 0 };
 		glm::vec4 Tint{ 1.0f };
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
-		SpriteRendererComponent(const glm::vec4& tint) : Tint{ tint } {}
 	};
 
 	struct CameraComponent

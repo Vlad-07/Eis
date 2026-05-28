@@ -1,20 +1,21 @@
 #include "AssetBrowser.h"
+
+#include "Eis/Project/Project.h"
+#include "Eis/Assets/Importers.h"
+
 #include <imgui.h>
 
 
 
 namespace Eis
 {
-	// replace with project stuff...
-	static const std::filesystem::path c_ProjectAssets{ "assets" };
-
-
 	AssetBrowser::AssetBrowser()
+		: m_BasePath{ Project::GetAssetsDir() }, m_CurrentPath{ Project::GetAssetsDir() }
 	{
-		m_FolderTex = Texture2D::Create("resources/icons/folder.png");
-		m_FileTex = Texture2D::Create("resources/icons/file.png");
+		m_DirectoryTex = TextureImporter::LoadTexture2D("resources/icons/folder.png");
+		m_FileTex = TextureImporter::LoadTexture2D("resources/icons/file.png");
 
-		ChangeDir(c_ProjectAssets);
+		ChangeDir(Project::GetAssetsDir());
 	}
 
 
@@ -27,13 +28,16 @@ namespace Eis
 			// TODO: settings and menu bar
 			if (ImGui::BeginMenu("Settings"))
 			{
+				ImGui::SliderFloat("Item size", &m_ItemSize, 32.0f, 200.0f, "%.1f");
+				ImGui::Checkbox("Show all", &m_ShowAllFiles);
+
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenuBar();
 		}
 
-		if (m_CurrentPath != c_ProjectAssets)
+		if (m_CurrentPath != Project::GetAssetsDir())
 		{
 			if (ImGui::Button("<-"))
 				ChangeDir(m_CurrentPath.parent_path());
@@ -45,54 +49,70 @@ namespace Eis
 
 		// Items
 		{
-			const bool doubleClick = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
-
-			static float itemSize = 72.0f;
 			//	ImGui::SliderFloat("Item Size", &itemSize, 32.0f, 256.0f);
 
 			const float padding = ImGui::GetStyle().CellPadding.x * 2.0f;
-			int columns = (int)glm::floor(ImGui::GetContentRegionAvail().x / (itemSize + padding));
+			int columns = (int)glm::floor(ImGui::GetContentRegionAvail().x / (m_ItemSize + padding));
 			if (columns < 1) columns = 1;
 			if (ImGui::BeginTable("Files", columns, ImGuiTableFlags_SizingStretchSame))
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
 				for (auto& dirEntry : m_Files)
 				{
-					const auto& path = dirEntry.path();
-					//auto relativePath = std::filesystem::relative(path, c_ProjectAssets);
+					const auto& path = dirEntry.Path;
+					const auto& relativePath = std::filesystem::relative(dirEntry.Path, Project::GetAssetsDir());
+					const bool isDir = dirEntry.IsDir;
+					const AssetType type = dirEntry.AssetType;
 					const std::string fileName = path.filename().string();
-					const bool isDir = dirEntry.is_directory();
 
+					// Hide unimported files
+					if (!m_ShowAllFiles && !isDir && type == AssetType::None)
+						continue;
 
 					ImGui::TableNextColumn();
-
+					ImGui::PushID(fileName.c_str());
 
 					ImGui::ImageButton(fileName.c_str(),
-						isDir ? m_FolderTex->GetRendererId() : m_FileTex->GetRendererId(),
-						{ itemSize, itemSize }, { 0,1 }, { 1,0 });
+						SelectIcon(dirEntry)->GetRendererId(),
+						{ m_ItemSize, m_ItemSize }, { 0,1 }, { 1,0 });
 
-					if (path.extension().string() == ".eis")
+					// Options
+					if (!isDir && type == AssetType::None && ImGui::BeginPopupContextItem("ItemOptions"))
 					{
-						if (ImGui::BeginDragDropSource())
+						if (ImGui::MenuItem("Import"))
 						{
-							ImGui::SetDragDropPayload("ASSET_DRAG", path.string().c_str(), path.string().size(), ImGuiCond_Once);
-							ImGui::EndDragDropSource();
+							Project::GetEditorAssetManager()->ImportAsset(path);
+							RefreshAssetStatus(dirEntry);
 						}
+
+						ImGui::EndPopup();
 					}
 
-					if (doubleClick && ImGui::IsItemHovered())
+					// Drag
+					if (type != AssetType::None && ImGui::BeginDragDropSource())
 					{
-						if (isDir)
-						{
-							ChangeDir(path); // maybe deffer
-							break; // to not mess up the loop
-						}
-						else
-							OpenFile(path);
+						ImGui::SetDragDropPayload("ASSET_DRAG", &dirEntry.Handle, sizeof(AssetHandle), ImGuiCond_Once);
+						ImGui::EndDragDropSource();
 					}
 
+					// Change dir / Open file
+					if (ImGui::IsItemHovered())
+					{
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+						{
+							if (isDir)
+							{
+								ChangeDir(path); // maybe deffer
+								ImGui::PopID();
+								break; // to not mess up the loop
+							}
+							else
+								OpenFile(path);
+						}
+					}
 
 					ImGui::TextWrapped("%s", fileName.c_str());
+					ImGui::PopID();
 				}
 
 				ImGui::EndTable();
@@ -110,7 +130,30 @@ namespace Eis
 
 		m_Files.clear();
 		for (auto& p : std::filesystem::directory_iterator{ m_CurrentPath })
-			m_Files.push_back(p);
+			m_Files.emplace_back(p.path(), p.is_directory());
+
+		RefreshAllFileAssetStatus();
+	}
+
+	void AssetBrowser::RefreshAllFileAssetStatus()
+	{
+		// feels slow...
+		for (auto& dirEntry : m_Files)
+		{
+			if (dirEntry.IsDir)
+				continue;
+
+			RefreshAssetStatus(dirEntry);
+		}
+	}
+
+	void AssetBrowser::RefreshAssetStatus(DirEntry& dirEntry)
+	{
+		if (dirEntry.IsDir)
+			return;
+
+		dirEntry.Handle = Project::GetEditorAssetManager()->GetAssetByPath(dirEntry.Path);
+		dirEntry.AssetType = Project::GetEditorAssetManager()->GetAssetType(dirEntry.Handle);
 	}
 
 	void AssetBrowser::OpenFile(const std::filesystem::path& path)
@@ -121,5 +164,20 @@ namespace Eis
 		}
 		// and edit selected asset etc...
 		// kind of requires an asset manager or editor event system
+	}
+
+	const Ref<Texture2D>& AssetBrowser::SelectIcon(const DirEntry& dirEntry)
+	{
+		if (dirEntry.IsDir)
+			return m_DirectoryTex;
+
+		switch (dirEntry.AssetType)
+		{
+			case AssetType::Texture2D:
+				// TODO: asset type icons
+				break;
+		}
+
+		return m_FileTex;
 	}
 }
