@@ -1,8 +1,9 @@
 #pragma once
 
-#include <entt.hpp>
-
 #include "Eis/Core/UUID.h"
+#include "Eis/Assets/Asset.h"
+
+#include <entt.hpp>
 
 
 namespace Eis
@@ -10,13 +11,16 @@ namespace Eis
 	class Entity;
 	class EditorCamera;
 
-	class Scene
+	class Scene : public Asset
 	{
 	public:
 		Scene();
 		~Scene() = default;
 
 		static Ref<Scene> Copy(const Ref<Scene>& other);
+
+		static AssetType GetStaticType() { return AssetType::Scene; }
+		virtual AssetType GetType() const override { return GetStaticType(); }
 
 
 		Entity CreateEntity(std::string_view name, UUID uuid = UUID{});

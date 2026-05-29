@@ -5,56 +5,81 @@
 
 namespace Eis
 {
-	class Buffer
+	// Non-owning raw buffer class
+	struct Buffer
 	{
-	public:
-		Buffer() noexcept = default;
-		Buffer(const void* data, uint64_t size) noexcept;
-		Buffer(uint64_t size) noexcept;
-		Buffer(const Buffer& buf) noexcept;
-		Buffer(Buffer&& buf) noexcept;
-		~Buffer() noexcept;
+		uint8_t* Data{};
+		uint64_t Size{};
 
-		const Buffer& operator=(const Buffer& other);
+		Buffer() = default;
+		Buffer(const Buffer&) = default;
 
-		void Allocate(uint64_t size);
-		void Resize(uint64_t size);
-		void Release();
+		Buffer(uint64_t size) { Allocate(size); }
 
-		void ZeroInit();
-		void AppendNull();
+		Buffer(const void* data, uint64_t size)
+			: Data{ (uint8_t*)data }, Size{ size } {}
 
-		void* Data() { return m_Data; }
-		const void* Data() const { return static_cast<const void*>(m_Data); }
-
-		template<typename T>
-		T& Read(uint64_t offset = 0)
-		{ return *(T*)((uint8_t*)m_Data + offset); }
-		template<typename T>
-		const T& Read(uint64_t offset = 0) const
-		{ return *(T*)((uint8_t*)m_Data + offset); }
-
-		void Write(const void* data, uint64_t size, uint64_t offset = 0);
-
-		template<typename T>
-		void SetObjectPtr(T* ptr)
+		static Buffer Copy(Buffer other)
 		{
-			m_Data = static_cast<void*>(ptr);
-			m_Size = sizeof(T);
+			Buffer result{ other.Size };
+			memcpy(result.Data, other.Data, other.Size);
+			return result;
 		}
 
+		void Allocate(uint64_t size)
+		{
+			Release();
 
-		uint64_t GetSize() const { return m_Size; }
+			Data = static_cast<uint8_t*>(malloc(size));
+			Size = size;
+		}
 
-		operator bool() const { return m_Data; }
-		uint8_t& operator[](uint64_t index) { return ((uint8_t*)m_Data)[index]; }
-		uint8_t operator[](uint64_t index) const { return ((uint8_t*)m_Data)[index]; }
+		void Release()
+		{
+			free(Data);
+			Data = nullptr;
+			Size = 0;
+		}
 
 		template<typename T>
-		T* As() const { return (T*)m_Data; }
+		T* As()
+		{
+			return static_cast<T*>(Data);
+		}
+
+		operator bool() const
+		{
+			return Data != nullptr;
+		}
+
+	};
+
+
+	struct ScopedBuffer
+	{
+		ScopedBuffer(Buffer buffer)
+			: m_Buffer{ buffer } {}
+
+		ScopedBuffer(uint64_t size)
+			: m_Buffer{ size } {}
+
+		~ScopedBuffer()
+		{
+			m_Buffer.Release();
+		}
+
+		uint8_t* Data() { return m_Buffer.Data; }
+		uint64_t Size() const { return m_Buffer.Size; }
+
+		template<typename T>
+		T* As()
+		{
+			return m_Buffer.As<T>();
+		}
+
+		operator bool() const { return m_Buffer; }
 
 	private:
-		void* m_Data{};
-		uint64_t m_Size{};
+		Buffer m_Buffer;
 	};
 }

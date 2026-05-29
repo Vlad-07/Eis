@@ -10,6 +10,8 @@ using json = nlohmann::ordered_json;
 
 namespace glm
 {
+	// TODO: move to common file
+
 	static void to_json(json& j, vec2 v)
 	{
 		j = { v.x, v.y };
@@ -88,16 +90,15 @@ namespace Eis
 
 			j["SpriteRendererComponent"] = json::object();
 			j["SpriteRendererComponent"]["Tint"] = component.Tint;
+			j["SpriteRendererComponent"]["Texture"] = (uint64_t)component.Texture;
 		}
 	}
 
 
-	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
-		: m_Scene{ scene } {}
 
 	void SceneSerializer::Serialize(const std::filesystem::path& path)
 	{
-		EIS_CORE_ASSERT(m_Scene, "Invalid scene!");
+		EIS_CORE_ASSERT(m_Scene);
 
 		m_Scene->m_Name = path.stem().string();
 
@@ -124,11 +125,11 @@ namespace Eis
 
 	bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
-		EIS_CORE_ASSERT(m_Scene, "Invalid scene!");
+		EIS_CORE_ASSERT(m_Scene);
 
 		if (!std::filesystem::exists(path))
 		{
-			EIS_CORE_ERROR("Could not find scene: '{}'", path.string());
+			EIS_CORE_ERROR("Could not find scene file: {}", path.string());
 			return false;
 		}
 
@@ -137,7 +138,7 @@ namespace Eis
 
 		if (!j.contains("Scene"))
 		{
-			EIS_CORE_ERROR("Invalid scene: {}!", path.string());
+			EIS_CORE_ERROR("Invalid scene file: {}!", path.string());
 			return false;
 		}
 
@@ -187,8 +188,8 @@ namespace Eis
 
 				auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 
-
 				src.Tint = component["Tint"].get<glm::vec4>();
+				src.Texture = component["Texture"].get<uint64_t>();
 			}
 		}
 

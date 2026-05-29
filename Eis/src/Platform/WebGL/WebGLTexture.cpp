@@ -7,70 +7,38 @@
 
 namespace Eis
 {
-	WebGLTexture2D::WebGLTexture2D(const std::string& path)
-		: m_Path(path)
+	static GLenum ImageToGLDataFormat(ImageFormat format)
 	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		if (path.find(':') != std::string::npos || path[0] == '\\')
-			EIS_CORE_WARN("Absolute path detected!");
-
-		int width = 0, height = 0, channels = 0;
-
-		stbi_set_flip_vertically_on_load(1);
-		stbi_uc* data = nullptr;
+		switch (format)
 		{
-			EIS_PROFILE_RENDERER_SCOPE("stbi_load - WebGLTexture2D::WebGLTexture2D(const std::string& path)");
-			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+			case Eis::ImageFormat::RGB8: return GL_RGB;
+			case Eis::ImageFormat::RGBA8: return GL_RGBA;
 		}
 
-		if (!data)
-		{
-			EIS_CORE_ERROR("Failed to load image!");
-			return;
-		}
-
-		m_Width = width;
-		m_Height = height;
-
-		GLenum internalFormat = 0, dataFormat = 0;
-		if (channels == 4)
-		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		}
-		else if (channels == 3)
-		{
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		}
-
-		EIS_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
-
-		m_InternalFormat = internalFormat;
-		m_DataFormat = dataFormat;
-
-		glGenTextures(1, &m_RendererId);
-		glBindTexture(GL_TEXTURE_2D, m_RendererId);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
-
-		stbi_image_free(data);
+		EIS_CORE_ASSERT(false);
+		return 0;
 	}
 
-	WebGLTexture2D::WebGLTexture2D(uint32_t width, uint32_t height)
-		:m_Width(width), m_Height(height)
+	static GLenum ImageToGLInternalFormat(ImageFormat format)
+	{
+		switch (format)
+		{
+			case Eis::ImageFormat::RGB8: return GL_RGB8;
+			case Eis::ImageFormat::RGBA8: return GL_RGBA8;
+		}
+
+		EIS_CORE_ASSERT(false);
+		return 0;
+	}
+
+
+	WebGLTexture2D::WebGLTexture2D(const TextureSpec& spec, Buffer data)
+		: m_Spec{ spec }
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		m_InternalFormat = GL_RGBA8;
-		m_DataFormat = GL_RGBA;
+		m_DataFormat = ImageToGLDataFormat(m_Spec.Format);
+		m_InternalFormat = ImageToGLInternalFormat(m_Spec.Format);
 
 		glGenTextures(1, &m_RendererId);
 		glBindTexture(GL_TEXTURE_2D, m_RendererId);
@@ -81,7 +49,9 @@ namespace Eis
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, m_DataFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Spec.Width, m_Spec.Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, nullptr);
+
+		if (data) SetData(data);
 	}
 
 	WebGLTexture2D::~WebGLTexture2D()
@@ -92,13 +62,14 @@ namespace Eis
 	}
 
 
-	void WebGLTexture2D::SetData(void* data, uint32_t size)
+	void WebGLTexture2D::SetData(Buffer data)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
-		EIS_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must cover entire texture!");
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+		const uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		EIS_CORE_ASSERT(data.Size == m_Spec.Width * m_Spec.Height * bpp, "Data must cover entire texture!");
+
+		glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Spec.Width, m_Spec.Height, m_DataFormat, GL_UNSIGNED_BYTE, data.Data);
 	}
 
 	void WebGLTexture2D::Bind(uint32_t slot) const
@@ -107,21 +78,5 @@ namespace Eis
 
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererId);
-	}
-
-	void WebGLTexture2D::Unbind(uint32_t slot) const
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-
-	bool WebGLTexture2D::operator==(const Texture& other) const
-	{
-		if (const auto* p = dynamic_cast<const WebGLTexture2D*>(&other))
-			return m_RendererId == p->GetRendererId();
-		return false;
 	}
 }

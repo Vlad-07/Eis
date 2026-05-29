@@ -11,8 +11,8 @@ namespace Eis
 	class SceneSerializer
 	{
 	public:
-		SceneSerializer(const Ref<Scene>& scene);
-		~SceneSerializer() = default;
+		SceneSerializer(const Ref<Scene>& scene)
+			: m_Scene{ scene } {}
 
 		void Serialize(const std::filesystem::path& path);
 		void SerializeRuntime(const std::filesystem::path& path);

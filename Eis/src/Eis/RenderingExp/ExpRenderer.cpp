@@ -126,9 +126,9 @@ namespace Eis
 
 		// Init WhiteTexture
 
-		uint32_t whiteTexData = 0xffffffff;
-		s_Data.WhiteTexture = Texture2D::Create(1, 1);
-		s_Data.WhiteTexture->SetData(static_cast<void*>(&whiteTexData), sizeof(whiteTexData));
+		const uint32_t whiteTexData = 0xffffffff;
+		Buffer data{ static_cast<const void*>(&whiteTexData), sizeof(whiteTexData) };
+		s_Data.WhiteTexture = Texture2D::Create(TextureSpec{}, data);
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
@@ -139,12 +139,12 @@ namespace Eis
 		for (uint8_t i{}; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_Data.QuadShader = Shader::Create("assets/shaders/QuadLit.glsl");
+		s_Data.QuadShader = Shader::Create("resources/shaders/QuadLit.glsl");
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 
-		s_Data.LightShader = Shader::Create("assets/shaders/Light.glsl");
+		s_Data.LightShader = Shader::Create("resources/shaders/Light.glsl");
 		s_Data.LightShader->Bind();
 		s_Data.LightShader->SetInt("u_Normal", 0);
 		s_Data.LightShader->SetFloat2("u_ScreenSize",
@@ -152,7 +152,7 @@ namespace Eis
 			  Application::GetWindow().GetHeight() });
 
 
-		s_Data.CompositionShader = Shader::Create("assets/shaders/Composition.glsl");
+		s_Data.CompositionShader = Shader::Create("resources/shaders/Composition.glsl");
 		s_Data.CompositionShader->Bind();
 		s_Data.CompositionShader->SetInt("u_Normal", 0);
 		s_Data.CompositionShader->SetInt("u_Albedo", 1);

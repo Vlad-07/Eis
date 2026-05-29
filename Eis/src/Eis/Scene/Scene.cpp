@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "Components.h"
 
+#include "Eis/Assets/AssetManager.h"
 #include "Eis/Scene/ScriptableEntity.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 #include "Eis/Rendering/Objects/EditorCamera.h"
@@ -104,9 +105,18 @@ namespace Eis
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
 			{
-				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [trc, src] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Tint);
+				const glm::mat4 tr = trc.GetTransform();
+				if (src.Texture != 0)
+				{
+					Ref<Texture2D> tex = AssetManager::GetAsset<Texture2D>(src.Texture);
+					Renderer2D::DrawQuad(tr, tex, src.Tint, 1.0f, (int32_t)entity);
+				}
+				else
+				{
+					Renderer2D::DrawQuad(tr, src.Tint, (int32_t)entity);
+				}
 			}
 
 			Renderer2D::EndScene();
@@ -123,6 +133,7 @@ namespace Eis
 	}
 
 
+
 	void Scene::OnUpdateEditor(EditorCamera& camera)
 	{
 		Renderer2D::BeginScene(camera);
@@ -130,9 +141,18 @@ namespace Eis
 		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (auto entity : group)
 		{
-			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+			auto [trc, src] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Tint, (int32_t)entity);
+			const glm::mat4 tr = trc.GetTransform();
+			if (src.Texture != 0)
+			{
+				Ref<Texture2D> tex = AssetManager::GetAsset<Texture2D>(src.Texture);
+				Renderer2D::DrawQuad(tr, tex, src.Tint, 1.0f, (int32_t)entity);
+			}
+			else
+			{
+				Renderer2D::DrawQuad(tr, src.Tint, (int32_t)entity);
+			}
 		}
 
 		Renderer2D::EndScene();

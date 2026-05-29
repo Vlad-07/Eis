@@ -1,0 +1,17 @@
+[
+    {
+        "Handle": 696969696969696969,
+        "FilePath": "Scenes/Scene.eis",
+        "Type": "Scene"
+    },
+    {
+        "Handle": 4367654898436145315,
+        "FilePath": "C:/dev/Eis/Editor/Demo/Assets/Textures/mouce.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 8165994734636588267,
+        "FilePath": "C:/dev/Eis/Editor/Demo/Assets/Textures/ice.png",
+        "Type": "Texture2D"
+    }
+]

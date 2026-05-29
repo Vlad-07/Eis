@@ -60,7 +60,7 @@ namespace Eis
 
 		glm::vec2 m_InitialMousePos{};
 
-		float m_Distance{ 10.0f };
+		float m_Distance{ 5.0f };
 		float m_Pitch{}, m_Yaw{};
 
 		float m_ViewportWidth{}, m_ViewportHeight{};

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Eis.h>
+#include "Eis.h"
+
+#include "Eis/Rendering/Objects/EditorCamera.h"
 
 #include "Panels/Hierarchy.h"
 #include "Panels/AssetBrowser.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
 
 
 namespace Eis
@@ -24,13 +25,18 @@ namespace Eis
 		virtual void OnEvent(Event& event) override;
 
 	private:
+		void NewProject();
+		void SaveProject();
+		void OpenProject(const std::filesystem::path& path);
+
+
 		void NewScene();
 
-		void SaveScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
 
 		void OpenScene();
-		void OpenScene(const std::filesystem::path& path);
+		void OpenScene(AssetHandle handle);
 
 
 		void ScenePlay();
@@ -48,14 +54,16 @@ namespace Eis
 			EDIT = 0, PLAY = 1
 		};
 
+		std::filesystem::path m_ProjectPath;
+
 		EditorState m_State{ EditorState::EDIT };
 		Ref<Scene> m_ActiveScene, m_EditedScene;
 		std::filesystem::path m_EditedScenePath;
 
 		Ref<Framebuffer> m_Framebuffer;
 
-		HierarchyPanel m_HierarchyPanel;
-		AssetBrowser m_AssetBrowserPanel;
+		Scope<HierarchyPanel> m_HierarchyPanel;
+		Scope<AssetBrowser> m_AssetBrowserPanel;
 
 		int m_GizmoType{ -1 };
 
