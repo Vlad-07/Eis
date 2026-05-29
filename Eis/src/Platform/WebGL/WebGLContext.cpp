@@ -16,7 +16,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
+		if (gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress) == 0)
 		{
 			EIS_CORE_CRITICAL("Failed to initialize Glad!");
 			std::exit(1);

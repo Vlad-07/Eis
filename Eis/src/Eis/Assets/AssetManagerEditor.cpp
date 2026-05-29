@@ -115,8 +115,8 @@ namespace Eis
 
 		handle = AssetHandle{}; // generate a new one
 		AssetMetadata metadata;
-		metadata.FilePath = path;
 		metadata.Type = AssetTypeFromExtension(path.extension());
+		metadata.FilePath = path;
 
 		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
 		if (!asset)
@@ -126,8 +126,9 @@ namespace Eis
 		}
 
 		asset->Handle = handle;
-		m_AssetRegistry[handle] = metadata;
-		m_LoadedAssets[handle] = asset;
+
+		m_AssetRegistry[handle] = std::move(metadata);
+		m_LoadedAssets[handle] = std::move(asset);
 
 		SerializeAssetRegistry();
 
