@@ -5,13 +5,13 @@
         "Type": "Scene"
     },
     {
-        "Handle": 4367654898436145315,
-        "FilePath": "C:/dev/Eis/Editor/Demo/Assets/Textures/mouce.png",
+        "Handle": 4846061153772448282,
+        "FilePath": "Textures/mouce.png",
         "Type": "Texture2D"
     },
     {
-        "Handle": 8165994734636588267,
-        "FilePath": "C:/dev/Eis/Editor/Demo/Assets/Textures/ice.png",
+        "Handle": 7193054068700051059,
+        "FilePath": "Textures/ice.png",
         "Type": "Texture2D"
     }
 ]

@@ -39,6 +39,8 @@ namespace Eis
 		m_EditorCam = EditorCamera{ 80.0f, 16.0f / 9.0f, 0.1f, 1000.0f };
 
 		m_ProjectPath = FileDialogs::OpenFile("Eis Project (.eproj)\0*.eproj\0");
+		if (m_ProjectPath.empty())
+			EIS_CORE_ASSERT(false, "TODO: project creation UI");
 		OpenProject(m_ProjectPath);
 
 		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
@@ -268,18 +270,9 @@ namespace Eis
 		if (m_State != EditorState::EDIT)
 			return;
 
-		// maybe don't force scene on disk?
-		const std::filesystem::path path = FileDialogs::SaveFile("Eis Scene (.eis)\0*.eis\0");
-
-		if (path.empty())
-			return;
-
-		Ref<Scene> newScene = CreateRef<Scene>();
-		SceneImporter::SaveScene(newScene, path);
-		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
-		OpenScene(newSceneHandle);
+		m_EditedScene = CreateRef<Scene>();
+		SaveSceneAs();
 	}
-
 
 	void EditorLayer::SaveScene()
 	{
@@ -294,10 +287,12 @@ namespace Eis
 		if (m_State != EditorState::EDIT)
 			return;
 
-		const std::filesystem::path path = FileDialogs::OpenFile("Eis Scene (.eis)\0*.eis\0");
+		std::filesystem::path path = FileDialogs::SaveFile("Eis Scene (.eis)\0*.eis\0");
 
 		if (path.empty())
 			return;
+
+		path = std::filesystem::relative(path, Project::GetAssetsDir());
 
 		SceneImporter::SaveScene(m_EditedScene, path);
 		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
@@ -310,10 +305,12 @@ namespace Eis
 		if (m_State != EditorState::EDIT)
 			return;
 
-		const std::filesystem::path path = FileDialogs::OpenFile("Eis Scene (.eis)\0*.eis\0");
+		std::filesystem::path path = FileDialogs::OpenFile("Eis Scene (.eis)\0*.eis\0");
 
 		if (path.empty())
 			return;
+
+		path = std::filesystem::relative(path, Project::GetAssetsDir());
 
 		AssetHandle sceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
 		OpenScene(sceneHandle);
@@ -321,9 +318,11 @@ namespace Eis
 
 	void EditorLayer::OpenScene(AssetHandle handle)
 	{
-		EIS_CORE_ASSERT(handle);
+		EIS_CORE_ASSERT(AssetManager::IsHandleValid(handle));
 
 		if (m_State != EditorState::EDIT)
+			return;
+		if (AssetManager::GetAssetType(handle) != AssetType::Scene)
 			return;
 
 		Ref<Scene> readOnlyScene = AssetManager::GetAsset<Scene>(handle);

@@ -19,6 +19,8 @@ namespace Eis
 		virtual bool IsAssetLoaded(AssetHandle handle) const override;
 
 
+		// If path already belongs to an imported asset its handle is returned
+		// Otherwise a new asset is created
 		AssetHandle ImportAsset(const std::filesystem::path& path);
 
 

@@ -81,7 +81,7 @@ namespace Eis
 					{
 						if (ImGui::MenuItem("Import"))
 						{
-							Project::GetEditorAssetManager()->ImportAsset(path);
+							Project::GetEditorAssetManager()->ImportAsset(relativePath);
 							RefreshAssetStatus(dirEntry);
 						}
 
@@ -152,7 +152,9 @@ namespace Eis
 		if (dirEntry.IsDir)
 			return;
 
-		dirEntry.Handle = Project::GetEditorAssetManager()->GetAssetByPath(dirEntry.Path);
+		const std::filesystem::path& relativePath = std::filesystem::relative(dirEntry.Path, Project::GetAssetsDir());
+
+		dirEntry.Handle = Project::GetEditorAssetManager()->GetAssetByPath(relativePath);
 		dirEntry.AssetType = Project::GetEditorAssetManager()->GetAssetType(dirEntry.Handle);
 	}
 

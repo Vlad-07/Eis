@@ -113,7 +113,7 @@ namespace Eis
 		AssetHandle handle = GetAssetByPath(path);
 		if (handle) return handle; // Already imported
 
-		handle = AssetHandle{}; // generate a new one
+		handle = AssetHandle{}; // Generate a new handle
 		AssetMetadata metadata;
 		metadata.Type = AssetTypeFromExtension(path.extension());
 		metadata.FilePath = path;
