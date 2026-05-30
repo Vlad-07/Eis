@@ -10,8 +10,8 @@ namespace Eis
 	{
 		switch (format)
 		{
-			case Eis::ImageFormat::RGB8: return GL_RGB;
-			case Eis::ImageFormat::RGBA8: return GL_RGBA;
+			case ImageFormat::RGB8: return GL_RGB;
+			case ImageFormat::RGBA8: return GL_RGBA;
 		}
 
 		EIS_CORE_ASSERT(false);
@@ -22,8 +22,8 @@ namespace Eis
 	{
 		switch (format)
 		{
-			case Eis::ImageFormat::RGB8: return GL_RGB8;
-			case Eis::ImageFormat::RGBA8: return GL_RGBA8;
+			case ImageFormat::RGB8: return GL_RGB8;
+			case ImageFormat::RGBA8: return GL_RGBA8;
 		}
 
 		EIS_CORE_ASSERT(false);

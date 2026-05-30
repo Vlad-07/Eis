@@ -2,7 +2,7 @@ project "Eis"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -38,7 +38,9 @@ project "Eis"
 		"vendor/spdlog/include",
 		"vendor/entt/include",
 		"vendor/json/include",
-		"vendor/stb_image"
+		"vendor/stb_image",
+		"vendor/SPIRV-Cross",
+		"vendor/shaderc/include"
 	}
 
 	defines
@@ -54,6 +56,7 @@ project "Eis"
 		"Glad",
 		"ImGui",
 		"Spdlog",
+		"SPIRV-Cross",
 		"opengl32.lib"
 	}
 
@@ -63,6 +66,11 @@ project "Eis"
 
 	filter "system:windows"
 		systemversion "latest"
+
+	filter { "system:windows", "configurations:Debug" }
+		links { "vendor/shaderc/lib/shaderc_combinedd.lib" }
+	filter { "system:windows", "configurations:Release" }
+		links { "vendor/shaderc/lib/shaderc_combined.lib" }
 
 	filter "configurations:Debug"
 		defines "EIS_DEBUG"

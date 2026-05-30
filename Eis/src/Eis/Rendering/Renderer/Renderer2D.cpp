@@ -4,9 +4,11 @@
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 #include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/VertexArray.h"
+#include "Eis/Rendering/Objects/UniformBuffer.h"
 
-#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 
 namespace Eis
@@ -110,6 +112,12 @@ namespace Eis
 
 		uint16_t TextureSlotIndex = 1; // 0 is WhiteTex
 		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		} CameraBuf;
+		Ref<UniformBuffer> CameraUniformBuf;
 
 		Renderer2D::Statistics Stats;
 	};
@@ -246,6 +254,9 @@ namespace Eis
 		s_Data.QuadVertexTexCoords[1] = { 1.0f, 0.0f };
 		s_Data.QuadVertexTexCoords[2] = { 1.0f, 1.0f };
 		s_Data.QuadVertexTexCoords[3] = { 0.0f, 1.0f };
+
+		// Init camera data
+		s_Data.CameraUniformBuf = UniformBuffer::Create(sizeof(s_Data.CameraBuf), 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -258,36 +269,12 @@ namespace Eis
 	}
 
 
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		s_Data.ColorShader->Bind();
-		s_Data.ColorShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
-
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
-
-		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetMat4("u_VP", camera.GetViewProjectionMatrix());
-
-		StartBatch();
-	}
-
 	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		const glm::mat4 viewProj = camera.GetViewProjection();
-
-		s_Data.ColorShader->Bind();
-		s_Data.ColorShader->SetMat4("u_VP", viewProj);
-
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("u_VP", viewProj);
-
-		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetMat4("u_VP", viewProj);
+		s_Data.CameraBuf.ViewProjection = camera.GetViewProjection();
+		s_Data.CameraUniformBuf->SetData(&s_Data.CameraBuf, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -296,16 +283,8 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		const glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
-
-		s_Data.ColorShader->Bind();
-		s_Data.ColorShader->SetMat4("u_VP", viewProj);
-
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetMat4("u_VP", viewProj);
-
-		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetMat4("u_VP", viewProj);
+		s_Data.CameraBuf.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		s_Data.CameraUniformBuf->SetData(&s_Data.CameraBuf, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}

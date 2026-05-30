@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Eis/Rendering/Objects/Framebuffer.h"
+
 #include <vector>
 #include <variant>
 #include <glm/glm.hpp>
-
-#include "Eis/Rendering/Objects/Framebuffer.h"
 
 
 typedef unsigned int GLuint;

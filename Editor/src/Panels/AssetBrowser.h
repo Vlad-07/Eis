@@ -1,9 +1,9 @@
 #pragma once
 
-#include <filesystem>
+#include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Assets/Asset.h"
 
-#include <Eis/Rendering/Objects/Texture.h>
-#include <Eis/Assets/Asset.h>
+#include <filesystem>
 
 
 namespace Eis

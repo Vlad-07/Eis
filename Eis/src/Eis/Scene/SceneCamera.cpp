@@ -13,6 +13,8 @@ namespace Eis
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
 	{
+		EIS_CORE_ASSERT(width > 0 && height > 0);
+
 		m_AspectRatio = static_cast<float>(width) / static_cast<float>(height);
 		RecalculateProjection();
 	}

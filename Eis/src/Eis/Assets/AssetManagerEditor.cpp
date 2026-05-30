@@ -57,7 +57,7 @@ namespace Eis
 	}
 
 
-	Ref<Asset> Eis::AssetManagerEditor::GetAsset(AssetHandle handle)
+	Ref<Asset> AssetManagerEditor::GetAsset(AssetHandle handle)
 	{
 		if (!IsHandleValid(handle))
 		{

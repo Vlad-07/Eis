@@ -4,6 +4,8 @@ bin/
 bin-int/
 !Eis/vendor/premake/bin/
 
+cache/
+
 *.log
 
 # Files

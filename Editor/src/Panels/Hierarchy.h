@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Eis/Core/Core.h>
-#include <Eis/Scene/Scene.h>
-#include <Eis/Scene/Entity.h>
+#include "Eis/Core/Core.h"
+#include "Eis/Scene/Scene.h"
+#include "Eis/Scene/Entity.h"
 
 
 namespace Eis

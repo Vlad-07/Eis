@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Eis/Rendering/Objects/Shader.h"
 
 
@@ -13,8 +11,8 @@ namespace Eis
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::string& filePath);
-		OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
+		OpenGLShader(const std::filesystem::path& path);
+//		OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;
@@ -28,15 +26,26 @@ namespace Eis
 		virtual void SetFloat4(const std::string& name, glm::vec4 value) override;
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 
-		virtual const std::string& GetName() const override { return m_Name; }
+		//virtual const std::string& GetName() const override { return m_Name; }
 
 	private:
-		std::string ReadFile(const std::string& filePath);
+		std::string ReadFile(const std::filesystem::path& path);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+
+		// Also caches to file
+		void CompileToVK(const std::unordered_map<GLenum, std::string>& shaderSources);
+		// Also caches to file
+		void TranspileToGL();
+		void UploadBinaries();
+		void Reflect(GLenum stage, std::vector<uint32_t> spirv);
+
+		void CompileGLSL(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 	private:
 		GLuint m_RendererId{};
 		std::string m_Name;
+
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_VKBinaries;
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_GLBinaries;
 	};
 }

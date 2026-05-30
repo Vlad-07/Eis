@@ -16,6 +16,7 @@ workspace "Eis"
 		include "Eis/vendor/imgui"
 		include "Eis/vendor/spdlog"
 		include "Eis/vendor/premake"
+		include "Eis/vendor/SPIRV-Cross"
 	group ""
 
 
@@ -27,7 +28,7 @@ project "Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")

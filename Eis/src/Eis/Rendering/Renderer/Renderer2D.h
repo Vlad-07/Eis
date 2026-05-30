@@ -5,7 +5,6 @@
 #include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Rendering/Objects/Camera.h"
 #include "Eis/Rendering/Objects/EditorCamera.h"
-#include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
 namespace Eis
@@ -17,7 +16,6 @@ namespace Eis
 	public:
 	// Called by app
 
-		static void BeginScene(const OrthographicCamera& camera);
 		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
 		static void EndScene();

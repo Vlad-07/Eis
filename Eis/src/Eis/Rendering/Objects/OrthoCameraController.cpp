@@ -86,7 +86,7 @@ namespace Eis
 	{
 		EIS_PROFILE_FUNCTION();
 
-		glm::vec2 mousePos = Eis::Input::GetMousePos();
+		glm::vec2 mousePos = Input::GetMousePos();
 
 		mousePos /= glm::vec2(Application::GetWindow().GetWidth(), Application::GetWindow().GetHeight());
 		mousePos = mousePos * 2.0f - glm::vec2(1.0f);
