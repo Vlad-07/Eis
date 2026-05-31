@@ -11,8 +11,11 @@ namespace Eis
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::filesystem::path& path);
-//		OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
+		using ShaderSources = std::unordered_map<GLenum, std::string>;
+		using ShaderBinaries = std::unordered_map<GLenum, std::vector<uint32_t>>;
+
+	public:
+		OpenGLShader(std::string_view name, const std::string& source);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;
@@ -29,23 +32,25 @@ namespace Eis
 		//virtual const std::string& GetName() const override { return m_Name; }
 
 	private:
-		std::string ReadFile(const std::filesystem::path& path);
-		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+		ShaderSources PreProcess(const std::string& source);
 
-		// Also caches to file
-		void CompileToVK(const std::unordered_map<GLenum, std::string>& shaderSources);
-		// Also caches to file
-		void TranspileToGL();
-		void UploadBinaries();
+		ShaderBinaries CompileToVK(const ShaderSources& glslSources);
+		ShaderBinaries CompileToGL(const ShaderBinaries& vkBinaries);
+
+
+		void UploadBinaries(const ShaderBinaries& binaries);
 		void Reflect(GLenum stage, std::vector<uint32_t> spirv);
 
-		void CompileGLSL(const std::unordered_map<GLenum, std::string>& shaderSources);
+
+		void CompileGLSL(const ShaderSources& shaderSources);
 
 	private:
 		GLuint m_RendererId{};
 		std::string m_Name;
 
-		std::unordered_map<GLenum, std::vector<uint32_t>> m_VKBinaries;
-		std::unordered_map<GLenum, std::vector<uint32_t>> m_GLBinaries;
+		bool m_ShouldRecompile{};
+
+		ShaderBinaries m_VKBinaries;
+		ShaderBinaries m_GLBinaries;
 	};
 }

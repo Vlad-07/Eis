@@ -13,7 +13,8 @@ namespace Eis
 		{ ".eis", AssetType::Scene},
 		{ ".png", AssetType::Texture2D },
 		{ ".jpg", AssetType::Texture2D },
-		{ ".jpeg", AssetType::Texture2D }
+		{ ".jpeg", AssetType::Texture2D },
+		{ ".glsl", AssetType::Shader }
 	};
 
 	static AssetType AssetTypeFromExtension(const std::filesystem::path& extension)
@@ -173,7 +174,7 @@ namespace Eis
 		for (const auto& obj : reg)
 		{
 			const AssetHandle handle = obj["Handle"].get<uint64_t>();
-			
+
 			AssetMetadata& metadata = m_AssetRegistry[handle];
 			metadata.Type = AssetTypeFromString(obj["Type"].get<std::string>());
 			metadata.FilePath = obj["FilePath"].get<std::string>();

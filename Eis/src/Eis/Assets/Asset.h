@@ -14,7 +14,8 @@ namespace Eis
 	{
 		None = 0,
 		Scene,
-		Texture2D
+		Texture2D,
+		Shader
 	};
 
 	std::string_view AssetTypeToString(AssetType type);

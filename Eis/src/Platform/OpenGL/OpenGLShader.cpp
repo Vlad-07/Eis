@@ -12,9 +12,30 @@
 #include <spirv_cross.hpp>
 #include <spirv_glsl.hpp>
 
+#include <rapidhash/rapidhash.h>
+#include <json.hpp>
+
+
+using json = nlohmann::json;
 
 namespace Eis
 {
+	static bool SPIRVAvailable()
+	{
+		// TODO: platform capabilities
+		int numFormats{};
+		glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &numFormats);
+		std::vector<GLint> formats(numFormats, 0);
+		glGetIntegerv(GL_SHADER_BINARY_FORMATS, formats.data());
+
+		// overkill, pretty sure spir-v is the only binary format in opengl
+
+		for (GLint format : formats)
+			if (format == GL_SHADER_BINARY_FORMAT_SPIR_V)
+				return true;
+		return false;
+	}
+
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
 		if (type == "vertex")
@@ -24,6 +45,16 @@ namespace Eis
 
 		EIS_CORE_ASSERT(false, "Unknown shader type!");
 		return 0;
+	}
+	static std::string ShaderTypeToString(GLenum stage)
+	{
+		switch (stage)
+		{
+			case GL_VERTEX_SHADER: return "vertex";
+			case GL_FRAGMENT_SHADER: return "fragment";
+		}
+		EIS_CORE_ASSERT(false);
+		return {};
 	}
 
 	static shaderc_shader_kind GLShaderStageToShaderc(GLenum stage)
@@ -47,7 +78,6 @@ namespace Eis
 		EIS_CORE_ASSERT(false);
 		return "";
 	}
-
 	static std::string GLShaderStageCacheFileExtGL(GLenum stage)
 	{
 		switch (stage)
@@ -59,58 +89,138 @@ namespace Eis
 		return "";
 	}
 
-	static std::filesystem::path GetCacheDir()
+	static const std::filesystem::path& GetCacheDir()
 	{
-		return "resources/cache/shaders/opengl";
+		static const std::filesystem::path cacheDir{ "resources/cache/shaders/opengl" };
+		return cacheDir;
+	}
+	static const std::filesystem::path& GetCacheRegistryPath()
+	{
+		static const std::filesystem::path cacheRegPath{ "resources/cache/shaders/opengl/ShaderCacheRegistry.shreg" };
+		return cacheRegPath;
 	}
 
-	static void CreateCacheDir()
+	static void CheckCache()
 	{
 		const std::filesystem::path& path = GetCacheDir();
 		if (!std::filesystem::exists(path))
 			std::filesystem::create_directories(path);
+
+		const std::filesystem::path& regPath = GetCacheRegistryPath();
+		if (!std::filesystem::exists(regPath))
+		{
+			std::ofstream out{ regPath };
+			out << "{}";
+		}
 	}
 
 
-	OpenGLShader::OpenGLShader(const std::filesystem::path& path)
+	static bool ReadBinary(std::vector<uint32_t>& data, const std::filesystem::path& path)
+	{
+		std::ifstream in{ path, std::ios::binary };
+
+		if (!in.is_open())
+			return false;
+
+		in.seekg(0, std::ios::end);
+		size_t size = in.tellg();
+		in.seekg(0, std::ios::beg);
+
+		data.resize(size / sizeof(uint32_t));
+		in.read((char*)data.data(), size);
+
+		return true;
+	}
+	static void WriteBinary(const std::vector<uint32_t>& data, const std::filesystem::path& path)
+	{
+		std::ofstream out{ path, std::ios::binary };
+
+		if (!out.is_open())
+			return;
+
+		out.write((const char*)data.data(), data.size() * sizeof(uint32_t));
+	}
+
+
+	OpenGLShader::OpenGLShader(std::string_view name, const std::string& source)
+		: m_Name{ name }
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		m_Name = path.filename().string();
+		CheckCache();
 
-		std::string source = ReadFile(path);
-		auto shaderSources = PreProcess(source);
-
-		// TODO: platform capabilities
-		int numFormats = 0;
-		glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &numFormats);
-		GLint* formats = new GLint[numFormats];
-		glGetIntegerv(GL_SHADER_BINARY_FORMATS, formats);
-		if (formats[0] == GL_SHADER_BINARY_FORMAT_SPIR_V)
+		if (SPIRVAvailable())
 		{
-			CreateCacheDir();
+			const uint64_t hash = rapidhash(source.data(), source.size());
 
-			CompileToVK(shaderSources);
-			TranspileToGL();
-			UploadBinaries();
+			bool upToDate{ false };
+			std::ifstream in{ GetCacheRegistryPath() };
+			json j = json::parse(in);
+			in.close();
+
+			if (j.contains(m_Name))
+			{
+				uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
+
+				if (oldHash == hash)
+					upToDate = true;
+			}
+
+			// TODO: take this registry garbage out of the shader class
+
+			if (!upToDate)
+			{
+				// Compile
+				ShaderSources shaderSources = PreProcess(source);
+				m_VKBinaries = CompileToVK(shaderSources);
+				m_GLBinaries = CompileToGL(m_VKBinaries);
+				UploadBinaries(m_GLBinaries);
+
+				// Write KV
+				for (const auto& [stage, binary] : m_VKBinaries)
+					WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
+				// Write GL
+				for (const auto& [stage, binary] : m_GLBinaries)
+					WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtGL(stage)));
+
+				// Write registry
+				j[m_Name]["Hash"] = hash;
+				for (const auto& [stage, unused] : m_VKBinaries)
+					j[m_Name]["Stages"].push_back(ShaderTypeToString(stage));
+
+				std::ofstream out{ GetCacheRegistryPath() };
+				out << j.dump(4);
+			}
+			else
+			{
+				// Load VK
+				for (const auto& s : j[m_Name]["Stages"])
+				{
+					GLenum stage = ShaderTypeFromString(s.get<std::string>());
+
+					auto& binary = m_VKBinaries[stage];
+					ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
+				}
+
+				// Load GL
+				for (const auto& s : j[m_Name]["Stages"])
+				{
+					GLenum stage = ShaderTypeFromString(s.get<std::string>());
+
+					auto& binary = m_GLBinaries[stage];
+					ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtGL(stage)));
+				}
+
+				UploadBinaries(m_GLBinaries);
+			}
 		}
 		else
+		{
+			ShaderSources shaderSources = PreProcess(source);
+			EIS_CORE_WARN("SPIR-V shaders not supported! Falling back to GLSL");
 			CompileGLSL(shaderSources);
+		}
 	}
-
-	/*OpenGLShader::OpenGLShader(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
-		: m_Name(name)
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		EIS_CORE_INFO("Compiling shader: {}", m_Name);
-
-		std::unordered_map<GLenum, std::string> sources;
-		sources[GL_VERTEX_SHADER] = vsSrc;
-		sources[GL_FRAGMENT_SHADER] = fsSrc;
-
-		CompileGLSL(sources);
-	}*/
 
 	OpenGLShader::~OpenGLShader()
 	{
@@ -120,38 +230,11 @@ namespace Eis
 	}
 
 
-	std::string OpenGLShader::ReadFile(const std::filesystem::path& path)
+	OpenGLShader::ShaderSources OpenGLShader::PreProcess(const std::string& source)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		std::ifstream in(path, std::ios::binary);
-
-		if (!in)
-		{
-			EIS_CORE_ERROR("Could not open file '{}'", path.string());
-			return {};
-		}
-
-		in.seekg(0, std::ios::end);
-		size_t size = in.tellg();
-		in.seekg(0, std::ios::beg);
-
-		if (size == -1)
-		{
-			EIS_CORE_ERROR("Could not read from file '{}'", path.string());
-			return {};
-		}
-
-		std::string result(size, '\0');
-		in.read(result.data(), size);
-		return result;
-	}
-
-	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		std::unordered_map<GLenum, std::string> shaderSources;
+		ShaderSources shaderSources;
 
 		const std::string typeToken{ "//type" };
 		size_t pos = source.find(typeToken, 0); // Start of shader type declaration line
@@ -179,123 +262,78 @@ namespace Eis
 		return shaderSources;
 	}
 
-	void OpenGLShader::CompileToVK(const std::unordered_map<GLenum, std::string>& shaderSources)
+	OpenGLShader::ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources)
 	{
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 
-		std::filesystem::path cacheDir = GetCacheDir();
-
-		m_VKBinaries.clear();
-		for (const auto& [stage, src] : shaderSources)
+		ShaderBinaries binaries;
+		for (const auto& [stage, src] : glslSources)
 		{
-			const std::filesystem::path cachePath = GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage));
+			std::vector<uint32_t>& stageData = binaries[stage];
 
-			std::vector<uint32_t>& stageData = m_VKBinaries[stage];
-
-			std::ifstream in{ cachePath, std::ios::binary };
-			if (in.is_open())
+			shaderc::SpvCompilationResult module
+				= compiler.CompileGlslToSpv(src, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
+			if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 			{
-				in.seekg(0, std::ios::end);
-				size_t size = in.tellg();
-				in.seekg(0, std::ios::beg);
-
-				stageData.resize(size / sizeof(uint32_t));
-				in.read((char*)stageData.data(), size);
+				EIS_CORE_ERROR("GLSL to SPIR-V compilation failed!");
+				EIS_CORE_ERROR("{}", module.GetErrorMessage());
+				EIS_CORE_ASSERT(false);
 			}
-			else
-			{
-				shaderc::SpvCompilationResult module
-					= compiler.CompileGlslToSpv(src, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
-				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
-				{
-					EIS_CORE_ERROR("GLSL to SPIR-V compilation failed!");
-					EIS_CORE_ERROR("{}", module.GetErrorMessage());
-					EIS_CORE_ASSERT(false);
-				}
 
-				stageData.assign(module.cbegin(), module.cend());
-
-				std::ofstream out{ cachePath, std::ios::binary };
-				if (out.is_open())
-				{
-					out.write((char*)stageData.data(), stageData.size() * sizeof(uint32_t));
-					out.flush();
-					out.close();
-				}
-			}
+			stageData.assign(module.cbegin(), module.cend());
 		}
+
+		return binaries;
 	}
 
-	void OpenGLShader::TranspileToGL()
+	OpenGLShader::ShaderBinaries OpenGLShader::CompileToGL(const ShaderBinaries& vkBinaries)
 	{
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 
-		std::filesystem::path cacheDir = GetCacheDir();
-
+		ShaderBinaries binaries;
 		for (const auto& [stage, spirv] : m_VKBinaries)
 		{
-			const std::filesystem::path cachePath = GetCacheDir() / (m_Name + GLShaderStageCacheFileExtGL(stage));
+			std::vector<uint32_t>& stageData = binaries[stage];
 
-			std::vector<uint32_t>& stageData = m_GLBinaries[stage];
+			spirv_cross::CompilerGLSL::Options crossOptions;
+			crossOptions.vulkan_semantics = true; // might be bad?
 
-			std::ifstream in{ cachePath, std::ios::binary };
-			if (in)
+			spirv_cross::CompilerGLSL glslCompiler{ spirv };
+			glslCompiler.set_common_options(crossOptions);
+
+			std::string glslSrc = glslCompiler.compile();
+
+			//EIS_CORE_TRACE("{}", glslSrc);
+
+			shaderc::SpvCompilationResult module =
+				compiler.CompileGlslToSpv(glslSrc, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
+			if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 			{
-				in.seekg(0, std::ios::end);
-				size_t size = in.tellg();
-				in.seekg(0, std::ios::beg);
-
-				stageData.resize(size / sizeof(uint32_t));
-				in.read((char*)stageData.data(), size);
+				EIS_CORE_ERROR("Transpiled GLSL to SPIR-V compilation failed!");
+				EIS_CORE_ERROR("{}", module.GetErrorMessage());
+				EIS_CORE_ASSERT(false);
 			}
-			else
-			{
-				spirv_cross::CompilerGLSL::Options crossOptions;
-				crossOptions.vulkan_semantics = true; // might be bad?
 
-				spirv_cross::CompilerGLSL glslCompiler{ spirv };
-				glslCompiler.set_common_options(crossOptions);
-
-				std::string glslSrc = glslCompiler.compile();
-
-				//EIS_CORE_TRACE("{}", glslSrc);
-
-				shaderc::SpvCompilationResult module =
-					compiler.CompileGlslToSpv(glslSrc, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
-				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
-				{
-					EIS_CORE_ERROR("Transpiled GLSL to SPIR-V compilation failed!");
-					EIS_CORE_ERROR("{}", module.GetErrorMessage());
-					EIS_CORE_ASSERT(false);
-				}
-
-				stageData.assign(module.cbegin(), module.cend());
-
-				std::ofstream out{ cachePath, std::ios::binary };
-				if (out.is_open())
-				{
-					out.write((char*)stageData.data(), stageData.size() * sizeof(uint32_t));
-					out.flush();
-					out.close();
-				}
-			}
+			stageData.assign(module.cbegin(), module.cend());
 		}
+
+		return binaries;
 	}
 
-	void OpenGLShader::UploadBinaries()
+	void OpenGLShader::UploadBinaries(const ShaderBinaries& glBinaries)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		GLuint program = glCreateProgram();
 
 		std::vector<GLuint> glShaderIDs;
-		for (const auto& [stage, spirv] : m_GLBinaries)
+		for (const auto& [stage, spirv] : glBinaries)
 		{
 			GLuint shader = glShaderIDs.emplace_back((GLuint)glCreateShader(stage));
 
@@ -346,7 +384,7 @@ namespace Eis
 	}
 
 
-	void OpenGLShader::CompileGLSL(const std::unordered_map<GLenum, std::string>& shaderSources)
+	void OpenGLShader::CompileGLSL(const ShaderSources& shaderSources)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 

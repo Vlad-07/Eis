@@ -6,11 +6,12 @@
 
 namespace Eis
 {
-	using AssetLoadingFn = std::function < Ref<Asset>(AssetHandle, const AssetMetadata&)>;
+	using AssetLoadingFn = std::function<Ref<Asset>(AssetHandle, const AssetMetadata&)>;
 	static std::map<AssetType, AssetLoadingFn> s_AssetLoadingFns
 	{
 		{ AssetType::Scene, SceneImporter::ImportScene },
-		{ AssetType::Texture2D, TextureImporter::ImportTexture2D }
+		{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
+		{ AssetType::Shader, ShaderImporter::ImportShader }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

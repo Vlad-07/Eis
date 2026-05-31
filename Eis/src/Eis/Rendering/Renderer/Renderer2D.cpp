@@ -6,6 +6,8 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/UniformBuffer.h"
 
+#include "Eis/Assets/Importers.h"
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -236,13 +238,13 @@ namespace Eis
 		for (uint8_t i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_Data.ColorShader = Shader::Create("resources/shaders/Color.glsl");
+		s_Data.ColorShader = ShaderImporter::LoadShader("resources/shaders/Color.glsl");
 
-		s_Data.QuadShader = Shader::Create("resources/shaders/Quad.glsl");
+		s_Data.QuadShader = ShaderImporter::LoadShader("resources/shaders/Quad.glsl");
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.CircleShader = Shader::Create("resources/shaders/Circle.glsl");
+		s_Data.CircleShader = ShaderImporter::LoadShader("resources/shaders/Circle.glsl");
 
 		// Init QuadVertex
 		s_Data.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);

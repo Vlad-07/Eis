@@ -40,7 +40,8 @@ project "Eis"
 		"vendor/json/include",
 		"vendor/stb_image",
 		"vendor/SPIRV-Cross",
-		"vendor/shaderc/include"
+		"vendor/shaderc/include",
+		"vendor/rapidhash/include"
 	}
 
 	defines

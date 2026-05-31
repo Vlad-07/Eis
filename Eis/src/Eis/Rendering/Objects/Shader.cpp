@@ -8,32 +8,17 @@
 
 namespace Eis
 {
-	Ref<Shader> Shader::Create(const std::filesystem::path& path)
+	Ref<Shader> Shader::Create(std::string_view name, const std::string& source)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::OpenGL:
 			case RendererAPI::API::WebGL:
-				return CreateRef<OpenGLShader>(path);
+				return CreateRef<OpenGLShader>(name, source);
 
 			default:
 				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
 				return nullptr;
 		}
 	}
-
-
-	/*Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
-	{
-		switch (RendererAPI::GetAPI())
-		{
-			case RendererAPI::API::OpenGL:
-			case RendererAPI::API::WebGL:
-				return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
-
-			default:
-				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-				return nullptr;
-		}
-	}*/
 }

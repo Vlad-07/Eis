@@ -8,6 +8,8 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/Framebuffer.h"
 
+#include "Eis/Assets/Importers.h"
+
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -139,12 +141,12 @@ namespace Eis
 		for (uint8_t i{}; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_Data.QuadShader = Shader::Create("resources/shaders/QuadLit.glsl");
+		s_Data.QuadShader = ShaderImporter::LoadShader("resources/shaders/QuadLit.glsl");
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 
-		s_Data.LightShader = Shader::Create("resources/shaders/Light.glsl");
+		s_Data.LightShader = ShaderImporter::LoadShader("resources/shaders/Light.glsl");
 		s_Data.LightShader->Bind();
 		s_Data.LightShader->SetInt("u_Normal", 0);
 		s_Data.LightShader->SetFloat2("u_ScreenSize",
@@ -152,7 +154,7 @@ namespace Eis
 			  Application::GetWindow().GetHeight() });
 
 
-		s_Data.CompositionShader = Shader::Create("resources/shaders/Composition.glsl");
+		s_Data.CompositionShader = ShaderImporter::LoadShader("resources/shaders/Composition.glsl");
 		s_Data.CompositionShader->Bind();
 		s_Data.CompositionShader->SetInt("u_Normal", 0);
 		s_Data.CompositionShader->SetInt("u_Albedo", 1);

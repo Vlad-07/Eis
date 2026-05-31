@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Eis/Assets/Asset.h"
+
 #include <string>
 #include <unordered_map>
 #include <filesystem>
@@ -9,7 +11,7 @@
 
 namespace Eis
 {
-	class Shader
+	class Shader : public Asset
 	{
 	public:
 		virtual ~Shader() = default;
@@ -27,7 +29,10 @@ namespace Eis
 
 		//virtual const std::string& GetName() const = 0;
 
-		static Ref<Shader> Create(const std::filesystem::path& path);
-//		static Ref<Shader> Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc);
+		static AssetType GetStaticType() { return AssetType::Shader; }
+		virtual AssetType GetType() const override { return GetStaticType(); }
+
+
+		static Ref<Shader> Create(std::string_view name, const std::string& source);
 	};
 }
