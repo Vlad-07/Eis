@@ -2,6 +2,8 @@
 
 #include "Eis/Assets/Asset.h"
 
+#include "Eis/Rendering/Objects/ShaderReflection.h"
+
 #include <string>
 #include <unordered_map>
 #include <filesystem>
@@ -18,6 +20,9 @@ namespace Eis
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
+		virtual const ShaderReflection& GetReflection() const = 0;
+		virtual const AttributeLayout& GetAttributeLayout() const = 0;
 
 		virtual void SetInt(const std::string& name, int value) = 0;
 		virtual void SetIntArray(const std::string& name, const int* values, uint32_t count) = 0;

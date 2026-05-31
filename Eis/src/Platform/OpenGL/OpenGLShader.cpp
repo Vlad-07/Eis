@@ -78,16 +78,6 @@ namespace Eis
 		EIS_CORE_ASSERT(false);
 		return "";
 	}
-	static std::string GLShaderStageCacheFileExtGL(GLenum stage)
-	{
-		switch (stage)
-		{
-			case GL_VERTEX_SHADER: return ".cached_gl.vert";
-			case GL_FRAGMENT_SHADER: return ".cached_gl.frag";
-		}
-		EIS_CORE_ASSERT(false);
-		return "";
-	}
 
 	static const std::filesystem::path& GetCacheDir()
 	{
@@ -149,77 +139,71 @@ namespace Eis
 
 		CheckCache();
 
-		if (SPIRVAvailable())
+		// TODO: maybe upload spir-v?
+		//if (SPIRVAvailable())
+		//{
+		const uint64_t hash = rapidhash(source.data(), source.size());
+
+		bool upToDate{ false };
+		std::ifstream in{ GetCacheRegistryPath() };
+		json j = json::parse(in);
+		in.close();
+
+		if (j.contains(m_Name))
 		{
-			const uint64_t hash = rapidhash(source.data(), source.size());
+			uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
 
-			bool upToDate{ false };
-			std::ifstream in{ GetCacheRegistryPath() };
-			json j = json::parse(in);
-			in.close();
+			if (oldHash == hash)
+				upToDate = true;
+		}
 
-			if (j.contains(m_Name))
-			{
-				uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
+		// TODO: take this registry garbage out of the shader class
 
-				if (oldHash == hash)
-					upToDate = true;
-			}
+		if (!upToDate)
+		{
+			// Compile
+			ShaderSources shaderSources = PreProcess(source);
+			m_VKBinaries = CompileToVK(shaderSources, m_Name);
+			m_GLSLsources = CompileToGLSL(m_VKBinaries);
+			UploadSources(m_GLSLsources);
 
-			// TODO: take this registry garbage out of the shader class
+			// Write KV
+			for (const auto& [stage, binary] : m_VKBinaries)
+				WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
 
-			if (!upToDate)
-			{
-				// Compile
-				ShaderSources shaderSources = PreProcess(source);
-				m_VKBinaries = CompileToVK(shaderSources);
-				m_GLBinaries = CompileToGL(m_VKBinaries);
-				UploadBinaries(m_GLBinaries);
+			// Write registry
+			j[m_Name]["Hash"] = hash;
+			for (const auto& [stage, unused] : m_VKBinaries)
+				j[m_Name]["Stages"].push_back(ShaderTypeToString(stage));
 
-				// Write KV
-				for (const auto& [stage, binary] : m_VKBinaries)
-					WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
-				// Write GL
-				for (const auto& [stage, binary] : m_GLBinaries)
-					WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtGL(stage)));
-
-				// Write registry
-				j[m_Name]["Hash"] = hash;
-				for (const auto& [stage, unused] : m_VKBinaries)
-					j[m_Name]["Stages"].push_back(ShaderTypeToString(stage));
-
-				std::ofstream out{ GetCacheRegistryPath() };
-				out << j.dump(4);
-			}
-			else
-			{
-				// Load VK
-				for (const auto& s : j[m_Name]["Stages"])
-				{
-					GLenum stage = ShaderTypeFromString(s.get<std::string>());
-
-					auto& binary = m_VKBinaries[stage];
-					ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
-				}
-
-				// Load GL
-				for (const auto& s : j[m_Name]["Stages"])
-				{
-					GLenum stage = ShaderTypeFromString(s.get<std::string>());
-
-					auto& binary = m_GLBinaries[stage];
-					ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtGL(stage)));
-				}
-
-				UploadBinaries(m_GLBinaries);
-			}
+			std::ofstream out{ GetCacheRegistryPath() };
+			out << j.dump(4);
 		}
 		else
 		{
-			ShaderSources shaderSources = PreProcess(source);
-			EIS_CORE_WARN("SPIR-V shaders not supported! Falling back to GLSL");
-			CompileGLSL(shaderSources);
+			// Load VK
+			for (const auto& s : j[m_Name]["Stages"])
+			{
+				GLenum stage = ShaderTypeFromString(s.get<std::string>());
+
+				auto& binary = m_VKBinaries[stage];
+				ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
+			}
+
+			// cahce intermediate glsl?
+			m_GLSLsources = CompileToGLSL(m_VKBinaries);
+			UploadSources(m_GLSLsources);
 		}
+		//}
+		//else
+		//{
+		//	ShaderSources shaderSources = PreProcess(source);
+		//	EIS_CORE_WARN("SPIR-V shaders not supported! Falling back to GLSL");
+		//	UploadSources(shaderSources);
+		//}
+
+		// TODO: cache reflection
+		m_Reflection = Reflect(m_VKBinaries);
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -262,20 +246,19 @@ namespace Eis
 		return shaderSources;
 	}
 
-	OpenGLShader::ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources)
+	OpenGLShader::ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources, std::string_view name)
 	{
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
-		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
+		// vk 1.3+ breaks discard
+		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
 		options.SetOptimizationLevel(shaderc_optimization_level_zero);
 
-		ShaderBinaries binaries;
+		ShaderBinaries output;
 		for (const auto& [stage, src] : glslSources)
 		{
-			std::vector<uint32_t>& stageData = binaries[stage];
-
 			shaderc::SpvCompilationResult module
-				= compiler.CompileGlslToSpv(src, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
+				= compiler.CompileGlslToSpv(src, GLShaderStageToShaderc(stage), name.data(), options);
 			if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 			{
 				EIS_CORE_ERROR("GLSL to SPIR-V compilation failed!");
@@ -283,49 +266,109 @@ namespace Eis
 				EIS_CORE_ASSERT(false);
 			}
 
+			std::vector<uint32_t>& stageData = output[stage];
 			stageData.assign(module.cbegin(), module.cend());
 		}
 
-		return binaries;
+		return output;
 	}
 
-	OpenGLShader::ShaderBinaries OpenGLShader::CompileToGL(const ShaderBinaries& vkBinaries)
+	OpenGLShader::ShaderSources OpenGLShader::CompileToGLSL(const ShaderBinaries& vkBinaries)
 	{
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-		options.SetOptimizationLevel(shaderc_optimization_level_zero);
-
-		ShaderBinaries binaries;
-		for (const auto& [stage, spirv] : m_VKBinaries)
+		ShaderSources output;
+		for (const auto& [stage, binary] : vkBinaries)
 		{
-			std::vector<uint32_t>& stageData = binaries[stage];
-
-			spirv_cross::CompilerGLSL::Options crossOptions;
-			crossOptions.vulkan_semantics = true; // might be bad?
-
-			spirv_cross::CompilerGLSL glslCompiler{ spirv };
-			glslCompiler.set_common_options(crossOptions);
-
-			std::string glslSrc = glslCompiler.compile();
-
-			//EIS_CORE_TRACE("{}", glslSrc);
-
-			shaderc::SpvCompilationResult module =
-				compiler.CompileGlslToSpv(glslSrc, GLShaderStageToShaderc(stage), m_Name.c_str(), options);
-			if (module.GetCompilationStatus() != shaderc_compilation_status_success)
-			{
-				EIS_CORE_ERROR("Transpiled GLSL to SPIR-V compilation failed!");
-				EIS_CORE_ERROR("{}", module.GetErrorMessage());
-				EIS_CORE_ASSERT(false);
-			}
-
-			stageData.assign(module.cbegin(), module.cend());
+			std::string& glslSrc = output[stage];
+			spirv_cross::CompilerGLSL glslCompiler{ binary };
+			glslSrc = glslCompiler.compile();
 		}
 
-		return binaries;
+		return output;
 	}
 
+
+	static ShaderDataType ShaderDataTypeFromSPIRType(spirv_cross::SPIRType::BaseType type)
+	{
+		switch (type)
+		{
+			case spirv_cross::SPIRType::Boolean:
+				return ShaderDataType::Bool;
+
+			case spirv_cross::SPIRType::Int:
+				return ShaderDataType::Int;
+
+			case spirv_cross::SPIRType::Float:
+				return ShaderDataType::Float;
+		}
+		
+		EIS_CORE_ASSERT(false);
+		return ShaderDataType::None;
+	}
+
+
+	static uint32_t SPIRTypeSize(const spirv_cross::SPIRType& type)
+	{
+		uint32_t componentSize{};
+		switch (type.basetype)
+		{
+			case spirv_cross::SPIRType::SByte:
+			case spirv_cross::SPIRType::UByte:
+			case spirv_cross::SPIRType::Boolean:
+				componentSize = 1; break;
+			case spirv_cross::SPIRType::Short:
+			case spirv_cross::SPIRType::UShort:
+				componentSize = 2; break;
+			case spirv_cross::SPIRType::Int:
+			case spirv_cross::SPIRType::UInt:
+			case spirv_cross::SPIRType::Float:
+				componentSize = 4; break;
+			case spirv_cross::SPIRType::Int64:
+			case spirv_cross::SPIRType::UInt64:
+			case spirv_cross::SPIRType::Double:
+				componentSize = 8; break;
+			default: EIS_CORE_ASSERT(false); break;
+		}
+
+		return componentSize * type.vecsize * type.columns;
+	}
+
+	ShaderReflection OpenGLShader::Reflect(const ShaderBinaries& binaries)
+	{
+		ShaderReflection reflection;
+
+
+		std::vector<VertexAttribute> vertexAtribs;
+		{
+			const auto& vertex = binaries.at(GL_VERTEX_SHADER);
+			spirv_cross::Compiler c{ vertex };
+			spirv_cross::ShaderResources resources = c.get_shader_resources();
+
+			vertexAtribs.resize(resources.stage_inputs.size());
+			for (size_t i{}; i < resources.stage_inputs.size(); i++)
+			{
+				const auto& input = resources.stage_inputs[i];
+				const auto& spvType = c.get_type(input.type_id);
+
+				const size_t binding = c.get_decoration(input.id, spv::DecorationLocation);
+
+				VertexAttribute& attrib = vertexAtribs[binding];
+				attrib.Name = input.name;
+				attrib.DataType = ShaderDataTypeFromSPIRType(spvType.basetype);
+				attrib.ComponentCount = spvType.vecsize;
+				attrib.Colums = spvType.columns;
+				attrib.Normalized = input.name.ends_with("_n"); // maybe a better normalization method?
+				attrib.Size = SPIRTypeSize(spvType);
+			}
+		}
+
+		reflection.VertexAttributes = AttributeLayout{ vertexAtribs };
+
+		return reflection;
+	}
+
+
+
+	/*
 	void OpenGLShader::UploadBinaries(const ShaderBinaries& glBinaries)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
@@ -373,18 +416,9 @@ namespace Eis
 		}
 
 		m_RendererId = program;
-	}
+	}*/
 
-	void OpenGLShader::Reflect(GLenum stage, std::vector<uint32_t> spirv)
-	{
-		spirv_cross::Compiler compiler{ spirv };
-		spirv_cross::ShaderResources res{ compiler.get_shader_resources() };
-
-		// do reflection...
-	}
-
-
-	void OpenGLShader::CompileGLSL(const ShaderSources& shaderSources)
+	void OpenGLShader::UploadSources(const ShaderSources& shaderSources)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 

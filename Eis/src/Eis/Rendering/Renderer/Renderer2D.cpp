@@ -46,6 +46,11 @@ namespace Eis
 		glm::vec4 Color;
 	};
 
+	class VertexBufferData
+	{
+		//...
+	};
+
 	struct Renderer2DData
 	{
 		static constexpr uint32_t MaxTriangles   = 10'000;
@@ -132,14 +137,25 @@ namespace Eis
 
 		RenderCommands::Init();
 
+		// Init Shaders
+
+		int samplers[s_Data.MaxTextureSlots];
+		for (uint8_t i = 0; i < s_Data.MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		s_Data.ColorShader = ShaderImporter::LoadShader("resources/shaders/Color.glsl");
+
+		s_Data.QuadShader = ShaderImporter::LoadShader("resources/shaders/Quad.glsl");
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+		s_Data.CircleShader = ShaderImporter::LoadShader("resources/shaders/Circle.glsl");
+
 
 		// Init Triangles
 
 		s_Data.TriangleVertexBuffer = VertexBuffer::Create(s_Data.MaxTriVertices * sizeof(TriangleVertex));
-		s_Data.TriangleVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position"},
-				{ ShaderDataType::Float4, "a_Color"}
-			});
+		s_Data.TriangleVertexBuffer->SetLayout(s_Data.ColorShader->GetAttributeLayout());
 
 		s_Data.TriangleVertexArray = VertexArray::Create();
 		s_Data.TriangleVertexArray->AddVertexBuffer(s_Data.TriangleVertexBuffer);
@@ -158,14 +174,7 @@ namespace Eis
 		// Init Quads
 
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxQuadVertices * sizeof(QuadVertex));
-		s_Data.QuadVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-				{ ShaderDataType::Float2, "a_TexCoord" },
-				{ ShaderDataType::Float,  "a_TexIndex" },
-				{ ShaderDataType::Float,  "a_TilingFactor" },
-				{ ShaderDataType::Int, "a_EntityId" }
-			});
+		s_Data.QuadVertexBuffer->SetLayout(s_Data.QuadShader->GetAttributeLayout());
 
 		s_Data.QuadVertexArray = VertexArray::Create();
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -193,13 +202,7 @@ namespace Eis
 		// Init Circles
 
 		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxCircleVertices * sizeof(CircleVertex));
-		s_Data.CircleVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_WorldPosition" },
-				{ ShaderDataType::Float3, "a_LocalPosition" },
-				{ ShaderDataType::Float4, "a_Color" },
-				{ ShaderDataType::Float,  "a_Thickness" },
-				{ ShaderDataType::Float,  "a_Fade" }
-			});
+		s_Data.CircleVertexBuffer->SetLayout(s_Data.CircleShader->GetAttributeLayout());
 
 		s_Data.CircleVertexArray = VertexArray::Create();
 		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
@@ -211,10 +214,7 @@ namespace Eis
 		// Init Lines
 
 		s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxLineVertices * sizeof(LineVertex));
-		s_Data.LineVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color"	}
-			});
+		s_Data.LineVertexBuffer->SetLayout(s_Data.ColorShader->GetReflection().VertexAttributes);
 
 		s_Data.LineVertexArray = VertexArray::Create();
 		s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
@@ -231,20 +231,6 @@ namespace Eis
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 		s_Data.TextureSlotIndex = 1;
 
-
-		// Init Shaders
-
-		int samplers[s_Data.MaxTextureSlots];
-		for (uint8_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
-		s_Data.ColorShader = ShaderImporter::LoadShader("resources/shaders/Color.glsl");
-
-		s_Data.QuadShader = ShaderImporter::LoadShader("resources/shaders/Quad.glsl");
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-
-		s_Data.CircleShader = ShaderImporter::LoadShader("resources/shaders/Circle.glsl");
 
 		// Init QuadVertex
 		s_Data.QuadVertexPositions[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
