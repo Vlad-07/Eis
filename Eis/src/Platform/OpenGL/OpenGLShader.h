@@ -11,10 +11,6 @@ namespace Eis
 	class OpenGLShader : public Shader
 	{
 	public:
-		using ShaderSources = std::unordered_map<GLenum, std::string>;
-		using ShaderBinaries = std::unordered_map<GLenum, std::vector<uint32_t>>;
-
-	public:
 		OpenGLShader(std::string_view name, const std::string& source);
 		virtual ~OpenGLShader();
 

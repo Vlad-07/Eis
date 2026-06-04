@@ -1,5 +1,7 @@
 #pragma once
 
+
+#include "Eis/Core/Core.h"
 #include "Eis/Rendering/Renderer/RendererAPI.h"
 
 

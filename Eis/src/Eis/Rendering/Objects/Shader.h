@@ -2,17 +2,18 @@
 
 #include "Eis/Assets/Asset.h"
 
-#include "Eis/Rendering/Objects/ShaderReflection.h"
+#include "ShaderReflection.h"
 
 #include <string>
-#include <unordered_map>
-#include <filesystem>
-
 #include <glm/glm.hpp>
 
 
 namespace Eis
 {
+	using ShaderSources = std::unordered_map<uint32_t, std::string>;
+	using ShaderBinaries = std::unordered_map<uint32_t, std::vector<uint32_t>>;
+
+
 	class Shader : public Asset
 	{
 	public:

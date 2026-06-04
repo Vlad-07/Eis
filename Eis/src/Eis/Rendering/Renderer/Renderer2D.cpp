@@ -5,6 +5,7 @@
 #include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/UniformBuffer.h"
+#include "Eis/Rendering/Objects/VertexBufferData.h"
 
 #include "Eis/Assets/Importers.h"
 
@@ -21,20 +22,9 @@ namespace Eis
 		glm::vec4 Color;
 	};
 
-	struct QuadVertex
-	{
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexCoord;
-		float TexIndex;
-		float TilingFactor;
-		int32_t EntityId;
-	};
-
 	struct CircleVertex
 	{
 		glm::vec3 WorldPosition;
-		glm::vec3 LocalPosition;
 		glm::vec4 Color;
 		float Thickness;
 		float Fade;
@@ -46,10 +36,6 @@ namespace Eis
 		glm::vec4 Color;
 	};
 
-	class VertexBufferData
-	{
-		//...
-	};
 
 	struct Renderer2DData
 	{
@@ -88,9 +74,8 @@ namespace Eis
 		Ref<VertexBuffer> QuadVertexBuffer;
 		Ref<Shader> QuadShader;
 
-		uint32_t QuadIndexCount = 0;
-		QuadVertex* QuadVertexBufferBase = nullptr;
-		QuadVertex* QuadVertexBufferPtr = nullptr;
+		uint32_t QuadVertexCount{};
+		VertexBufferData QuadVertexBufferData;
 
 		glm::mat4 QuadVertexPositions{};
 		glm::mat4x2 QuadVertexTexCoords{};
@@ -122,8 +107,8 @@ namespace Eis
 
 		struct CameraData
 		{
-			glm::mat4 ViewProjection;
-		} CameraBuf;
+			glm::mat4 ViewProjection{};
+		} CameraBuf{};
 		Ref<UniformBuffer> CameraUniformBuf;
 
 		Renderer2D::Statistics Stats;
@@ -149,7 +134,7 @@ namespace Eis
 		s_Data.QuadShader->Bind();
 		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
-		s_Data.CircleShader = ShaderImporter::LoadShader("resources/shaders/Circle.glsl");
+	//	s_Data.CircleShader = ShaderImporter::LoadShader("resources/shaders/Circle.glsl");
 
 
 		// Init Triangles
@@ -173,8 +158,10 @@ namespace Eis
 
 		// Init Quads
 
-		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxQuadVertices * sizeof(QuadVertex));
-		s_Data.QuadVertexBuffer->SetLayout(s_Data.QuadShader->GetAttributeLayout());
+		const AttributeLayout& quadLayout = s_Data.QuadShader->GetAttributeLayout();
+		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxQuadVertices * quadLayout.Stride);
+		s_Data.QuadVertexBuffer->SetLayout(quadLayout);
+		s_Data.QuadVertexBufferData.SetLayout(quadLayout, s_Data.MaxQuadVertices);
 
 		s_Data.QuadVertexArray = VertexArray::Create();
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -196,16 +183,15 @@ namespace Eis
 		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
-		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxQuadVertices];
 
 
 		// Init Circles
 
 		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxCircleVertices * sizeof(CircleVertex));
-		s_Data.CircleVertexBuffer->SetLayout(s_Data.CircleShader->GetAttributeLayout());
+	//	s_Data.CircleVertexBuffer->SetLayout(s_Data.CircleShader->GetAttributeLayout());
 
 		s_Data.CircleVertexArray = VertexArray::Create();
-		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+	//	s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
 		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // HACK: reuse quadIb
 
 		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxCircleVertices];
@@ -251,7 +237,6 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		delete[] s_Data.QuadVertexBufferBase;
 		delete[] s_Data.CircleVertexBufferBase;
 		delete[] s_Data.LineVertexBufferBase;
 	}
@@ -300,8 +285,7 @@ namespace Eis
 	}
 	void Renderer2D::StartBatchQuads()
 	{
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexCount = 0;
 		s_Data.TextureSlotIndex = 1;
 	}
 	void Renderer2D::StartBatchCircles()
@@ -345,18 +329,20 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		if (s_Data.QuadIndexCount == 0)
+		if (s_Data.QuadVertexCount == 0)
 			return;
 
-		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+		const uint32_t dataSize = s_Data.QuadVertexBufferData.GetVertexDataSize() * s_Data.QuadVertexCount;
+		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferData.GetData(), dataSize);
 
 		// Bind textures
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
 
+		const uint32_t indexCount = static_cast<uint32_t>(s_Data.QuadVertexCount * 1.5f);
+
 		s_Data.QuadShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		RenderCommands::DrawIndexed(s_Data.QuadVertexArray, indexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -507,23 +493,21 @@ namespace Eis
 
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		if (s_Data.QuadIndexCount >= s_Data.MaxQuadIndices)
+		if (s_Data.QuadVertexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();
 
 		const float textureIndex = GetTextureIndex(texture);
 		for (uint8_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = verts[i];
-			s_Data.QuadVertexBufferPtr->Color = tint;
-			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.QuadVertexTexCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TilingFactor = tiling;
-			s_Data.QuadVertexBufferPtr->EntityId = entityId;
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::Position, glm::vec3{ verts[i] });
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::Color, tint);
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::TexCoord0, s_Data.QuadVertexTexCoords[i]);
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::TexIndex, textureIndex);
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::TilingFactor, tiling);
+			s_Data.QuadVertexBufferData.Set(s_Data.QuadVertexCount, AttribSemantic::EntityId, entityId);
 
-			s_Data.QuadVertexBufferPtr++;
+			s_Data.QuadVertexCount++;
 		}
-
-		s_Data.QuadIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
 	}
@@ -555,7 +539,6 @@ namespace Eis
 		for (uint8_t i = 0; i < 4; i++)
 		{
 			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
-			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
 			s_Data.CircleVertexBufferPtr->Color = color;
 			s_Data.CircleVertexBufferPtr->Thickness = thickness;
 			s_Data.CircleVertexBufferPtr->Fade = fade;

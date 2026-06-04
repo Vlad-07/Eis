@@ -13,5 +13,10 @@
         "Handle": 7193054068700051059,
         "FilePath": "Textures/ice.png",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 7818644652425530162,
+        "FilePath": "Textures/circle.png",
+        "Type": "Texture2D"
     }
 ]

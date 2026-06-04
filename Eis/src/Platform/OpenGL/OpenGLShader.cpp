@@ -20,22 +20,6 @@ using json = nlohmann::json;
 
 namespace Eis
 {
-	static bool SPIRVAvailable()
-	{
-		// TODO: platform capabilities
-		int numFormats{};
-		glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &numFormats);
-		std::vector<GLint> formats(numFormats, 0);
-		glGetIntegerv(GL_SHADER_BINARY_FORMATS, formats.data());
-
-		// overkill, pretty sure spir-v is the only binary format in opengl
-
-		for (GLint format : formats)
-			if (format == GL_SHADER_BINARY_FORMAT_SPIR_V)
-				return true;
-		return false;
-	}
-
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
 		if (type == "vertex")
@@ -139,9 +123,6 @@ namespace Eis
 
 		CheckCache();
 
-		// TODO: maybe upload spir-v?
-		//if (SPIRVAvailable())
-		//{
 		const uint64_t hash = rapidhash(source.data(), source.size());
 
 		bool upToDate{ false };
@@ -194,13 +175,6 @@ namespace Eis
 			m_GLSLsources = CompileToGLSL(m_VKBinaries);
 			UploadSources(m_GLSLsources);
 		}
-		//}
-		//else
-		//{
-		//	ShaderSources shaderSources = PreProcess(source);
-		//	EIS_CORE_WARN("SPIR-V shaders not supported! Falling back to GLSL");
-		//	UploadSources(shaderSources);
-		//}
 
 		// TODO: cache reflection
 		m_Reflection = Reflect(m_VKBinaries);
@@ -214,7 +188,7 @@ namespace Eis
 	}
 
 
-	OpenGLShader::ShaderSources OpenGLShader::PreProcess(const std::string& source)
+	ShaderSources OpenGLShader::PreProcess(const std::string& source)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -246,7 +220,7 @@ namespace Eis
 		return shaderSources;
 	}
 
-	OpenGLShader::ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources, std::string_view name)
+	ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources, std::string_view name)
 	{
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
@@ -273,7 +247,7 @@ namespace Eis
 		return output;
 	}
 
-	OpenGLShader::ShaderSources OpenGLShader::CompileToGLSL(const ShaderBinaries& vkBinaries)
+	ShaderSources OpenGLShader::CompileToGLSL(const ShaderBinaries& vkBinaries)
 	{
 		ShaderSources output;
 		for (const auto& [stage, binary] : vkBinaries)
@@ -287,22 +261,22 @@ namespace Eis
 	}
 
 
-	static ShaderDataType ShaderDataTypeFromSPIRType(spirv_cross::SPIRType::BaseType type)
+	static BaseDataType ShaderDataTypeFromSPIRType(spirv_cross::SPIRType::BaseType type)
 	{
 		switch (type)
 		{
 			case spirv_cross::SPIRType::Boolean:
-				return ShaderDataType::Bool;
+				return BaseDataType::Bool;
 
 			case spirv_cross::SPIRType::Int:
-				return ShaderDataType::Int;
+				return BaseDataType::Int;
 
 			case spirv_cross::SPIRType::Float:
-				return ShaderDataType::Float;
+				return BaseDataType::Float;
 		}
 		
 		EIS_CORE_ASSERT(false);
-		return ShaderDataType::None;
+		return BaseDataType::None;
 	}
 
 
@@ -332,36 +306,131 @@ namespace Eis
 		return componentSize * type.vecsize * type.columns;
 	}
 
+	static AttribSemantic SemanticFromName(const std::string& name)
+	{
+		static const std::unordered_map<std::string, AttribSemantic> semanticMap
+		{
+			{ "a_Position", AttribSemantic::Position },
+			{ "a_Normal", AttribSemantic::Normal },
+			{ "a_Tangent", AttribSemantic::Tangent },
+			{ "a_Color", AttribSemantic::Color },
+			{ "a_TexCoord", AttribSemantic::TexCoord0 },
+			{ "a_TexIndex", AttribSemantic::TexIndex },
+			{ "a_TilingFactor", AttribSemantic::TilingFactor },
+			{ "a_EntityId", AttribSemantic::EntityId }
+		};
+
+		auto it = semanticMap.find(name);
+		if (it == semanticMap.end())
+		{
+			EIS_CORE_ASSERT(false);
+			return AttribSemantic::None;
+		}
+		return it->second;
+	}
+
 	ShaderReflection OpenGLShader::Reflect(const ShaderBinaries& binaries)
 	{
+		//TODO: move this to a ShaderReflector
+
 		ShaderReflection reflection;
 
-
-		std::vector<VertexAttribute> vertexAtribs;
+		auto& vertexAtribs = reflection.VertexAttributes.Attributes;
+		auto& samplers = reflection.Samplers;
+		auto& uniformBuffers = reflection.UniformBuffers;
+		auto& fragmentOutputs = reflection.FragmentOutputs;
+		for (const auto& [stage, bin] : binaries)
 		{
-			const auto& vertex = binaries.at(GL_VERTEX_SHADER);
-			spirv_cross::Compiler c{ vertex };
+			spirv_cross::Compiler c{ bin };
 			spirv_cross::ShaderResources resources = c.get_shader_resources();
 
-			vertexAtribs.resize(resources.stage_inputs.size());
-			for (size_t i{}; i < resources.stage_inputs.size(); i++)
+			// Vertex attribs
+			if (stage == GL_VERTEX_SHADER)
 			{
-				const auto& input = resources.stage_inputs[i];
-				const auto& spvType = c.get_type(input.type_id);
+				vertexAtribs.resize(resources.stage_inputs.size());
+				for (size_t i{}; i < resources.stage_inputs.size(); i++)
+				{
+					const auto& input = resources.stage_inputs[i];
+					const auto& spvType = c.get_type(input.type_id);
 
-				const size_t binding = c.get_decoration(input.id, spv::DecorationLocation);
+					const uint32_t location = c.get_decoration(input.id, spv::DecorationLocation);
 
-				VertexAttribute& attrib = vertexAtribs[binding];
-				attrib.Name = input.name;
-				attrib.DataType = ShaderDataTypeFromSPIRType(spvType.basetype);
-				attrib.ComponentCount = spvType.vecsize;
-				attrib.Colums = spvType.columns;
-				attrib.Normalized = input.name.ends_with("_n"); // maybe a better normalization method?
-				attrib.Size = SPIRTypeSize(spvType);
+					VertexAttribute& attrib = vertexAtribs[location];
+					attrib.Name = input.name;
+					attrib.DataType = ShaderDataTypeFromSPIRType(spvType.basetype);
+					attrib.VecSize = spvType.vecsize;
+					attrib.Columns = spvType.columns;
+					attrib.ByteSize = SPIRTypeSize(spvType);
+
+					attrib.Normalized = attrib.Name.ends_with("_n"); // maybe a better normalization method?
+					attrib.Semantic = SemanticFromName(attrib.Name);
+				}
+
+				uint8_t offset{};
+				for (auto& attrib : vertexAtribs)
+				{
+					attrib.ByteOffset = offset;
+					offset += attrib.ByteSize;
+				}
+				reflection.VertexAttributes.Stride = offset;
+			}
+
+			samplers.reserve(samplers.size() + resources.sampled_images.size());
+			for (const auto& s : resources.sampled_images)
+			{
+				Sampler sampler;
+				sampler.Name = s.name;
+				sampler.Binding = c.get_decoration(s.id, spv::DecorationBinding);
+
+				samplers.push_back(sampler);
+			}
+
+
+			uniformBuffers.reserve(resources.uniform_buffers.size());
+			for (const auto& ub : resources.uniform_buffers)
+			{
+				const auto& ubType = c.get_type(ub.base_type_id);
+
+				UniformBufferBlock uniformBuffer;
+				uniformBuffer.Name = ub.name;
+				uniformBuffer.Binding = (uint32_t)c.get_decoration(ub.id, spv::DecorationBinding);
+				uniformBuffer.BlockSize = (uint32_t)c.get_declared_struct_size(ubType);
+
+				uniformBuffer.Members.resize(ubType.member_types.size());
+				for (uint32_t i{}; i < uniformBuffer.Members.size(); i++)
+				{
+					const auto& memberType = c.get_type(ubType.member_types[i]);
+
+					UniformBufferMember& member = uniformBuffer.Members[i];
+					member.Name = c.get_member_name(ub.base_type_id, i);
+					member.DataType = ShaderDataTypeFromSPIRType(memberType.basetype);
+					member.VecSize = memberType.vecsize;
+					member.Columns = memberType.columns;
+					member.ByteSize = (uint8_t)c.get_declared_struct_member_size(ubType, i);
+
+					member.ByteOffset = c.type_struct_member_offset(ubType, i);
+				}
+
+				uniformBuffers.push_back(uniformBuffer);
+			}
+
+			if (stage == GL_FRAGMENT_SHADER)
+			{
+				fragmentOutputs.resize(resources.stage_outputs.size());
+				for (size_t i{}; i < resources.stage_outputs.size(); i++)
+				{
+					const auto& output = resources.stage_outputs[i];
+					const auto& type = c.get_type(output.type_id);
+
+					FragmentOutput& fragmentOut = fragmentOutputs[i];
+					fragmentOut.Name = output.name;
+					fragmentOut.DataType = ShaderDataTypeFromSPIRType(type.basetype);
+					fragmentOut.VecSize = type.vecsize;
+					fragmentOut.Columns = type.columns;
+					fragmentOut.ByteSize = SPIRTypeSize(type);
+				}
 			}
 		}
-
-		reflection.VertexAttributes = AttributeLayout{ vertexAtribs };
 
 		return reflection;
 	}

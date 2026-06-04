@@ -3,7 +3,7 @@
 
 namespace Eis
 {
-	enum class ShaderDataType
+	enum class BaseDataType : uint8_t
 	{
 		None = 0,
 		Bool,
@@ -11,56 +11,74 @@ namespace Eis
 		Float
 	};
 
-	struct VertexAttribute
+	struct ShaderMember
 	{
 		std::string Name;
-		ShaderDataType DataType{};
-		uint32_t ComponentCount{}; // 1 for non-vec, >1 for vec
-		uint32_t Colums{}; // 1 for non-mat, >1 for mat
-		uint32_t Size{}; // Size in bytes
-		bool Normalized{}; // Atributes whose name ends with '_n' are normalized
 
-		size_t Offset{}; // Calculated by layout, do not set
+		BaseDataType DataType{};
+		uint8_t VecSize{}; // 1 for non-vec, >1 for vec
+		uint8_t Columns{}; // 1 for non-mat, >1 for mat
+
+		uint8_t ByteSize{};
 	};
 
 
-	class AttributeLayout
+
+	enum class AttribSemantic : uint8_t
 	{
-	public:
-		AttributeLayout() = default;
-		AttributeLayout(const std::initializer_list<VertexAttribute>& atribs) : m_Attributes(atribs)
-		{
-			CalculateOffAndStride();
-		}
-		AttributeLayout(const std::vector<VertexAttribute>& atribs) : m_Attributes(atribs)
-		{
-			CalculateOffAndStride();
-		}
+		None = 0,
+		Position,
+		Normal,
+		Tangent,
+		Color,
+		TexCoord0,
+		TexIndex,
+		TilingFactor,
+		EntityId
+	};
 
-		const std::vector<VertexAttribute>& GetAttributes() const { return m_Attributes; }
+	struct VertexAttribute : public ShaderMember
+	{
+		// location is the index in vector
 
-		uint32_t GetStride() const { return m_Stride; }
+		bool Normalized{}; // Atributes whose name ends with '_n' are normalized
+		uint8_t ByteOffset{};
+		AttribSemantic Semantic;
+	};
 
-		std::vector<VertexAttribute>::iterator begin() { return m_Attributes.begin(); }
-		std::vector<VertexAttribute>::iterator end() { return m_Attributes.end(); }
-		std::vector<VertexAttribute>::const_iterator begin() const { return m_Attributes.begin(); }
-		std::vector<VertexAttribute>::const_iterator end() const { return m_Attributes.end(); }
+	struct AttributeLayout
+	{
+		std::vector<VertexAttribute> Attributes;
+		uint32_t Stride{};
+	};
 
-	private:
-		void CalculateOffAndStride()
-		{
-			size_t offset = 0;
-			m_Stride = 0;
-			for (auto& element : m_Attributes)
-			{
-				element.Offset = offset;
-				offset += element.Size;
-				m_Stride += element.Size;
-			}
-		}
 
-	private:
-		std::vector<VertexAttribute> m_Attributes;
-		uint32_t m_Stride = 0;
+
+	struct UniformBufferMember : public ShaderMember
+	{
+		uint8_t ByteOffset{};
+	};
+
+	struct UniformBufferBlock
+	{
+		std::string Name;
+		uint8_t Binding{};
+		uint32_t BlockSize{};
+
+		std::vector<UniformBufferMember> Members;
+	};
+
+
+
+	struct Sampler
+	{
+		std::string Name;
+		uint8_t Binding;
+	};
+
+
+	struct FragmentOutput : public ShaderMember
+	{
+		// location is the index in vector
 	};
 }
