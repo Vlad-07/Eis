@@ -49,16 +49,16 @@ namespace Eis
 
 		// Items
 		{
-			//	ImGui::SliderFloat("Item Size", &itemSize, 32.0f, 256.0f);
-
 			const float padding = ImGui::GetStyle().CellPadding.x * 2.0f;
 			int columns = (int)glm::floor(ImGui::GetContentRegionAvail().x / (m_ItemSize + padding));
 			if (columns < 1) columns = 1;
 			if (ImGui::BeginTable("Files", columns, ImGuiTableFlags_SizingStretchSame))
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
-				for (auto& dirEntry : m_Files)
+				for (auto it{ m_Files.begin() }; it != m_Files.end(); it++)
 				{
+					DirEntry& dirEntry = *it;
+
 					const auto& path = dirEntry.Path;
 					const auto& relativePath = std::filesystem::relative(dirEntry.Path, Project::GetAssetsDir());
 					const bool isDir = dirEntry.IsDir;
@@ -77,12 +77,27 @@ namespace Eis
 						{ m_ItemSize, m_ItemSize }, { 0,1 }, { 1,0 });
 
 					// Options
-					if (!isDir && type == AssetType::None && ImGui::BeginPopupContextItem("ItemOptions"))
+					if (ImGui::BeginPopupContextItem("ItemOptions"))
 					{
-						if (ImGui::MenuItem("Import"))
+						// Common
+
+						if (ImGui::MenuItem("Delete"))
 						{
-							Project::GetEditorAssetManager()->ImportAsset(relativePath);
-							RefreshAssetStatus(dirEntry);
+							Delete(it);
+							ImGui::EndPopup();
+							ImGui::PopID();
+							break;
+						}
+
+						// Importing
+
+						if (!isDir && type == AssetType::None)
+						{
+							if (ImGui::MenuItem("Import"))
+							{
+								Project::GetEditorAssetManager()->ImportAsset(relativePath);
+								RefreshFileStatus(dirEntry);
+							}
 						}
 
 						ImGui::EndPopup();
@@ -112,11 +127,34 @@ namespace Eis
 					}
 
 					ImGui::TextWrapped("%s", fileName.c_str());
+					if (ImGui::IsItemHovered())
+					{
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+						{}// rename
+					}
+
 					ImGui::PopID();
 				}
 
 				ImGui::EndTable();
 				ImGui::PopStyleColor();
+			}
+
+			// RMB between items
+			if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+			{
+				if (ImGui::BeginMenu("Create"))
+				{
+					if (ImGui::MenuItem("Folder"))
+						CreateDir(m_CurrentPath);
+
+					if (ImGui::MenuItem("Material"))
+						CreateFile(m_CurrentPath, AssetType::Material);
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndPopup();
 			}
 		}
 
@@ -143,11 +181,11 @@ namespace Eis
 			if (dirEntry.IsDir)
 				continue;
 
-			RefreshAssetStatus(dirEntry);
+			RefreshFileStatus(dirEntry);
 		}
 	}
 
-	void AssetBrowser::RefreshAssetStatus(DirEntry& dirEntry)
+	void AssetBrowser::RefreshFileStatus(DirEntry& dirEntry)
 	{
 		if (dirEntry.IsDir)
 			return;
@@ -167,6 +205,37 @@ namespace Eis
 		// and edit selected asset etc...
 		// kind of requires an asset manager or editor event system
 	}
+
+
+	void AssetBrowser::CreateDir(const std::filesystem::path& dir, std::string_view name)
+	{
+		EIS_CORE_ASSERT(std::filesystem::is_directory(dir));
+
+		m_Files.emplace_back(dir / name, true);
+		std::filesystem::create_directory(m_Files.back().Path);
+	}
+
+	void AssetBrowser::CreateFile(const std::filesystem::path& dir, AssetType type)
+	{
+		EIS_CORE_ASSERT(std::filesystem::is_directory(dir));
+
+		std::string stem = AssetTypeToString(type) + AssetTypeToExtension(type);
+
+		std::filesystem::path path = dir / stem;
+		if (std::filesystem::exists(path))
+		{
+			// TODO:
+		}
+
+		std::ofstream out{ path };
+	}
+
+	void AssetBrowser::Delete(std::vector<DirEntry>::iterator it)
+	{
+		std::filesystem::remove_all(it->Path);
+		m_Files.erase(it);
+	}
+
 
 	const Ref<Texture2D>& AssetBrowser::SelectIcon(const DirEntry& dirEntry)
 	{

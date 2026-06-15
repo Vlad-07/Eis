@@ -1,12 +1,11 @@
 # Directories
 .vs/
+.idea/
 bin/
 bin-int/
 !Eis/vendor/premake/bin/
 
 cache/
-
-*.log
 
 # Files
 *.user
@@ -19,4 +18,8 @@ imgui.ini
 Makefile
 *.o
 *.tmp
-*.rar
+
+*.log
+
+shaderc_combined.lib
+shaderc_combinedd.lib

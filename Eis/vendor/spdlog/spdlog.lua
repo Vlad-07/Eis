@@ -1,11 +1,11 @@
-project "Spdlog"
+project "spdlog"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	files
 	{
@@ -32,13 +32,10 @@ project "Spdlog"
 	}
 
 	filter "toolset:msc*"
+		multiprocessorcompile "on"
 		buildoptions { "/utf-8" }
 
 	filter "system:windows"
-		systemversion "latest"
-
-	filter "system:linux"
-		pic "on"
 		systemversion "latest"
 	
 	filter "configurations:Debug"

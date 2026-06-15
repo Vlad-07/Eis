@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Eis/Assets/Asset.h"
-
-#include "ShaderReflection.h"
+#include "ShaderData.h"
 
 #include <string>
 #include <glm/glm.hpp>

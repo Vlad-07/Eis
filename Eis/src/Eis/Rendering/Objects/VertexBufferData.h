@@ -10,8 +10,6 @@ namespace Eis
 	class VertexBufferData
 	{
 	public:
-		VertexBufferData() = default;
-
 		void SetLayout(const AttributeLayout& layout, uint64_t maxVertices);
 
 		template<typename T>
@@ -28,8 +26,6 @@ namespace Eis
 
 		const void* GetData() { return m_Data.data(); }
 		uint32_t GetVertexDataSize() const { return m_Layout.Stride; }
-
-		void Clear() { m_Data.clear(); m_Layout = {}; m_MaxVertexCount = 0; }
 
 	private:
 		const VertexAttribute& GetAttribBySemantic(AttribSemantic semantic) const;

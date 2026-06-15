@@ -3,8 +3,8 @@ project "Glad"
 	language "C"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	files
 	{
@@ -17,6 +17,9 @@ project "Glad"
 	{
 		"include"
 	}
+
+	filter "toolset:msc*"
+		multiprocessorcompile "on"
 
 	filter "system:windows"
 		systemversion "latest"

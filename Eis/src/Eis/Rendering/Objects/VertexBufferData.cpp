@@ -19,6 +19,6 @@ namespace Eis
 				return attrib;
 
 		EIS_CORE_ASSERT(false);
-		return m_Layout.Attributes.front(); // hide the warning, this souldn't execute anyway
+		return m_Layout.Attributes.front(); // hide the warning, this shouldn't execute anyway
 	}
 }

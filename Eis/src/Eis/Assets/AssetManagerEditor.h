@@ -9,6 +9,9 @@ namespace Eis
 	using AssetRegistry = std::map<AssetHandle, AssetMetadata>;
 
 
+	std::string AssetTypeToExtension(AssetType type);
+	AssetType AssetTypeFromExtension(const std::string& ext);
+
 	class AssetManagerEditor : public AssetManagerBase
 	{
 	public:

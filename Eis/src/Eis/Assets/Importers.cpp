@@ -8,6 +8,7 @@
 
 #include <stb_image.h>
 
+
 namespace Eis
 {
 	Ref<Scene> SceneImporter::ImportScene(AssetHandle handle, const AssetMetadata& metadata)

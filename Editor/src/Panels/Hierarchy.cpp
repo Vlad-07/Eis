@@ -2,6 +2,7 @@
 
 #include "Eis/Scene/Components.h"
 #include "Eis/Project/Project.h"
+#include "Eis/Assets/AssetManager.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -202,7 +203,7 @@ namespace Eis
 
 
 	template<typename T>
-	void DrawAddComponent(Entity e, std::string_view name)
+	static void DrawAddComponent(Entity e, std::string_view name)
 	{
 		if (!e.HasComponent<T>())
 		{
@@ -214,6 +215,50 @@ namespace Eis
 		}
 	}
 
+	template<typename T>
+	static void DragDropTarget(T& data)
+	{
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
+				data = *(T*)payload->Data;
+
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	static void DragDropAssetTarget(AssetHandle& assetHandle, AssetType type)
+	{
+		AssetHandle handle{ 0 };
+		DragDropTarget<AssetHandle>(handle);
+		if (AssetManager::GetAssetType(handle) == type)
+			assetHandle = handle;
+	}
+
+	static void DrawAssetTarget(std::string_view name, AssetType type, AssetHandle& assetHandle)
+	{
+		char buf[64]{};
+		snprintf(buf, 64, "%s: ", name.data());
+		ImGui::Text(buf);
+		ImGui::SameLine();
+
+		std::string label{ "None" };
+		if (assetHandle != 0)
+		{
+			if (Project::GetEditorAssetManager()->GetAssetType(assetHandle) == type)
+				label = Project::GetEditorAssetManager()->GetFilePath(assetHandle).stem().string();
+			else
+				label = "Invalid";
+		}
+
+		glm::vec2 size = ImGui::CalcTextSize(label.c_str());
+		size += glm::vec2{ ImGui::GetStyle().FramePadding } *2.0f;
+		size.x += 20.0f;
+		if (ImGui::ButtonEx(label.c_str(), size, ImGuiButtonFlags_PressedOnDoubleClick))
+			assetHandle = 0;
+
+		DragDropAssetTarget(assetHandle, type);
+	}
 
 	void HierarchyPanel::DrawComponents(Entity entity)
 	{
@@ -321,36 +366,8 @@ namespace Eis
 			{
 				ImGui::ColorEdit4("Tint", glm::value_ptr(component.Tint));
 
-				ImGui::Text("Texture: ");
-				ImGui::SameLine();
-
-				std::string label{ "None" };
-				if (component.Texture != 0)
-				{
-					if (Project::GetEditorAssetManager()->GetAssetType(component.Texture) == AssetType::Texture2D)
-						label = Project::GetEditorAssetManager()->GetFilePath(component.Texture).filename().string();
-					else
-						label = "Invalid";
-				}
-
-				glm::vec2 size = ImGui::CalcTextSize(label.c_str());
-				size += glm::vec2{ ImGui::GetStyle().FramePadding } * 2.0f;
-				size.x += 20.0f;
-				if (ImGui::ButtonEx(label.c_str(), size, ImGuiButtonFlags_PressedOnDoubleClick))
-					component.Texture = 0;
-
-				if (ImGui::BeginDragDropTarget())
-				{
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_DRAG"))
-					{
-						AssetHandle handle = *(AssetHandle*)payload->Data;
-						component.Texture = handle;
-					}
-
-					ImGui::EndDragDropTarget();
-				}
+				DrawAssetTarget("Texture", AssetType::Texture2D, component.Texture);
 			});
-			
 		}
 	}
 }

@@ -4,8 +4,8 @@ project "ImGui"
     cppdialect "C++20"
     staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	files
 	{
@@ -50,13 +50,12 @@ project "ImGui"
 		"IMGUI_USER_CONFIG=\"ImGuiConfig.h\""
 	}
 
+    filter "toolset:msc*"
+		multiprocessorcompile "on"
+
 	filter "system:windows"
 		systemversion "latest"
 
-	filter "system:linux"
-		pic "on"
-		systemversion "latest"
-	
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"

@@ -11,7 +11,7 @@ namespace Eis
 		Float
 	};
 
-	struct ShaderMember
+	struct ShaderMemberType
 	{
 		std::string Name;
 
@@ -37,7 +37,7 @@ namespace Eis
 		EntityId
 	};
 
-	struct VertexAttribute : public ShaderMember
+	struct VertexAttribute : public ShaderMemberType
 	{
 		// location is the index in vector
 
@@ -54,7 +54,7 @@ namespace Eis
 
 
 
-	struct UniformBufferMember : public ShaderMember
+	struct UniformBufferMember : public ShaderMemberType
 	{
 		uint8_t ByteOffset{};
 	};
@@ -63,7 +63,7 @@ namespace Eis
 	{
 		std::string Name;
 		uint8_t Binding{};
-		uint32_t BlockSize{};
+		uint16_t BlockSize{};
 
 		std::vector<UniformBufferMember> Members;
 	};
@@ -77,8 +77,20 @@ namespace Eis
 	};
 
 
-	struct FragmentOutput : public ShaderMember
+
+	struct FragmentOutput : public ShaderMemberType
 	{
 		// location is the index in vector
+	};
+
+
+
+
+	struct ShaderReflection
+	{
+		AttributeLayout VertexAttributes;
+		std::vector<UniformBufferBlock> UniformBuffers;
+		std::vector<Sampler> Samplers;
+		std::vector<FragmentOutput> FragmentOutputs;
 	};
 }

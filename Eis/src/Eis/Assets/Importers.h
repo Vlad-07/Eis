@@ -37,4 +37,13 @@ namespace Eis
 		// Used for non asset shaders (eg. editor resources)
 		static Ref<Shader> LoadShader(const std::filesystem::path& path);
 	};
+
+	/*
+	class MaterialImporter
+	{
+	public:
+		static Ref<Material> ImportMaterial(AssetHandle handle, const AssetMetadata& metadata);
+
+		static void SaveMaterial(Ref<Material> material, const std::filesystem::path& path);
+	};*/
 }

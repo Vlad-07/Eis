@@ -13,7 +13,7 @@
 #include <spirv_glsl.hpp>
 
 #include <rapidhash/rapidhash.h>
-#include <json.hpp>
+#include <json/json.hpp>
 
 
 using json = nlohmann::json;

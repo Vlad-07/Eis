@@ -3,8 +3,8 @@ project "GLFW"
 	language "C"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	files
 	{
@@ -25,6 +25,9 @@ project "GLFW"
 		"src/null_joystick.c"
 	}
 
+	filter "toolset:msc*"
+		multiprocessorcompile "on"
+
 	filter "system:windows"
 		systemversion "latest"
 
@@ -42,35 +45,12 @@ project "GLFW"
 
 		defines 
 		{ 
-			"_GLFW_WIN32",
-			"_CRT_SECURE_NO_WARNINGS"
+			"_GLFW_WIN32"
 		}
 
 		links
 		{
 			"Dwmapi.lib"
-		}
-
-	filter "system:linux"
-		pic "On"
-		systemversion "latest"
-
-		files
-		{
-			"src/x11_init.c",
-			"src/x11_monitor.c",
-			"src/x11_window.c",
-			"src/xkb_unicode.c",
-			"src/posix_time.c",
-			"src/posix_thread.c",
-			"src/posix_module.c",
-			"src/glx_context.c",
-			"src/linux_joystick.c"
-		}
-
-		defines
-		{
-			"_GLFW_X11"
 		}
 
 	filter "configurations:Debug"

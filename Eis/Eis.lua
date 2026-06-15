@@ -4,8 +4,8 @@ project "Eis"
 	cppdialect "C++20"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	pchheader "Eispch.h"
 	pchsource "src/Eispch.cpp"
@@ -28,6 +28,7 @@ project "Eis"
 		"src"
 	}
 
+	externalwarnings "off"
 	externalincludedirs
 	{
 		"vendor/GLFW/include",
@@ -56,14 +57,14 @@ project "Eis"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"Spdlog",
+		"spdlog",
 		"SPIRV-Cross",
 		"opengl32.lib"
 	}
 
 	filter "toolset:msc*"
-		buildoptions { "/utf-8", "/Zc:preprocessor" }
 		multiprocessorcompile "on"
+		buildoptions { "/utf-8", "/Zc:preprocessor" }
 
 	filter "system:windows"
 		systemversion "latest"

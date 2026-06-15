@@ -4,8 +4,8 @@ project "SPIRV-Cross"
 	cppdialect "C++20"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (outputdir)
+	objdir (outputintdir)
 
 	files
 	{
@@ -34,6 +34,7 @@ project "SPIRV-Cross"
 	}
 
 	filter "toolset:msc*"
+		multiprocessorcompile "on"
 		buildoptions { "/utf-8" }
 
 	filter "system:windows"
