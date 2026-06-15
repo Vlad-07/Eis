@@ -2,6 +2,7 @@
 #include "OpenGLShader.h"
 
 #include "Eis/Project/Project.h"
+#include "Eis/Rendering/Objects/ShaderReflector.h"
 
 #include <ios>
 #include <fstream>
@@ -20,47 +21,34 @@ using json = nlohmann::json;
 
 namespace Eis
 {
-	static GLenum ShaderTypeFromString(const std::string& type)
-	{
-		if (type == "vertex")
-			return GL_VERTEX_SHADER;
-		if (type == "fragment" || type == "pixel")
-			return GL_FRAGMENT_SHADER;
-
-		EIS_CORE_ASSERT(false, "Unknown shader type!");
-		return 0;
-	}
-	static std::string ShaderTypeToString(GLenum stage)
+	static GLenum ShaderStageToGL(ShaderStage stage)
 	{
 		switch (stage)
 		{
-			case GL_VERTEX_SHADER: return "vertex";
-			case GL_FRAGMENT_SHADER: return "fragment";
+			case Eis::ShaderStage::Vertex: return GL_VERTEX_SHADER;
+			case Eis::ShaderStage::Fragment: return GL_FRAGMENT_SHADER;
+			default: EIS_CORE_ASSERT(false); return 0;
 		}
-		EIS_CORE_ASSERT(false);
-		return {};
 	}
 
-	static shaderc_shader_kind GLShaderStageToShaderc(GLenum stage)
+	static shaderc_shader_kind GLShaderStageToShaderc(ShaderStage stage)
 	{
 		switch (stage)
 		{
-			case GL_VERTEX_SHADER: return shaderc_shader_kind::shaderc_vertex_shader;
-			case GL_FRAGMENT_SHADER: return shaderc_shader_kind::shaderc_fragment_shader;
+			case ShaderStage::Vertex: return shaderc_shader_kind::shaderc_vertex_shader;
+			case ShaderStage::Fragment: return shaderc_shader_kind::shaderc_fragment_shader;
+			default: EIS_CORE_ASSERT(false); return {};
 		}
-		EIS_CORE_ASSERT(false);
-		return {};
 	}
 
-	static std::string GLShaderStageCacheFileExtVK(GLenum stage)
+	static std::string ShaderStageCacheFileExtVK(ShaderStage stage)
 	{
 		switch (stage)
 		{
-			case GL_VERTEX_SHADER: return ".cached_vk.vert";
-			case GL_FRAGMENT_SHADER: return ".cached_vk.frag";
+			case ShaderStage::Vertex: return ".cached_vk.vert";
+			case ShaderStage::Fragment: return ".cached_vk.frag";
+			default: EIS_CORE_ASSERT(false); return "";
 		}
-		EIS_CORE_ASSERT(false);
-		return "";
 	}
 
 	static const std::filesystem::path& GetCacheDir()
@@ -132,10 +120,8 @@ namespace Eis
 
 		if (j.contains(m_Name))
 		{
-			uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
-
-			if (oldHash == hash)
-				upToDate = true;
+			const uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
+			upToDate = (oldHash == hash);
 		}
 
 		// TODO: take this registry garbage out of the shader class
@@ -150,12 +136,12 @@ namespace Eis
 
 			// Write KV
 			for (const auto& [stage, binary] : m_VKBinaries)
-				WriteBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
+				WriteBinary(binary, GetCacheDir() / (m_Name + ShaderStageCacheFileExtVK(stage)));
 
 			// Write registry
 			j[m_Name]["Hash"] = hash;
 			for (const auto& [stage, unused] : m_VKBinaries)
-				j[m_Name]["Stages"].push_back(ShaderTypeToString(stage));
+				j[m_Name]["Stages"].push_back(ShaderStageToString(stage));
 
 			std::ofstream out{ GetCacheRegistryPath() };
 			out << j.dump(4);
@@ -165,10 +151,10 @@ namespace Eis
 			// Load VK
 			for (const auto& s : j[m_Name]["Stages"])
 			{
-				GLenum stage = ShaderTypeFromString(s.get<std::string>());
+				ShaderStage stage = ShaderStageFromString(s.get<std::string>());
 
 				auto& binary = m_VKBinaries[stage];
-				ReadBinary(binary, GetCacheDir() / (m_Name + GLShaderStageCacheFileExtVK(stage)));
+				ReadBinary(binary, GetCacheDir() / (m_Name + ShaderStageCacheFileExtVK(stage)));
 			}
 
 			// cahce intermediate glsl?
@@ -177,7 +163,7 @@ namespace Eis
 		}
 
 		// TODO: cache reflection
-		m_Reflection = Reflect(m_VKBinaries);
+		m_Reflection = ShaderReflector::Reflect(m_VKBinaries);
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -206,7 +192,7 @@ namespace Eis
 			const size_t begin = pos + typeToken.length() + 1;
 
 			const std::string type = source.substr(begin, eol - begin);
-			const GLenum glType = ShaderTypeFromString(type);
+			const ShaderStage stage = ShaderStageFromString(type);
 
 
 			// Start of shader code after shader type declaration line
@@ -214,7 +200,7 @@ namespace Eis
 
 			pos = source.find(typeToken, nextLinePos); // Start of next shader type declaration line
 
-			shaderSources[glType] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
+			shaderSources[stage] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
 		}
 
 		return shaderSources;
@@ -256,264 +242,37 @@ namespace Eis
 			spirv_cross::CompilerGLSL glslCompiler{ binary };
 			glslSrc = glslCompiler.compile();
 		}
-
 		return output;
 	}
 
-
-	static BaseDataType ShaderDataTypeFromSPIRType(spirv_cross::SPIRType::BaseType type)
-	{
-		switch (type)
-		{
-			case spirv_cross::SPIRType::Boolean:
-				return BaseDataType::Bool;
-
-			case spirv_cross::SPIRType::Int:
-				return BaseDataType::Int;
-
-			case spirv_cross::SPIRType::Float:
-				return BaseDataType::Float;
-		}
-		
-		EIS_CORE_ASSERT(false);
-		return BaseDataType::None;
-	}
-
-
-	static uint32_t SPIRTypeSize(const spirv_cross::SPIRType& type)
-	{
-		uint32_t componentSize{};
-		switch (type.basetype)
-		{
-			case spirv_cross::SPIRType::SByte:
-			case spirv_cross::SPIRType::UByte:
-			case spirv_cross::SPIRType::Boolean:
-				componentSize = 1; break;
-			case spirv_cross::SPIRType::Short:
-			case spirv_cross::SPIRType::UShort:
-				componentSize = 2; break;
-			case spirv_cross::SPIRType::Int:
-			case spirv_cross::SPIRType::UInt:
-			case spirv_cross::SPIRType::Float:
-				componentSize = 4; break;
-			case spirv_cross::SPIRType::Int64:
-			case spirv_cross::SPIRType::UInt64:
-			case spirv_cross::SPIRType::Double:
-				componentSize = 8; break;
-			default: EIS_CORE_ASSERT(false); break;
-		}
-
-		return componentSize * type.vecsize * type.columns;
-	}
-
-	static AttribSemantic SemanticFromName(const std::string& name)
-	{
-		static const std::unordered_map<std::string, AttribSemantic> semanticMap
-		{
-			{ "a_Position", AttribSemantic::Position },
-			{ "a_Normal", AttribSemantic::Normal },
-			{ "a_Tangent", AttribSemantic::Tangent },
-			{ "a_Color", AttribSemantic::Color },
-			{ "a_TexCoord", AttribSemantic::TexCoord0 },
-			{ "a_TexIndex", AttribSemantic::TexIndex },
-			{ "a_TilingFactor", AttribSemantic::TilingFactor },
-			{ "a_EntityId", AttribSemantic::EntityId }
-		};
-
-		auto it = semanticMap.find(name);
-		if (it == semanticMap.end())
-		{
-			EIS_CORE_ASSERT(false);
-			return AttribSemantic::None;
-		}
-		return it->second;
-	}
-
-	ShaderReflection OpenGLShader::Reflect(const ShaderBinaries& binaries)
-	{
-		//TODO: move this to a ShaderReflector
-
-		ShaderReflection reflection;
-
-		auto& vertexAtribs = reflection.VertexAttributes.Attributes;
-		auto& samplers = reflection.Samplers;
-		auto& uniformBuffers = reflection.UniformBuffers;
-		auto& fragmentOutputs = reflection.FragmentOutputs;
-		for (const auto& [stage, bin] : binaries)
-		{
-			spirv_cross::Compiler c{ bin };
-			spirv_cross::ShaderResources resources = c.get_shader_resources();
-
-			// Vertex attribs
-			if (stage == GL_VERTEX_SHADER)
-			{
-				vertexAtribs.resize(resources.stage_inputs.size());
-				for (size_t i{}; i < resources.stage_inputs.size(); i++)
-				{
-					const auto& input = resources.stage_inputs[i];
-					const auto& spvType = c.get_type(input.type_id);
-
-					const uint32_t location = c.get_decoration(input.id, spv::DecorationLocation);
-
-					VertexAttribute& attrib = vertexAtribs[location];
-					attrib.Name = input.name;
-					attrib.DataType = ShaderDataTypeFromSPIRType(spvType.basetype);
-					attrib.VecSize = spvType.vecsize;
-					attrib.Columns = spvType.columns;
-					attrib.ByteSize = SPIRTypeSize(spvType);
-
-					attrib.Normalized = attrib.Name.ends_with("_n"); // maybe a better normalization method?
-					attrib.Semantic = SemanticFromName(attrib.Name);
-				}
-
-				uint8_t offset{};
-				for (auto& attrib : vertexAtribs)
-				{
-					attrib.ByteOffset = offset;
-					offset += attrib.ByteSize;
-				}
-				reflection.VertexAttributes.Stride = offset;
-			}
-
-			samplers.reserve(samplers.size() + resources.sampled_images.size());
-			for (const auto& s : resources.sampled_images)
-			{
-				Sampler sampler;
-				sampler.Name = s.name;
-				sampler.Binding = c.get_decoration(s.id, spv::DecorationBinding);
-
-				samplers.push_back(sampler);
-			}
-
-
-			uniformBuffers.reserve(resources.uniform_buffers.size());
-			for (const auto& ub : resources.uniform_buffers)
-			{
-				const auto& ubType = c.get_type(ub.base_type_id);
-
-				UniformBufferBlock uniformBuffer;
-				uniformBuffer.Name = ub.name;
-				uniformBuffer.Binding = (uint32_t)c.get_decoration(ub.id, spv::DecorationBinding);
-				uniformBuffer.BlockSize = (uint32_t)c.get_declared_struct_size(ubType);
-
-				uniformBuffer.Members.resize(ubType.member_types.size());
-				for (uint32_t i{}; i < uniformBuffer.Members.size(); i++)
-				{
-					const auto& memberType = c.get_type(ubType.member_types[i]);
-
-					UniformBufferMember& member = uniformBuffer.Members[i];
-					member.Name = c.get_member_name(ub.base_type_id, i);
-					member.DataType = ShaderDataTypeFromSPIRType(memberType.basetype);
-					member.VecSize = memberType.vecsize;
-					member.Columns = memberType.columns;
-					member.ByteSize = (uint8_t)c.get_declared_struct_member_size(ubType, i);
-
-					member.ByteOffset = c.type_struct_member_offset(ubType, i);
-				}
-
-				uniformBuffers.push_back(uniformBuffer);
-			}
-
-			if (stage == GL_FRAGMENT_SHADER)
-			{
-				fragmentOutputs.resize(resources.stage_outputs.size());
-				for (size_t i{}; i < resources.stage_outputs.size(); i++)
-				{
-					const auto& output = resources.stage_outputs[i];
-					const auto& type = c.get_type(output.type_id);
-
-					FragmentOutput& fragmentOut = fragmentOutputs[i];
-					fragmentOut.Name = output.name;
-					fragmentOut.DataType = ShaderDataTypeFromSPIRType(type.basetype);
-					fragmentOut.VecSize = type.vecsize;
-					fragmentOut.Columns = type.columns;
-					fragmentOut.ByteSize = SPIRTypeSize(type);
-				}
-			}
-		}
-
-		return reflection;
-	}
-
-
-
-	/*
-	void OpenGLShader::UploadBinaries(const ShaderBinaries& glBinaries)
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		GLuint program = glCreateProgram();
-
-		std::vector<GLuint> glShaderIDs;
-		for (const auto& [stage, spirv] : glBinaries)
-		{
-			GLuint shader = glShaderIDs.emplace_back((GLuint)glCreateShader(stage));
-
-			glShaderBinary(1, &shader, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), (GLsizei)spirv.size() * sizeof(uint32_t));
-
-			glSpecializeShader(shader, "main", 0, nullptr, nullptr);
-
-			glAttachShader(program, shader);
-		}
-
-		glLinkProgram(program);
-
-		GLint isLinked = 0;
-		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
-		if (isLinked == GL_FALSE)
-		{
-			GLint maxLength = 0;
-			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-
-			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-
-			glDeleteProgram(program);
-
-			for (auto id : glShaderIDs)
-				glDeleteShader(id);
-
-			EIS_CORE_ERROR("{}", infoLog.data());
-			EIS_CORE_ASSERT(false, "Shader link failure!");
-			return;
-		}
-
-		for (auto id : glShaderIDs)
-		{
-			glDetachShader(program, id);
-			glDeleteShader(id);
-		}
-
-		m_RendererId = program;
-	}*/
 
 	void OpenGLShader::UploadSources(const ShaderSources& shaderSources)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		GLuint program = glCreateProgram();
+		const GLuint program = glCreateProgram();
 
 		// TODO: consider  stack array instead of a heap vector for performance reasons
 		std::vector<GLuint> glShaderIDs;
 		glShaderIDs.reserve(shaderSources.size());
 		for (const auto& [stage, src] : shaderSources)
 		{
-			GLuint shader = glCreateShader(stage);
+			const GLuint shader = glShaderIDs.emplace_back(glCreateShader(ShaderStageToGL(stage)));
 
 			const GLchar* sourceCStr = src.c_str();
 			glShaderSource(shader, 1, &sourceCStr, 0);
 
 			glCompileShader(shader);
 
-			GLint isCompiled = 0;
+			GLint isCompiled{};
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
 			if (isCompiled == GL_FALSE)
 			{
-				GLint maxLength = 0;
-				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+				GLint maxLen{};
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLen);
 
-				std::vector<GLchar> infoLog(maxLength);
-				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+				std::vector<GLchar> infoLog(maxLen);
+				glGetShaderInfoLog(shader, maxLen, &maxLen, infoLog.data());
 
 				glDeleteShader(shader);
 
@@ -523,20 +282,19 @@ namespace Eis
 			}
 
 			glAttachShader(program, shader);
-			glShaderIDs.push_back(shader);
 		}
 
 		glLinkProgram(program);
 
-		GLint isLinked = 0;
+		GLint isLinked{};
 		glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
 		if (isLinked == GL_FALSE)
 		{
-			GLint maxLength = 0;
-			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+			GLint maxLen{};
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLen);
 
-			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+			std::vector<GLchar> infoLog(maxLen);
+			glGetProgramInfoLog(program, maxLen, &maxLen, &infoLog[0]);
 
 			glDeleteProgram(program);
 

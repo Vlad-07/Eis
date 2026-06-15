@@ -54,12 +54,14 @@ namespace Eis
 			return std::static_pointer_cast<AssetManagerEditor>(s_ActiveProject->m_AssetManager);
 		}
 
-
 		ProjectConfig& GetConfig() { return m_Config; }
+
 
 
 		static Ref<Project> New();
 		static Ref<Project> Load(const std::filesystem::path& path);
+
+		static void SaveActive() { EIS_CORE_ASSERT(s_ActiveProject); SaveActive(s_ActiveProject->m_ProjectPath); }
 		static void SaveActive(const std::filesystem::path& path);
 
 	private:
@@ -70,6 +72,7 @@ namespace Eis
 		std::shared_ptr<AssetManagerBase> m_AssetManager;
 
 
-		static inline Ref<Project> s_ActiveProject;
+	private:
+		static inline Ref<Project> s_ActiveProject{};
 	};
 }

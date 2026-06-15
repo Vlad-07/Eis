@@ -36,8 +36,6 @@ namespace Eis
 		static ShaderBinaries CompileToVK(const ShaderSources& glslSources, std::string_view name);
 		static ShaderSources CompileToGLSL(const ShaderBinaries& vkBinaries);
 
-		static ShaderReflection Reflect(const ShaderBinaries& binaries);
-
 
 	//	void UploadBinaries(const ShaderBinaries& binaries);
 		void UploadSources(const ShaderSources& shaderSources);

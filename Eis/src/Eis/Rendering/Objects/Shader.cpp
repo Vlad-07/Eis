@@ -21,4 +21,26 @@ namespace Eis
 				return nullptr;
 		}
 	}
+
+
+	ShaderStage ShaderStageFromString(const std::string& type)
+	{
+		if (type == "vertex")
+			return ShaderStage::Vertex;
+		if (type == "fragment" || type == "pixel")
+			return ShaderStage::Fragment;
+
+		EIS_CORE_ASSERT(false);
+		return ShaderStage::None;
+	}
+
+	std::string ShaderStageToString(ShaderStage stage)
+	{
+		switch (stage)
+		{
+			case ShaderStage::Vertex: return "vertex";
+			case ShaderStage::Fragment: return "fragment";
+			default: EIS_CORE_ASSERT(false); return {};
+		}
+	}
 }

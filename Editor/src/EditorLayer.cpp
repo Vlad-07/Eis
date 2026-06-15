@@ -257,9 +257,9 @@ namespace Eis
 	{
 		if (Project::Load(path))
 		{
-			m_ProjectPath = path;
 			OpenScene(Project::GetActive()->GetConfig().StartingScene);
 			m_AssetBrowserPanel = CreateScope<AssetBrowser>();
+			m_ProjectPath = path;
 		}
 	}
 

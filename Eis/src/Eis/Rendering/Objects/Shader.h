@@ -9,8 +9,22 @@
 
 namespace Eis
 {
-	using ShaderSources = std::unordered_map<uint32_t, std::string>;
-	using ShaderBinaries = std::unordered_map<uint32_t, std::vector<uint32_t>>;
+	enum class ShaderStage : uint8_t
+	{
+		None = 0,
+
+		Vertex,
+		Fragment
+	};
+
+	ShaderStage ShaderStageFromString(const std::string& type);
+	std::string ShaderStageToString(ShaderStage stage);
+
+
+	// GLSL plain text
+	using ShaderSources = std::unordered_map<ShaderStage, std::string>;
+	// SPIR-V binary
+	using ShaderBinaries = std::unordered_map<ShaderStage, std::vector<uint32_t>>;
 
 
 	class Shader : public Asset
