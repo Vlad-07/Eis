@@ -12,13 +12,13 @@ namespace Eis
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLVertexBuffer>(size);
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLVertexBuffer>(size);
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
 	}
 
@@ -26,13 +26,13 @@ namespace Eis
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLVertexBuffer>(vertices, size);
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLVertexBuffer>(vertices, size);
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
 	}
 
@@ -42,13 +42,29 @@ namespace Eis
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLIndexBuffer>(indices, count);
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLIndexBuffer>(indices, count);
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
+		}
+	}
+
+
+
+	Ref<UniformBuffer> UniformBuffer::Create(uint64_t size, uint32_t binding)
+	{
+		switch (RendererAPI::GetAPI())
+		{
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLUniformBuffer>(size, binding);
+
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
 	}
 }

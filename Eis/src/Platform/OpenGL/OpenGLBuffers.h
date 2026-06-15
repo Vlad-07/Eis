@@ -27,6 +27,7 @@ namespace Eis
 		AttributeLayout m_Layout;
 	};
 
+
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
@@ -41,5 +42,19 @@ namespace Eis
 	private:
 		GLuint m_RendererId{};
 		uint32_t m_Count{};
+	};
+
+
+	class OpenGLUniformBuffer : public UniformBuffer
+	{
+	public:
+		OpenGLUniformBuffer(uint64_t size, uint32_t binding);
+		virtual ~OpenGLUniformBuffer();
+
+		virtual void SetData(const void* data, uint64_t size, uint64_t offset = 0) override;
+
+	private:
+		GLuint m_RendererId{};
+		uint64_t m_Size{};
 	};
 }

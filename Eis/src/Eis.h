@@ -42,8 +42,6 @@
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 
-#include "Eis/Rendering/Objects/OrthoCameraController.h"
-
 #include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Rendering/Objects/Framebuffer.h"

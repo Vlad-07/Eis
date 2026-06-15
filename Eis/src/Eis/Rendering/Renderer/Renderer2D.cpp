@@ -4,8 +4,9 @@
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 #include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/VertexArray.h"
-#include "Eis/Rendering/Objects/UniformBuffer.h"
 #include "Eis/Rendering/Objects/VertexBufferData.h"
+#include "Eis/Rendering/Objects/Camera.h"
+#include "Eis/Rendering/Objects/EditorCamera.h"
 
 #include "Eis/Assets/Importers.h"
 
@@ -588,6 +589,10 @@ namespace Eis
 	}
 
 
+	void Renderer2D::OnWindowResized(uint32_t width, uint32_t height)
+	{
+		RenderCommands::SetViewport(0, 0, width, height);
+	}
 
 	void Renderer2D::SetLineWidth(float width)
 	{

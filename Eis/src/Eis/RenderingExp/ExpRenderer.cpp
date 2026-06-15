@@ -230,7 +230,7 @@ namespace Eis
 	}
 
 
-	void ExpRenderer::BeginScene(const OrthographicCamera& camera)
+	/*void ExpRenderer::BeginScene(const OrthographicCamera& camera)
 	{
 		const auto& vp{ camera.GetViewProjectionMatrix() };
 		s_Data.QuadShader->Bind();
@@ -245,7 +245,7 @@ namespace Eis
 		s_Data.GeometryFramebuffer->Clear();
 
 		glDisable(GL_BLEND);
-	}
+	}*/
 
 	void ExpRenderer::EndScene()
 	{

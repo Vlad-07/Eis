@@ -1,15 +1,13 @@
 #pragma once
 
-#include "Eis/Rendering/Renderer/RenderCommands.h"
-
 #include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
 
 
 namespace Eis
 {
 	class Shader;
+	class Camera;
+	class EditorCamera;
 
 	class Renderer2D
 	{
@@ -91,7 +89,7 @@ namespace Eis
 		static void Init();
 		static void Shutdown();
 
-		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
+		static void OnWindowResized(uint32_t width, uint32_t height);
 
 	private:
 		static void StartBatch();

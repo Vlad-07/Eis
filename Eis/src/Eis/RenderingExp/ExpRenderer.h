@@ -3,7 +3,6 @@
 #include "Eis/Rendering/Renderer/RenderCommands.h"
 
 #include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
 namespace Eis
@@ -15,7 +14,7 @@ namespace Eis
 	public:
 		// Called by app
 
-		static void BeginScene(const OrthographicCamera& camera);
+		//static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 
 		// Quads

@@ -10,9 +10,9 @@ namespace Eis
 	{
 		switch (type)
 		{
-			case BaseDataType::Bool:		return GL_BOOL;
-			case BaseDataType::Int:		return GL_INT;
-			case BaseDataType::Float:		return GL_FLOAT;
+			case BaseDataType::Bool:  return GL_BOOL;
+			case BaseDataType::Int:   return GL_INT;
+			case BaseDataType::Float: return GL_FLOAT;
 		}
 
 		EIS_CORE_ASSERT(false, "Unknown BaseDataType!");
@@ -24,7 +24,7 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		GLuint vbIndex = 0;
+		GLuint vbIndex{};
 		for (const auto& vb : m_VertexBuffers)
 		{
 			vb->Bind();

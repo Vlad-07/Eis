@@ -10,14 +10,15 @@ namespace Eis
 	{
 		switch (type)
 		{
-			case BaseDataType::Bool:		return GL_BOOL;
-			case BaseDataType::Int:		return GL_INT;
-			case BaseDataType::Float:		return GL_FLOAT;
+			case BaseDataType::Bool:  return GL_BOOL;
+			case BaseDataType::Int:   return GL_INT;
+			case BaseDataType::Float: return GL_FLOAT;
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown BaseDataType!");
+		EIS_CORE_ASSERT(false);
 		return 0;
 	}
+
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
@@ -110,7 +111,7 @@ namespace Eis
 				}
 
 				default:
-					EIS_CORE_ASSERT(false, "Unknown BaseDataType!");
+					EIS_CORE_ASSERT(false);
 			}
 		}
 
