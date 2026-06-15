@@ -12,13 +12,13 @@ namespace Eis
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLFramebuffer>(fbSpec);
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLFramebuffer>(fbSpec);
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
 	}
 }

@@ -6,26 +6,19 @@
 
 namespace Eis
 {
-	static GLenum ShaderDataTypeToOpenGLType(ShaderDataType type)
+	static GLenum ShaderDataTypeToOpenGLType(BaseDataType type)
 	{
 		switch (type)
 		{
-		case ShaderDataType::Bool:		return GL_BOOL;
-		case ShaderDataType::Int:		return GL_INT;
-		case ShaderDataType::Int2:		return GL_INT;
-		case ShaderDataType::Int3:		return GL_INT;
-		case ShaderDataType::Int4:		return GL_INT;
-		case ShaderDataType::Float:		return GL_FLOAT;
-		case ShaderDataType::Float2:	return GL_FLOAT;
-		case ShaderDataType::Float3:	return GL_FLOAT;
-		case ShaderDataType::Float4:	return GL_FLOAT;
-		case ShaderDataType::Mat3:		return GL_FLOAT;
-		case ShaderDataType::Mat4:		return GL_FLOAT;
+			case BaseDataType::Bool:  return GL_BOOL;
+			case BaseDataType::Int:   return GL_INT;
+			case BaseDataType::Float: return GL_FLOAT;
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		EIS_CORE_ASSERT(false);
 		return 0;
 	}
+
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
@@ -59,75 +52,66 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		EIS_CORE_ASSERT(vb->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+		EIS_CORE_ASSERT(vb->GetLayout().Attributes.size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(m_RendererId);
 		vb->Bind();
 
 		const auto& vbLayout = vb->GetLayout();
 
-		for (const auto& element : vbLayout)
+		for (const auto& element : vbLayout.Attributes)
 		{
-			switch (element.Type)
+			switch (element.DataType)
 			{
-				case ShaderDataType::Bool:
-				case ShaderDataType::Int:
-				case ShaderDataType::Int2:
-				case ShaderDataType::Int3:
-				case ShaderDataType::Int4:
+				case BaseDataType::Bool:
+				case BaseDataType::Int:
 				{
 					glEnableVertexAttribArray(m_VertexBufferIndex);
 					glVertexAttribIPointer(m_VertexBufferIndex,
-						element.GetComponentCount(),
-						ShaderDataTypeToOpenGLType(element.Type),
-						vbLayout.GetStride(),
-						(const void*)element.Offset);
+						element.VecSize,
+						ShaderDataTypeToOpenGLType(element.DataType),
+						vbLayout.Stride,
+						(const void*)element.ByteOffset);
 
 					m_VertexBufferIndex++;
 
 					break;
 				}
 
-				case ShaderDataType::Float:
-				case ShaderDataType::Float2:
-				case ShaderDataType::Float3:
-				case ShaderDataType::Float4:
+				case BaseDataType::Float:
 				{
-					glEnableVertexAttribArray(m_VertexBufferIndex);
-					glVertexAttribPointer(m_VertexBufferIndex,
-						element.GetComponentCount(),
-						ShaderDataTypeToOpenGLType(element.Type),
-						element.Normalized ? GL_TRUE : GL_FALSE,
-						vbLayout.GetStride(),
-						(const void*)element.Offset);
-
-					m_VertexBufferIndex++;
-
-					break;
-				}
-
-				case ShaderDataType::Mat3:
-				case ShaderDataType::Mat4:
-				{
-					uint8_t count = element.GetComponentCount();
-					for (uint8_t i{}; i < count; i++)
+					if (element.Columns == 1)
 					{
 						glEnableVertexAttribArray(m_VertexBufferIndex);
 						glVertexAttribPointer(m_VertexBufferIndex,
-							count,
-							ShaderDataTypeToOpenGLType(element.Type),
+							element.VecSize,
+							ShaderDataTypeToOpenGLType(element.DataType),
 							element.Normalized ? GL_TRUE : GL_FALSE,
-							vbLayout.GetStride(),
-							(const void*)(element.Offset + sizeof(float) * count * i));
-						glVertexAttribDivisor(m_VertexBufferIndex, 1);
+							vbLayout.Stride,
+							(const void*)element.ByteOffset);
+
 						m_VertexBufferIndex++;
 					}
-
+					else
+					{
+						for (size_t i{}; i < element.VecSize; i++)
+						{
+							glEnableVertexAttribArray(m_VertexBufferIndex);
+							glVertexAttribPointer(m_VertexBufferIndex,
+								element.VecSize,
+								ShaderDataTypeToOpenGLType(element.DataType),
+								element.Normalized ? GL_TRUE : GL_FALSE,
+								vbLayout.Stride,
+								(const void*)(element.ByteOffset + sizeof(float) * element.VecSize * i));
+							glVertexAttribDivisor(m_VertexBufferIndex, 1);
+							m_VertexBufferIndex++;
+						}
+					}
 					break;
 				}
 
 				default:
-					EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
+					EIS_CORE_ASSERT(false);
 			}
 		}
 

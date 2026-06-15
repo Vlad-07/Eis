@@ -264,7 +264,7 @@ namespace Eis
 		m_Data.VSync = enabled;
 	}
 
-	void Eis::WindowsWindow::SetTitle(const std::string& title)
+	void WindowsWindow::SetTitle(const std::string& title)
 	{
 		EIS_PROFILE_FUNCTION();
 

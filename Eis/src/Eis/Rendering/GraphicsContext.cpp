@@ -13,15 +13,15 @@ namespace Eis
     {
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-			return CreateScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
+			case RendererAPI::API::OpenGL:
+				return CreateScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
 
-		case RendererAPI::API::WebGL:
-			return CreateScope<WebGLContext>(static_cast<GLFWwindow*>(window));
+			case RendererAPI::API::WebGL:
+				return CreateScope<WebGLContext>(static_cast<GLFWwindow*>(window));
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
     }
 }

@@ -3,25 +3,39 @@
 #include "AssetImporter.h"
 #include "Eis/Project/Project.h"
 
-#include <json.hpp>
+#include <json/json.hpp>
 
 
 namespace Eis
 {
-	static std::map<std::filesystem::path, AssetType> s_AssetExtensionMap
+	static std::map<std::string, AssetType> s_AssetExtensionMap
 	{
-		{ ".eis", AssetType::Scene},
-		{ ".png", AssetType::Texture2D },
-		{ ".jpg", AssetType::Texture2D },
-		{ ".jpeg", AssetType::Texture2D }
+		{ ".eis",  AssetType::Scene },
+		{ ".png",  AssetType::Texture2D },
+		{ ".jpg",  AssetType::Texture2D },
+		{ ".jpeg", AssetType::Texture2D },
+		{ ".glsl", AssetType::Shader },
+		{ ".emat", AssetType::Material }
 	};
 
-	static AssetType AssetTypeFromExtension(const std::filesystem::path& extension)
+	std::string AssetTypeToExtension(AssetType type)
 	{
-		auto it = s_AssetExtensionMap.find(extension);
+		switch (type)
+		{
+			case Eis::AssetType::Scene:    return ".eis";
+			case Eis::AssetType::Shader:   return ".glsl";
+			case Eis::AssetType::Material: return ".emat";
+		}
+
+		EIS_CORE_ASSERT(false);
+		return "";
+	}
+	AssetType AssetTypeFromExtension(const std::string& ext)
+	{
+		auto it = s_AssetExtensionMap.find(ext);
 		if (it == s_AssetExtensionMap.end())
 		{
-			EIS_CORE_ERROR("Unknown extension: {}", extension.string());
+			EIS_CORE_ERROR("Unknown extension: {}", ext);
 			return AssetType::None;
 		}
 
@@ -57,7 +71,7 @@ namespace Eis
 	}
 
 
-	Ref<Asset> Eis::AssetManagerEditor::GetAsset(AssetHandle handle)
+	Ref<Asset> AssetManagerEditor::GetAsset(AssetHandle handle)
 	{
 		if (!IsHandleValid(handle))
 		{
@@ -115,7 +129,7 @@ namespace Eis
 
 		handle = AssetHandle{}; // Generate a new handle
 		AssetMetadata metadata;
-		metadata.Type = AssetTypeFromExtension(path.extension());
+		metadata.Type = AssetTypeFromExtension(path.extension().string());
 		metadata.FilePath = path;
 
 		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
@@ -173,7 +187,7 @@ namespace Eis
 		for (const auto& obj : reg)
 		{
 			const AssetHandle handle = obj["Handle"].get<uint64_t>();
-			
+
 			AssetMetadata& metadata = m_AssetRegistry[handle];
 			metadata.Type = AssetTypeFromString(obj["Type"].get<std::string>());
 			metadata.FilePath = obj["FilePath"].get<std::string>();

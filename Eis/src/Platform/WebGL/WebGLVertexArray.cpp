@@ -6,24 +6,16 @@
 
 namespace Eis
 {
-	static GLenum ShaderDataTypeToOpenGLType(ShaderDataType type)
+	static GLenum ShaderDataTypeToOpenGLType(BaseDataType type)
 	{
 		switch (type)
 		{
-		case ShaderDataType::Bool:		return GL_BOOL;
-		case ShaderDataType::Int:		return GL_INT;
-		case ShaderDataType::Int2:		return GL_INT;
-		case ShaderDataType::Int3:		return GL_INT;
-		case ShaderDataType::Int4:		return GL_INT;
-		case ShaderDataType::Float:		return GL_FLOAT;
-		case ShaderDataType::Float2:	return GL_FLOAT;
-		case ShaderDataType::Float3:	return GL_FLOAT;
-		case ShaderDataType::Float4:	return GL_FLOAT;
-		case ShaderDataType::Mat3:		return GL_FLOAT;
-		case ShaderDataType::Mat4:		return GL_FLOAT;
+			case BaseDataType::Bool:  return GL_BOOL;
+			case BaseDataType::Int:   return GL_INT;
+			case BaseDataType::Float: return GL_FLOAT;
 		}
 
-		EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
+		EIS_CORE_ASSERT(false, "Unknown BaseDataType!");
 		return 0;
 	}
 
@@ -32,74 +24,65 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		GLuint vbIndex = 0;
+		GLuint vbIndex{};
 		for (const auto& vb : m_VertexBuffers)
 		{
 			vb->Bind();
 
 			const auto& vbLayout = vb->GetLayout();
-			for (const auto& element : vbLayout)
+			for (const auto& element : vbLayout.Attributes)
 			{
-				switch (element.Type)
+				switch (element.DataType)
 				{
-					case ShaderDataType::Bool:
-					case ShaderDataType::Int:
-					case ShaderDataType::Int2:
-					case ShaderDataType::Int3:
-					case ShaderDataType::Int4:
+					case BaseDataType::Bool:
+					case BaseDataType::Int:
 					{
 						glEnableVertexAttribArray(vbIndex);
 						glVertexAttribIPointer(vbIndex,
-							element.GetComponentCount(),
-							ShaderDataTypeToOpenGLType(element.Type),
-							vbLayout.GetStride(),
-							(const void*)element.Offset);
+							element.VecSize,
+							ShaderDataTypeToOpenGLType(element.DataType),
+							vbLayout.Stride,
+							(const void*)element.ByteOffset);
 
 						vbIndex++;
 
 						break;
 					}
 
-					case ShaderDataType::Float:
-					case ShaderDataType::Float2:
-					case ShaderDataType::Float3:
-					case ShaderDataType::Float4:
+					case BaseDataType::Float:
 					{
-						glEnableVertexAttribArray(vbIndex);
-						glVertexAttribPointer(vbIndex,
-							element.GetComponentCount(),
-							ShaderDataTypeToOpenGLType(element.Type),
-							element.Normalized ? GL_TRUE : GL_FALSE,
-							vbLayout.GetStride(),
-							(const void*)element.Offset);
-
-						vbIndex++;
-
-						break;
-					}
-
-					case ShaderDataType::Mat3:
-					case ShaderDataType::Mat4:
-					{
-						uint8_t count = element.GetComponentCount();
-						for (uint8_t i{}; i < count; i++)
+						if (element.Columns == 1)
 						{
 							glEnableVertexAttribArray(vbIndex);
 							glVertexAttribPointer(vbIndex,
-								count,
-								ShaderDataTypeToOpenGLType(element.Type),
+								element.VecSize,
+								ShaderDataTypeToOpenGLType(element.DataType),
 								element.Normalized ? GL_TRUE : GL_FALSE,
-								vbLayout.GetStride(),
-								(const void*)(element.Offset + sizeof(float) * count * i));
-							glVertexAttribDivisor(vbIndex, 1);
+								vbLayout.Stride,
+								(const void*)element.ByteOffset);
+
 							vbIndex++;
 						}
-
+						else
+						{
+							for (size_t i{}; i < element.VecSize; i++)
+							{
+								glEnableVertexAttribArray(vbIndex);
+								glVertexAttribPointer(vbIndex,
+									element.VecSize,
+									ShaderDataTypeToOpenGLType(element.DataType),
+									element.Normalized ? GL_TRUE : GL_FALSE,
+									vbLayout.Stride,
+									(const void*)(element.ByteOffset + sizeof(float) * element.VecSize * i));
+								glVertexAttribDivisor(vbIndex, 1);
+								vbIndex++;
+							}
+						}
 						break;
 					}
 
 					default:
-						EIS_CORE_ASSERT(false, "Unknown ShaderDataType!");
+						EIS_CORE_ASSERT(false, "Unknown BaseDataType!");
 				}
 			}
 		}
@@ -120,7 +103,7 @@ namespace Eis
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		EIS_CORE_ASSERT(vb->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+		EIS_CORE_ASSERT(vb->GetLayout().Attributes.size(), "Vertex Buffer has no layout!");
 		
 		m_VertexBuffers.push_back(vb);
 	}

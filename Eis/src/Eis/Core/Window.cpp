@@ -10,7 +10,7 @@
 
 namespace Eis
 {
-	Scope<Window> Eis::Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
 #ifdef EIS_PLATFORM_WINDOWS
 		return CreateScope<WindowsWindow>(props);

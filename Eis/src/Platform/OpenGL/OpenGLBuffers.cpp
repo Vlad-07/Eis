@@ -6,8 +6,7 @@
 
 namespace Eis
 {
-	// Vertex Buffer -----------------------------------------------------------------------------------------------|
-	// -------------------------------------------------------------------------------------------------------------|
+	// Vertex Buffer
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
 	{
@@ -57,8 +56,8 @@ namespace Eis
 	}
 
 
-	// Index Buffer ------------------------------------------------------------------------------------------------|
-	// -------------------------------------------------------------------------------------------------------------|
+
+	// Index Buffer
 
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
 		: m_Count(count)
@@ -89,5 +88,29 @@ namespace Eis
 		EIS_PROFILE_RENDERER_FUNCTION();
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+
+
+	// Uniform Buffer
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer(uint64_t size, uint32_t binding)
+		: m_Size{ size }
+	{
+		glCreateBuffers(1, &m_RendererId);
+		glNamedBufferData(m_RendererId, size, nullptr, GL_DYNAMIC_DRAW); // TODO: usage?
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererId);
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer()
+	{
+		glDeleteBuffers(1, &m_RendererId);
+	}
+
+	void OpenGLUniformBuffer::SetData(const void* data, uint64_t size, uint64_t offset)
+	{
+		EIS_CORE_ASSERT(size + offset <= m_Size, "Data too large!");
+
+		glNamedBufferSubData(m_RendererId, offset, size, data);
 	}
 }

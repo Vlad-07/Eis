@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <optional>
-
 #include "Eis/Core/Layer.h"
 #include "Eis/Core/Buffer.h"
 #include "Eis/Debug/Assert.h"
+
+#include <vector>
+#include <optional>
 
 
 namespace Eis
@@ -23,12 +23,12 @@ namespace Eis
 			if constexpr (std::is_constructible<T, Buffer&>::value)
 			{
 				if (data)
-					return Eis::CreateScope<T>(data.value());
+					return CreateScope<T>(data.value());
 				// else falltrough to default construction
 			}
 
 			if constexpr (std::is_default_constructible<T>::value)
-				return Eis::CreateScope<T>();
+				return CreateScope<T>();
 			else
 			{
 				EIS_ASSERT(false, "T is not default constructible and nullopt was provided or T is not suitable for default factory!");

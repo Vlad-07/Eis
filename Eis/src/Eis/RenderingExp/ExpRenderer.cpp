@@ -8,6 +8,8 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/Framebuffer.h"
 
+#include "Eis/Assets/Importers.h"
+
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -88,18 +90,38 @@ namespace Eis
 	{
 		RenderCommands::Init();
 
+		// Init Shaders
+
+		int samplers[s_Data.MaxTextureSlots];
+		for (uint8_t i{}; i < s_Data.MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		s_Data.QuadShader = ShaderImporter::LoadShader("resources/shaders/QuadLit.glsl");
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+
+		s_Data.LightShader = ShaderImporter::LoadShader("resources/shaders/Light.glsl");
+		s_Data.LightShader->Bind();
+		s_Data.LightShader->SetInt("u_Normal", 0);
+		s_Data.LightShader->SetFloat2("u_ScreenSize",
+			{ Application::GetWindow().GetWidth(),
+			  Application::GetWindow().GetHeight() });
+
+
+		s_Data.CompositionShader = ShaderImporter::LoadShader("resources/shaders/Composition.glsl");
+		s_Data.CompositionShader->Bind();
+		s_Data.CompositionShader->SetInt("u_Normal", 0);
+		s_Data.CompositionShader->SetInt("u_Albedo", 1);
+		s_Data.CompositionShader->SetInt("u_Light", 2);
+		s_Data.CompositionShader->SetInt("u_VolumetricLight", 3);
+
+
+
 		// Init Quads
 
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxQuadVertices * sizeof(QuadVertex));
-		s_Data.QuadVertexBuffer->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float4, "a_Color" },
-				{ ShaderDataType::Float2, "a_TexCoord" },
-				{ ShaderDataType::Float,  "a_TexIndex" },
-				{ ShaderDataType::Float,  "a_TilingFactor" },
-				{ ShaderDataType::Float2, "a_Normal" },
-				{ ShaderDataType::Float,  "a_LightInfluence" }
-			});
+		s_Data.QuadVertexBuffer->SetLayout(s_Data.QuadShader->GetAttributeLayout());
 
 		s_Data.QuadVertexArray = VertexArray::Create();
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -131,33 +153,6 @@ namespace Eis
 		s_Data.WhiteTexture = Texture2D::Create(TextureSpec{}, data);
 
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
-
-
-		// Init Shaders
-
-		int samplers[s_Data.MaxTextureSlots];
-		for (uint8_t i{}; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
-		s_Data.QuadShader = Shader::Create("resources/shaders/QuadLit.glsl");
-		s_Data.QuadShader->Bind();
-		s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-
-
-		s_Data.LightShader = Shader::Create("resources/shaders/Light.glsl");
-		s_Data.LightShader->Bind();
-		s_Data.LightShader->SetInt("u_Normal", 0);
-		s_Data.LightShader->SetFloat2("u_ScreenSize",
-			{ Application::GetWindow().GetWidth(),
-			  Application::GetWindow().GetHeight() });
-
-
-		s_Data.CompositionShader = Shader::Create("resources/shaders/Composition.glsl");
-		s_Data.CompositionShader->Bind();
-		s_Data.CompositionShader->SetInt("u_Normal", 0);
-		s_Data.CompositionShader->SetInt("u_Albedo", 1);
-		s_Data.CompositionShader->SetInt("u_Light", 2);
-		s_Data.CompositionShader->SetInt("u_VolumetricLight", 3);
 
 
 		// Init QuadVertex
@@ -218,9 +213,7 @@ namespace Eis
 
 
 		s_Data.LightVB = VertexBuffer::Create(sizeof(glm::vec2) * 4);
-		s_Data.LightVB->SetLayout(BufferLayout{
-			{ ShaderDataType::Float2, "a_Position" }
-		});
+		s_Data.LightVB->SetLayout(s_Data.LightShader->GetAttributeLayout());
 
 		s_Data.LightVA = VertexArray::Create();
 		s_Data.LightVA->AddVertexBuffer(s_Data.LightVB);
@@ -237,7 +230,7 @@ namespace Eis
 	}
 
 
-	void ExpRenderer::BeginScene(const OrthographicCamera& camera)
+	/*void ExpRenderer::BeginScene(const OrthographicCamera& camera)
 	{
 		const auto& vp{ camera.GetViewProjectionMatrix() };
 		s_Data.QuadShader->Bind();
@@ -252,7 +245,7 @@ namespace Eis
 		s_Data.GeometryFramebuffer->Clear();
 
 		glDisable(GL_BLEND);
-	}
+	}*/
 
 	void ExpRenderer::EndScene()
 	{

@@ -19,13 +19,13 @@ namespace Eis
 	{
 		switch (s_API)
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateScope<OpenGLRendererAPI>();
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateScope<OpenGLRendererAPI>();
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)s_API);
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)s_API);
+				return nullptr;
 		}
 	}
 }

@@ -1,23 +1,19 @@
 #pragma once
 
-#include "Eis/Rendering/Renderer/RenderCommands.h"
-
 #include "Eis/Rendering/Objects/Texture.h"
-#include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
-#include "Eis/Rendering/Objects/OrthographicCamera.h"
 
 
 namespace Eis
 {
 	class Shader;
+	class Camera;
+	class EditorCamera;
 
 	class Renderer2D
 	{
 	public:
 	// Called by app
 
-		static void BeginScene(const OrthographicCamera& camera);
 		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
 		static void EndScene();
@@ -93,7 +89,7 @@ namespace Eis
 		static void Init();
 		static void Shutdown();
 
-		static void OnWindowResized(uint32_t width, uint32_t height) { RenderCommands::SetViewport(0, 0, width, height); }
+		static void OnWindowResized(uint32_t width, uint32_t height);
 
 	private:
 		static void StartBatch();

@@ -5,73 +5,42 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
+
 namespace Eis
 {
-	Ref<Shader> Shader::Create(const std::string& filepath)
+	Ref<Shader> Shader::Create(std::string_view name, const std::string& source)
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLShader>(filepath);
+			case RendererAPI::API::OpenGL:
+			case RendererAPI::API::WebGL:
+				return CreateRef<OpenGLShader>(name, source);
 
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
-		}
-	}
-
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& vsSrc, const std::string& fsSrc)
-	{
-		switch (RendererAPI::GetAPI())
-		{
-		case RendererAPI::API::OpenGL:
-		case RendererAPI::API::WebGL:
-			return CreateRef<OpenGLShader>(name, vsSrc, fsSrc);
-
-		default:
-			EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
-			return nullptr;
+			default:
+				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
+				return nullptr;
 		}
 	}
 
 
-
-	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
+	ShaderStage ShaderStageFromString(const std::string& type)
 	{
-		EIS_CORE_ASSERT(!Exists(name), "Shader already exists!");
-		m_Shaders[name] = shader;
+		if (type == "vertex")
+			return ShaderStage::Vertex;
+		if (type == "fragment" || type == "pixel")
+			return ShaderStage::Fragment;
+
+		EIS_CORE_ASSERT(false);
+		return ShaderStage::None;
 	}
 
-	void ShaderLibrary::Add(const Ref<Shader>& shader)
+	std::string ShaderStageToString(ShaderStage stage)
 	{
-		auto& name = shader->GetName();
-		EIS_CORE_ASSERT(!Exists(name), "Shader already exists!");
-		m_Shaders[name] = shader;
-	}
-
-	Ref<Shader> ShaderLibrary::Load(const std::string& filePath)
-	{
-		auto shader = Shader::Create(filePath);
-		Add(shader);
-		return shader;
-	}
-
-	Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filePath)
-	{
-		auto shader = Shader::Create(filePath);
-		Add(name, shader);
-		return shader;
-	}
-
-	Ref<Shader> ShaderLibrary::Get(const std::string& name)
-	{
-		EIS_CORE_ASSERT(Exists(name), "Shader not found!");
-		return m_Shaders[name];
-	}
-
-	bool ShaderLibrary::Exists(const std::string& name)
-	{
-		return m_Shaders.find(name) != m_Shaders.end();
+		switch (stage)
+		{
+			case ShaderStage::Vertex: return "vertex";
+			case ShaderStage::Fragment: return "fragment";
+			default: EIS_CORE_ASSERT(false); return {};
+		}
 	}
 }

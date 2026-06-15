@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "Components.h"
 
-#include <json.hpp>
+#include <json/json.hpp>
 
 
 using json = nlohmann::ordered_json;

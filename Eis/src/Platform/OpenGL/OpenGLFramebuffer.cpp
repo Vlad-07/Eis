@@ -9,7 +9,7 @@
 
 namespace Eis
 {
-	static constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // should querry gpu
+	static constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // TODO: querry gpu
 
 
 	static bool IsDepthFormat(FramebufferTexFormat format)
@@ -32,7 +32,7 @@ namespace Eis
 				return GL_RGB8;
 			case FramebufferTexFormat::RGBA8:
 				return GL_RGBA8;
-			case Eis::FramebufferTexFormat::DEPTH24STENCIL8:
+			case FramebufferTexFormat::DEPTH24STENCIL8:
 				return GL_DEPTH24_STENCIL8;
 		}
 
