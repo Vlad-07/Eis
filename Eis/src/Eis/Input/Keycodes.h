@@ -7,7 +7,7 @@ namespace Eis
 
 	namespace Key
 	{
-		enum : uint16_t
+		enum : KeyCode
 		{
 			// From glfw3.h
 

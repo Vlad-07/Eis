@@ -1,13 +1,13 @@
 #pragma once
 
-#include <chrono>
-
 #include "Eis/Debug/Assert.h"
+
+#include <chrono>
 
 
 namespace Eis
 {
-	// Feels shady mixing usings with a class
+	// This is shady...
 
 	using Clock = std::chrono::steady_clock;
 	using TimePoint = std::chrono::time_point<Clock>;
@@ -79,7 +79,7 @@ namespace Eis
 		static Duration GetMaxDeltaTime() { return s_MaxDeltaTime; }
 
 		static void SetFixedDeltaTime(Duration d) { s_FixedDeltaTime = d; }
-		static void SetMaxDeltaTime(Duration d) { EIS_CORE_ASSERT(d > s_FixedDeltaTime, "MaxDeltaTime must be larger than FixedDeltaTime!"); s_MaxDeltaTime = d; }
+		static void SetMaxDeltaTime(Duration d) { EIS_CORE_ASSERT(d > s_FixedDeltaTime); s_MaxDeltaTime = d; }
 
 	private:
 		static void Init();
@@ -89,13 +89,13 @@ namespace Eis
 		friend class Application;
 
 	private:
-		static Duration s_DeltaTime;
-		static Duration s_UncappedDeltaTime;
-		static Duration s_FixedDeltaTime;
-		static Duration s_MaxDeltaTime;
+		static inline Duration s_DeltaTime{};
+		static inline Duration s_UncappedDeltaTime{};
+		static inline Duration s_FixedDeltaTime{ Duration::FromHz(50) }; // Default FixedUpdate is 50hz
+		static inline Duration s_MaxDeltaTime{ s_FixedDeltaTime * 5.0 }; // Limit to 5 fixed updates
 
-		static TimePoint s_FrameStart;
+		static inline TimePoint s_FrameStart{};
 
-		static Duration s_FixedUpdateAccumulator;
+		static inline Duration s_FixedUpdateAccumulator{};
 	};
 }

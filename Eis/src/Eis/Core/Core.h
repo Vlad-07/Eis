@@ -44,18 +44,14 @@
 #endif
 
 
-// Networking
-#ifdef EIS_PLATFORM_WINDOWS
-	#define EIS_NETWORKING_ENABLE
-#endif
-
-
 
 #define BIT(x) (1 << x) // Used for event categories
 
 // Used for event functions
 #define EIS_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
+
+#define EIS_NODISCARD [[nodiscard]]
 
 #define EIS_DEPRECATED [[deprecated]]
 #define EIS_DEPRECATED_MSG(msg) [[deprecated(msg)]]

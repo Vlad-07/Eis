@@ -1,6 +1,9 @@
 project "Premake"
 	kind "Utility"
 
+	targetdir (outputdir)
+	objdir (outputintdir)
+
 	files
 	{
 		"%{wks.location}/**.lua",

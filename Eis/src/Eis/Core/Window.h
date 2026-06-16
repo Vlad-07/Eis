@@ -1,11 +1,12 @@
 #pragma once
 
-#include <functional>
-#include <glm/glm.hpp>
-
 #include "Eis/Core/Core.h"
-#include "Eis/Input/Input.h"
 #include "Eis/Events/Event.h"
+
+#include <string>
+#include <functional>
+
+#include <glm/glm.hpp>
 
 
 namespace Eis
@@ -16,11 +17,11 @@ namespace Eis
 		uint32_t Width;
 		uint32_t Height;
 
-		WindowProps(const std::string& title = "Default Window", uint32_t width = 0, uint32_t height = 0)
+		WindowProps(const std::string& title = "Default Window", uint32_t width = DefaultWidth, uint32_t height = DefaultHeight)
 			: Title(title), Width(width), Height(height) {}
 
-		inline static constexpr uint32_t DefaultWidth = 1280;
-		inline static constexpr uint32_t DefaultHeight = 720;
+		static constexpr inline uint32_t DefaultWidth = 1280;
+		static constexpr inline uint32_t DefaultHeight = 720;
 	};
 
 

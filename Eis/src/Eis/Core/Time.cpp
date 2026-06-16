@@ -4,15 +4,6 @@
 
 namespace Eis
 {
-	Duration Time::s_DeltaTime{};
-	Duration Time::s_UncappedDeltaTime{};
-	Duration Time::s_FixedDeltaTime = Duration::FromHz(50); // Default FixedUpdate is 50hz
-	Duration Time::s_MaxDeltaTime = Time::s_FixedDeltaTime * 5.0; // Limit to 5 fixed updates
-
-	TimePoint Time::s_FrameStart;
-
-	Duration Time::s_FixedUpdateAccumulator{};
-
 	void Time::Init()
 	{
 		s_FrameStart = Clock::now(); // smooth the first frame

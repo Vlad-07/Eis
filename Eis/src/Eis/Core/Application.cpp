@@ -24,6 +24,7 @@ namespace Eis
 			std::filesystem::current_path(spec.WorkingDirectory);
 
 		// Init sub-systems
+
 		Time::Init();
 		Random::Init();
 		m_Window = Window::Create(WindowProps{ spec.Name });
@@ -137,7 +138,6 @@ namespace Eis
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
 		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
-		//ExpRenderer::OnWindowResized(e.GetSize().x, e.GetSize().y);
 
 		return false;
 	}

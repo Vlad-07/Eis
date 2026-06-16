@@ -23,7 +23,7 @@ namespace Eis
 		ApplicationSpecification spec;
 		spec.Name = "Editor";
 		spec.CommandLineArgs = args;
-	
+
 		return new EditorApp(spec);
 	}
 }

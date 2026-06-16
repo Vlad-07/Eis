@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Eis/Core/Core.h"
+
 #include <string>
 #include <ostream>
 #include <functional>
-#include "Eis/Core/Core.h"
 
 
 namespace Eis
