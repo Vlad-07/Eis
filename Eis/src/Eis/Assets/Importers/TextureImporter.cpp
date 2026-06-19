@@ -1,37 +1,13 @@
 #include "Eispch.h"
-#include "Importers.h"
+#include "TextureImporter.h"
 
 #include "Eis/Project/Project.h"
-#include "Eis/Utils/FileUtils.h"
-
-#include "Eis/Scene/SceneSerializer.h"
 
 #include <stb_image.h>
 
 
 namespace Eis
 {
-	Ref<Scene> SceneImporter::ImportScene(AssetHandle handle, const AssetMetadata& metadata)
-	{
-		Ref<Scene> scene = CreateRef<Scene>();
-		SceneSerializer s{ scene };
-		if (!s.Deserialize(Project::GetAssetsDir() / metadata.FilePath))
-		{
-			EIS_CORE_ERROR("Scene deserialization failed!");
-			return nullptr;
-		}
-
-		return scene;
-	}
-
-	void SceneImporter::SaveScene(const Ref<Scene>& scene, const std::filesystem::path& path)
-	{
-		SceneSerializer s{ scene };
-		s.Serialize(Project::GetAssetsDir() / path);
-	}
-
-
-
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
 		return LoadTexture2D(Project::GetAssetsDir() / metadata.FilePath);
@@ -73,20 +49,5 @@ namespace Eis
 		Ref<Texture2D> texture = Texture2D::Create(texSpec, data);
 		stbi_image_free(data.Data);
 		return texture;
-	}
-
-
-
-	Ref<Shader> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
-	{
-		return LoadShader(Project::GetAssetsDir() / metadata.FilePath);
-	}
-
-	Ref<Shader> ShaderImporter::LoadShader(const std::filesystem::path& path)
-	{
-		const std::string name = path.filename().string();
-		const std::string source = Utils::ReadFile(path);
-
-		return Shader::Create(name, source);
 	}
 }

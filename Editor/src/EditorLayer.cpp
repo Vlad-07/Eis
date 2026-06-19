@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/TextureImporter.h"
+#include "Eis/Assets/Importers/SceneImporter.h"
 #include "Eis/Utils/PlatformUtils.h"
 
 #include <imgui.h>
@@ -35,8 +36,6 @@ namespace Eis
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
 		m_HierarchyPanel = CreateScope<HierarchyPanel>();
-
-		m_EditorCam = EditorCamera{ 80.0f, 16.0f / 9.0f, 0.1f, 1000.0f };
 
 		m_ProjectPath = FileDialogs::OpenFile("Eis Project (.eproj)\0*.eproj\0");
 		if (m_ProjectPath.empty())
@@ -173,7 +172,7 @@ namespace Eis
 
 					// Camera...
 					glm::mat4 camProj = m_EditorCam.GetProjection();
-					glm::mat4 camView = m_EditorCam.GetViewMatrix();
+					glm::mat4 camView = m_EditorCam.GetView();
 
 					auto& tc = selected.GetComponent<TransformComponent>();
 					glm::mat4 transform = tc.GetTransform();
@@ -368,6 +367,7 @@ namespace Eis
 		m_EditorCam.OnEvent(event);
 
 		EventDispatcher d{ event };
+		d.Dispatch<MouseScrolledEvent>([](MouseScrolledEvent& e) { EIS_INFO("{}", e.GetYOffset()); return false; });
 		d.Dispatch<KeyPressedEvent>(EIS_BIND_EVENT_FN(OnKeyPressed));
 		d.Dispatch<MouseButtonPressedEvent>(EIS_BIND_EVENT_FN(OnMouseButtonPressed));
 	}

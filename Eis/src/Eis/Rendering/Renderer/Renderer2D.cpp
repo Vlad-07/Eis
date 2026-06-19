@@ -6,9 +6,9 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/VertexBufferData.h"
 #include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/ShaderImporter.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -243,7 +243,7 @@ namespace Eis
 	}
 
 
-	void Renderer2D::BeginScene(const EditorCamera& camera)
+	void Renderer2D::BeginScene(const EditorCamera2& camera)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 

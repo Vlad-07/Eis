@@ -20,8 +20,8 @@ workspace "Eis"
 		include "Eis/vendor/spdlog/spdlog.lua"
 		include "Eis/vendor/premake/Premake.lua"
 		include "Eis/vendor/SPIRV-Cross/SPIRV-Cross.lua"
+		include "Eis/vendor/fastgltf/fastgltf.lua"
 	group ""
 
-
-include "Eis/Eis.lua"
-include "Editor/Editor.lua"
+	include "Eis/Eis.lua"
+	include "Editor/Editor.lua"

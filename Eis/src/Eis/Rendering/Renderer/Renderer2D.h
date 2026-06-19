@@ -7,14 +7,14 @@ namespace Eis
 {
 	class Shader;
 	class Camera;
-	class EditorCamera;
+	class EditorCamera2;
 
 	class Renderer2D
 	{
 	public:
 	// Called by app
 
-		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const EditorCamera2& camera);
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
 		static void EndScene();
 

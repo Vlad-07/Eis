@@ -2,7 +2,7 @@
 
 #include "Eis.h"
 
-#include "Eis/Rendering/Objects/EditorCamera.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
 #include "Panels/Hierarchy.h"
 #include "Panels/AssetBrowser.h"
@@ -67,7 +67,7 @@ namespace Eis
 
 		int m_GizmoType{ -1 };
 
-		EditorCamera m_EditorCam;
+		EditorCamera2 m_EditorCam;
 
 
 		bool m_ViewportHovered{};

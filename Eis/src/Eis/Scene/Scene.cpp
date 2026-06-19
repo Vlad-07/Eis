@@ -6,7 +6,7 @@
 #include "Eis/Assets/AssetManager.h"
 #include "Eis/Scene/ScriptableEntity.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
 
 namespace Eis
@@ -134,7 +134,7 @@ namespace Eis
 
 
 
-	void Scene::OnUpdateEditor(EditorCamera& camera)
+	void Scene::OnUpdateEditor(EditorCamera2& camera)
 	{
 		Renderer2D::BeginScene(camera);
 

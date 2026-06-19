@@ -8,7 +8,7 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/Framebuffer.h"
 
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/ShaderImporter.h"
 
 
 #include <glm/gtx/rotate_vector.hpp>

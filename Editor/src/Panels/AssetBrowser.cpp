@@ -1,7 +1,7 @@
 #include "AssetBrowser.h"
 
 #include "Eis/Project/Project.h"
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/TextureImporter.h"
 
 #include <imgui.h>
 

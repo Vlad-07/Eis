@@ -16,7 +16,8 @@ namespace Eis
 		Scene,
 		Texture2D,
 		Shader,
-		Material
+		Material,
+		Mesh
 	};
 
 	std::string AssetTypeToString(AssetType type);
