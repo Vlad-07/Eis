@@ -19,7 +19,7 @@ namespace Eis
 		virtual void SetLayout(const AttributeLayout& layout) = 0;
 
 		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(float* verticies, uint32_t size);
+		static Ref<VertexBuffer> Create(const void* verticies, uint32_t size);
 	};
 
 

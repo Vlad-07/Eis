@@ -17,7 +17,7 @@ namespace Eis
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* verticies, uint32_t size)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const void* verticies, uint32_t size)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 

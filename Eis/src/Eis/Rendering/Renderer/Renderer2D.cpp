@@ -490,9 +490,9 @@ namespace Eis
 	}
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& tint, float tiling, int32_t entityId)
 	{
-		const glm::mat4 verts{ transform * s_Data.QuadVertexPositions };
-
 		EIS_PROFILE_RENDERER_FUNCTION();
+
+		const glm::mat4 verts{ transform * s_Data.QuadVertexPositions };
 
 		if (s_Data.QuadVertexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();

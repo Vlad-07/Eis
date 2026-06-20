@@ -367,7 +367,6 @@ namespace Eis
 		m_EditorCam.OnEvent(event);
 
 		EventDispatcher d{ event };
-		d.Dispatch<MouseScrolledEvent>([](MouseScrolledEvent& e) { EIS_INFO("{}", e.GetYOffset()); return false; });
 		d.Dispatch<KeyPressedEvent>(EIS_BIND_EVENT_FN(OnKeyPressed));
 		d.Dispatch<MouseButtonPressedEvent>(EIS_BIND_EVENT_FN(OnMouseButtonPressed));
 	}

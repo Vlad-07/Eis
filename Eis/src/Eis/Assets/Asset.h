@@ -27,6 +27,8 @@ namespace Eis
 	class Asset
 	{
 	public:
+		virtual ~Asset() = default;
+
 		AssetHandle Handle{ 0 };
 
 		virtual AssetType GetType() const = 0;
