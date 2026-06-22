@@ -23,8 +23,8 @@ namespace Eis
 		static void Clear()
 		{ s_RenderAPI->Clear(); }
 
-		static void DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount = 0)
-		{ s_RenderAPI->DrawIndexed(va, indexCount); }
+		static void DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount = 0, uint32_t firstIndex = 0)
+		{ s_RenderAPI->DrawIndexed(va, indexCount, firstIndex); }
 
 		static void DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)
 		{ s_RenderAPI->DrawArrays(va, vertexCount); }

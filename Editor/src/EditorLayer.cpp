@@ -4,6 +4,8 @@
 #include "Eis/Assets/Importers/SceneImporter.h"
 #include "Eis/Utils/PlatformUtils.h"
 
+#include "Eis/ImGui/ImGuiLayer.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -124,9 +126,13 @@ namespace Eis
 			{
 				if (ImGui::BeginMenu("Cam"))
 				{
-					ImGui::Text("TODO");
-					// TODO: better editor camera
-					// TODO: camera settings
+					bool stale{};
+					stale |= ImGui::SliderFloat("FOV", m_EditorCam.GetFov(), 30.0f, 120.0f, "%.0f");
+					stale |= ImGui::InputFloat("Near", m_EditorCam.GetNearClip());
+					stale |= ImGui::InputFloat("Far", m_EditorCam.GetFarClip());
+					stale |= ImGui::DragFloat("Speed", m_EditorCam.GetSpeed(), 0.1f, 0.1f, 100.0f);
+					stale |= ImGui::DragFloat("Sensitivity  ", m_EditorCam.GetSensitivity(), 0.05f, 0.05f, 10.0f);
+					if (stale) m_EditorCam.UpdateProjection();
 
 					ImGui::EndMenu();
 				}
@@ -137,6 +143,8 @@ namespace Eis
 
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			m_ViewportFocused = ImGui::IsWindowFocused();
+
+			Application::Get().GetImGuiLayer().BlockEvents(!m_ViewportHovered);
 
 			m_ViewportSize = glm::vec2{ ImGui::GetContentRegionAvail() };
 
@@ -404,22 +412,22 @@ namespace Eis
 
 			// Tools
 			case Key::Q:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = -1;
 				break;
 
 			case Key::W:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 
 			case Key::E:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 
 			case Key::R:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}

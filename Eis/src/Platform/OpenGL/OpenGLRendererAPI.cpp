@@ -33,11 +33,11 @@ namespace Eis
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount)
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount, uint32_t firstIndex)
 	{
 		va->Bind();
 		uint32_t count = indexCount ? indexCount : va->GetIndexBuffer()->GetCount();
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); // TODO: mode api
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)(firstIndex * sizeof(uint32_t))); // TODO: mode api
 	}
 
 	void OpenGLRendererAPI::DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)

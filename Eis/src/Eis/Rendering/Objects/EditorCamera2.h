@@ -22,6 +22,8 @@ namespace Eis
 		glm::mat4 GetView() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 
+		bool IsUsing() const { return m_Interacting; }
+
 		// ImGui widget utilities
 
 		float* GetNearClip() { return &m_NearClip; }
@@ -30,9 +32,9 @@ namespace Eis
 		float* GetSpeed() { return &m_Speed; }
 		float* GetSensitivity() { return &m_Sensitivity; }
 
+		void UpdateProjection();
 
 	private:
-		void UpdateProjection();
 		void UpdateView();
 
 		glm::vec3 GetUpDir();
@@ -54,5 +56,7 @@ namespace Eis
 		glm::mat4 m_ViewMatrix{};
 
 		glm::vec2 m_LastMousePos{};
+
+		bool m_Interacting{};
 	};
 }

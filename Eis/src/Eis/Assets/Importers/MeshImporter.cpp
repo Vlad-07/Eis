@@ -4,6 +4,7 @@
 #include "Eis/Project/Project.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <fastgltf/core.hpp>
 #include <fastgltf/tools.hpp>
@@ -26,6 +27,9 @@ namespace Eis
 		if (data.error() != fastgltf::Error::None)
 		{
 			EIS_CORE_ERROR("Failed to load gltf: {}", path.string());
+			EIS_CORE_ERROR("{}: {}",
+				fastgltf::getErrorName(data.error()),
+				fastgltf::getErrorMessage(data.error()));
 			return nullptr;
 		}
 
@@ -35,111 +39,114 @@ namespace Eis
 		if (loadedAsset.error() != fastgltf::Error::None)
 		{
 			EIS_CORE_ERROR("Failed to parse gltf: {}", path.string());
+			EIS_CORE_ERROR("{}: {}",
+				fastgltf::getErrorName(loadedAsset.error()),
+				fastgltf::getErrorMessage(loadedAsset.error()));
 			return nullptr;
 		}
 
 		Ref<Mesh> mesh = CreateRef<Mesh>();
 		fastgltf::Asset& asset = loadedAsset.get();
-		for (auto& meshdata : asset.meshes)
-		{
-			for (auto& primitive : meshdata.primitives)
+
+		fastgltf::iterateSceneNodes(asset, 0, fastgltf::math::fmat4x4{},
+			[&](fastgltf::Node& node, fastgltf::math::fmat4x4 matrix)
 			{
-				uint32_t baseVertex = (uint32_t)mesh->m_Vertices.size();
-				
-				// Indices
-				if (primitive.indicesAccessor.has_value())
+				if (!node.meshIndex.has_value())
+					return;
+
+				glm::mat4 transform = glm::make_mat4(matrix.data());
+
+				fastgltf::Mesh& meshdata = asset.meshes[*node.meshIndex];
+				for (auto& primitive : meshdata.primitives)
 				{
-					auto& acc = asset.accessors[*primitive.indicesAccessor];
-					mesh->m_Indices.reserve(mesh->m_Indices.size() + acc.count);
+					std::vector<MeshVertex> vertices;
+					std::vector<uint32_t> indices;
 
-					fastgltf::iterateAccessor<uint32_t>(asset, acc,
-						[&](uint32_t i)
-						{
-							mesh->m_Indices.push_back(baseVertex + i);
-						}
-					);
-				}
+					// Indices
+					if (primitive.indicesAccessor.has_value())
+					{
+						auto& acc = asset.accessors[*primitive.indicesAccessor];
+						indices.reserve(acc.count);
 
-				// Position attrib
-				auto* posAttrib = primitive.findAttribute("POSITION");
-				if (posAttrib != primitive.attributes.end())
-				{
-					auto& acc = asset.accessors[posAttrib->accessorIndex];
-					mesh->m_Vertices.resize(mesh->m_Vertices.size() + acc.count);
+						fastgltf::iterateAccessor<uint32_t>(asset, acc,
+							[&](uint32_t i)
+							{
+								indices.push_back(i);
+							}
+						);
+					}
 
-					fastgltf::iterateAccessorWithIndex<glm::vec3>(asset, acc,
-						[&](glm::vec3 pos, size_t i)
-						{
-							mesh->m_Vertices[baseVertex + i].Position = pos;
-						}
-					);
-				}
+					// Position attrib
+					// Prebake transform into vertices
+					auto* posAttrib = primitive.findAttribute("POSITION");
+					if (posAttrib != primitive.attributes.end())
+					{
+						auto& acc = asset.accessors[posAttrib->accessorIndex];
+						vertices.resize(vertices.size() + acc.count);
 
-				// Normal attrib
-				auto* normalAttrib = primitive.findAttribute("NORMAL");
-				if (normalAttrib != primitive.attributes.end())
-				{
-					auto& acc = asset.accessors[normalAttrib->accessorIndex];
+						fastgltf::iterateAccessorWithIndex<glm::vec3>(asset, acc,
+							[&](glm::vec3 pos, size_t i)
+							{
+								vertices[i].Position = transform * glm::vec4{ pos, 1.0f };
+							}
+						);
+					}
 
-					fastgltf::iterateAccessorWithIndex<glm::vec3>(asset, acc,
-						[&](glm::vec3 normal, size_t i)
-						{
-							mesh->m_Vertices[baseVertex + i].Normal = normal;
-						}
-					);
-				}
+					// Normal attrib
+					auto* normalAttrib = primitive.findAttribute("NORMAL");
+					if (normalAttrib != primitive.attributes.end())
+					{
+						auto& acc = asset.accessors[normalAttrib->accessorIndex];
 
-				// TexCoord0 attrib
-				auto* texcoord0Attrib = primitive.findAttribute("TEXCOORD_0");
-				if (texcoord0Attrib != primitive.attributes.end())
-				{
-					auto& acc = asset.accessors[texcoord0Attrib->accessorIndex];
+						fastgltf::iterateAccessorWithIndex<glm::vec3>(asset, acc,
+							[&](glm::vec3 normal, size_t i)
+							{
+								vertices[i].Normal = normal;
+							}
+						);
+					}
 
-					fastgltf::iterateAccessorWithIndex<glm::vec2>(asset, acc,
-						[&](glm::vec2 uv, size_t i)
-						{
-							mesh->m_Vertices[baseVertex + i].TexCoord0 = uv;
-						}
-					);
-				}
+					// TexCoord attrib
+					auto* texcoord0Attrib = primitive.findAttribute("TEXCOORD_0");
+					if (texcoord0Attrib != primitive.attributes.end())
+					{
+						auto& acc = asset.accessors[texcoord0Attrib->accessorIndex];
 
-				// TexCoord1 attrib
-				auto* texcoord1Attrib = primitive.findAttribute("TEXCOORD_1");
-				if (texcoord1Attrib != primitive.attributes.end())
-				{
-					auto& acc = asset.accessors[texcoord1Attrib->accessorIndex];
+						fastgltf::iterateAccessorWithIndex<glm::vec2>(asset, acc,
+							[&](glm::vec2 uv, size_t i)
+							{
+								vertices[i].TexCoord = uv;
+							}
+						);
+					}
 
-					fastgltf::iterateAccessorWithIndex<glm::vec2>(asset, acc,
-						[&](glm::vec2 uv, size_t i)
-						{
-							mesh->m_Vertices[baseVertex + i].TexCoord1 = uv;
-						}
-					);
-				}
+					// Tangent attrib
+					auto* tangentAttrib = primitive.findAttribute("TANGENT");
+					if (tangentAttrib != primitive.attributes.end())
+					{
+						auto& acc = asset.accessors[tangentAttrib->accessorIndex];
 
-				// Tangent attrib
-				auto* tangentAttrib = primitive.findAttribute("TANGENT");
-				if (tangentAttrib != primitive.attributes.end())
-				{
-					auto& acc = asset.accessors[tangentAttrib->accessorIndex];
+						fastgltf::iterateAccessorWithIndex<glm::vec4>(asset, acc,
+							[&](glm::vec4 tangent, size_t i)
+							{
+								vertices[i].Tangent = tangent;
+							}
+						);
+					}
 
-					fastgltf::iterateAccessorWithIndex<glm::vec4>(asset, acc,
-						[&](glm::vec4 tangent, size_t i)
-						{
-							mesh->m_Vertices[baseVertex + i].Tangent = tangent;
-						}
-					);
-				}
+					// Material
+					AssetHandle material{ 0 };
+					if (primitive.materialIndex.has_value())
+					{
+						auto& mat = asset.materials[*primitive.materialIndex];
 
-				// Material
-				if (primitive.materialIndex.has_value())
-				{
-					auto& mat = asset.materials[*primitive.materialIndex];
-					
-					// TODO: material system
+						// TODO: material system
+					}
+
+					mesh->AddSubMesh(std::move(vertices), std::move(indices), material);
 				}
 			}
-		}
+		);
 
 		return mesh;
 	}

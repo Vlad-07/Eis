@@ -24,8 +24,11 @@ namespace Eis
 			memcpy(m_Data.data() + vertexIndex * m_Layout.Stride + attrib.ByteOffset, &value, attrib.ByteSize);
 		}
 
-		const void* GetData() { return m_Data.data(); }
+		const void* GetData() const { return m_Data.data(); }
 		uint32_t GetVertexDataSize() const { return m_Layout.Stride; }
+		const AttributeLayout& GetLayout() const { return m_Layout; }
+
+		bool Has(AttribSemantic semantic) const;
 
 	private:
 		const VertexAttribute& GetAttribBySemantic(AttribSemantic semantic) const;

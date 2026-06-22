@@ -13,7 +13,7 @@ namespace Eis
 {
 	void EditorCamera2::OnUpdate()
 	{
-		if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
+		if (Input::IsMouseButtonPressed(Mouse::ButtonRight) && m_Interacting)
 		{
 			if (Input::IsKeyPressed(Key::W))
 				m_Position += GetForwardDir() * m_Speed * (float)Time::GetDeltaTime();
@@ -38,8 +38,6 @@ namespace Eis
 			m_Rotation.y += delta.x * m_Sensitivity;
 			m_Rotation.x += delta.y * m_Sensitivity;
 		}
-		else
-			m_LastMousePos = Input::GetMousePos(); // probably bad
 
 		UpdateView();
 	}
@@ -51,6 +49,25 @@ namespace Eis
 			[&](MouseScrolledEvent& event)
 			{
 				m_Speed *= glm::pow(1.2f, event.GetYOffset());
+				return false;
+			}
+		);
+		d.Dispatch<MouseButtonPressedEvent>(
+			[&](MouseButtonPressedEvent& event)
+			{
+				if (event.GetMouseButton() == Mouse::ButtonRight)
+				{
+					m_LastMousePos = Input::GetMousePos();
+					m_Interacting = true;
+				}
+				return false;
+			}
+		);
+		d.Dispatch<MouseButtonReleasedEvent>(
+			[&](MouseButtonReleasedEvent& event)
+			{
+				if (event.GetMouseButton() == Mouse::ButtonRight)
+					m_Interacting = false;
 				return false;
 			}
 		);

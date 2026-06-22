@@ -282,6 +282,7 @@ namespace Eis
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			DrawAddComponent<SpriteRendererComponent>(m_Selection, "Sprite Renderer");
+			DrawAddComponent<MeshRendererComponent>(m_Selection, "Mesh Renderer");
 			DrawAddComponent<CameraComponent>(m_Selection, "Camera");
 
 			ImGui::EndPopup();
@@ -367,6 +368,14 @@ namespace Eis
 				ImGui::ColorEdit4("Tint", glm::value_ptr(component.Tint));
 
 				DrawAssetTarget("Texture", AssetType::Texture2D, component.Texture);
+			});
+		}
+
+		if (entity.HasComponent<MeshRendererComponent>())
+		{
+			DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](MeshRendererComponent& component)
+			{
+				DrawAssetTarget("Mesh", AssetType::Mesh, component.Mesh);
 			});
 		}
 	}

@@ -18,5 +18,10 @@
         "Handle": 7818644652425530162,
         "FilePath": "Textures/circle.png",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 17321223398129636912,
+        "FilePath": "Meshes/Sponza/Sponza.gltf",
+        "Type": "Mesh"
     }
 ]

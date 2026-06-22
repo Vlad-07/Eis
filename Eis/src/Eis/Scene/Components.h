@@ -61,6 +61,14 @@ namespace Eis
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 	};
 
+	struct MeshRendererComponent
+	{
+		AssetHandle Mesh{ 0 };
+
+		MeshRendererComponent() = default;
+		MeshRendererComponent(const MeshRendererComponent&) = default;
+	};
+
 	struct CameraComponent
 	{
 		SceneCamera Camera;

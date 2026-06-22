@@ -2,6 +2,7 @@
 #include "Buffers.h"
 
 #include "Eis/Rendering/Renderer/RendererAPI.h"
+#include "Eis/Rendering/Objects/VertexBufferData.h"
 
 #include "Platform/OpenGL/OpenGLBuffers.h"
 
@@ -34,6 +35,13 @@ namespace Eis
 				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());
 				return nullptr;
 		}
+	}
+
+	Ref<VertexBuffer> VertexBuffer::Create(const VertexBufferData& data)
+	{
+		Ref<VertexBuffer> vb = Create(data.GetData(), data.GetVertexDataSize());
+		vb->SetLayout(data.GetLayout());
+		return vb;
 	}
 
 

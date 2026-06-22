@@ -6,7 +6,9 @@
 #include "Eis/Assets/AssetManager.h"
 #include "Eis/Scene/ScriptableEntity.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/SceneRenderer.h"
 #include "Eis/Rendering/Objects/EditorCamera2.h"
+#include "Eis/Rendering/Objects/Mesh.h"
 
 
 namespace Eis
@@ -32,6 +34,9 @@ namespace Eis
 
 			if (original.HasComponent<SpriteRendererComponent>())
 				newEnt.AddOrReplaceComponent<SpriteRendererComponent>(original.GetComponent<SpriteRendererComponent>());
+
+			if (original.HasComponent<MeshRendererComponent>())
+				newEnt.AddOrReplaceComponent<MeshRendererComponent>(original.GetComponent<MeshRendererComponent>());
 
 			if (original.HasComponent<CameraComponent>())
 				newEnt.AddOrReplaceComponent<CameraComponent>(original.GetComponent<CameraComponent>());
@@ -156,6 +161,22 @@ namespace Eis
 		}
 
 		Renderer2D::EndScene();
+
+
+		SceneRenderer::BeginScene(camera);
+
+		auto view = m_Registry.view<TransformComponent, MeshRendererComponent>();
+		for (const auto& [id, trc, mrc] : view.each())
+		{
+			const glm::mat4 tr = trc.GetTransform();
+			if (mrc.Mesh)
+			{
+				Ref<Mesh> mesh = AssetManager::GetAsset<Mesh>(mrc.Mesh);
+				SceneRenderer::DrawMesh(tr, mesh);
+			}
+		}
+
+		SceneRenderer::EndScene();
 	}
 
 

@@ -4,6 +4,7 @@
 #include "Eis/Core/Core.h"
 #include "Eis/Core/Random.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
+#include "Eis/Rendering/Renderer/SceneRenderer.h"
 
 #include "Eis/RenderingExp/ExpRenderer.h"
 
@@ -30,6 +31,7 @@ namespace Eis
 		m_Window = Window::Create(WindowProps{ spec.Name });
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
 		Renderer2D::Init();
+		SceneRenderer::Init();
 
 		// Init ImGui overlay
 		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();
