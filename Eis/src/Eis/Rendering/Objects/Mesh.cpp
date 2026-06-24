@@ -13,15 +13,16 @@ namespace Eis
 	{
 		m_SubMeshes.emplace_back((uint32_t)m_Indices.size(), (uint32_t)indices.size(), material);
 
-		m_Vertices.reserve(m_Vertices.size() + vertices.size());
-		m_Vertices.insert(m_Vertices.end(), vertices.begin(), vertices.end());
-
 		m_Indices.reserve(m_Indices.size() + indices.size());
 		for (uint32_t i : indices)
 			m_Indices.push_back(i + (uint32_t)m_Vertices.size());
 
-		// TEMP
+		m_Vertices.reserve(m_Vertices.size() + vertices.size());
+		m_Vertices.insert(m_Vertices.end(), vertices.begin(), vertices.end());
+	}
 
+	void Mesh::Upload()
+	{
 		m_VertexArray = VertexArray::Create();
 		m_VertexArray->Bind();
 

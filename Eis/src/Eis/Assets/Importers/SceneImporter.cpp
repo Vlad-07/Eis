@@ -13,7 +13,7 @@ namespace Eis
 	{
 		Ref<Scene> scene = CreateRef<Scene>();
 		SceneSerializer s{ scene };
-		if (!s.Deserialize(Project::GetAssetsDir() / metadata.FilePath))
+		if (!s.Deserialize(Project::GetAssetDir() / metadata.FilePath))
 		{
 			EIS_CORE_ERROR("Scene deserialization failed!");
 			return nullptr;
@@ -25,6 +25,6 @@ namespace Eis
 	void SceneImporter::SaveScene(const Ref<Scene>& scene, const std::filesystem::path& path)
 	{
 		SceneSerializer s{ scene };
-		s.Serialize(Project::GetAssetsDir() / path);
+		s.Serialize(Project::GetAssetDir() / path);
 	}
 }

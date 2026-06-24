@@ -39,7 +39,7 @@ namespace Eis
 
 	Ref<VertexBuffer> VertexBuffer::Create(const VertexBufferData& data)
 	{
-		Ref<VertexBuffer> vb = Create(data.GetData(), data.GetVertexDataSize());
+		Ref<VertexBuffer> vb = Create(data.GetData(), (uint32_t)data.GetDataSize());
 		vb->SetLayout(data.GetLayout());
 		return vb;
 	}

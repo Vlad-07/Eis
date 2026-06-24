@@ -19,7 +19,6 @@ namespace Eis
 		json j;
 		auto& proj = j["Project"] = j.object();
 
-		proj["Name"] = config.Name;
 		proj["AssetDir"] = config.AssetsDirectory.string();
 		proj["AssetReg"] = config.AssetRegistryPath.string();
 		proj["StartScene"] = (uint64_t)config.StartingScene;
@@ -34,7 +33,7 @@ namespace Eis
 
 		if (!std::filesystem::exists(path))
 		{
-			EIS_CORE_ERROR("Project file not found: {}!", path.generic_string());
+			EIS_CORE_ERROR("Project file not found: {}!", path.string());
 			return false;
 		}
 
@@ -44,13 +43,13 @@ namespace Eis
 		auto j = json::parse(in);
 		if (!j.contains("Project"))
 		{
-			EIS_CORE_ERROR("Invalid project file: {}!", path.generic_string());
+			EIS_CORE_ERROR("Invalid project file: {}!", path.string());
 			return false;
 		}
 
 		auto& proj = j["Project"];
 
-		config.Name = proj["Name"].get<std::string>();
+		config.Name = path.stem().string();
 		config.AssetsDirectory = proj["AssetDir"].get<std::filesystem::path>();
 		config.AssetRegistryPath = proj["AssetReg"].get<std::filesystem::path>();
 		config.StartingScene = proj["StartScene"].get<uint64_t>();

@@ -17,7 +17,6 @@ namespace Eis
 		virtual ~EditorLayer() = default;
 
 		virtual void Attach() override;
-		virtual void Detach() override;
 
 		virtual void Update() override;
 		virtual void ImGuiRender() override;
@@ -60,7 +59,7 @@ namespace Eis
 		Ref<Scene> m_ActiveScene, m_EditedScene;
 		std::filesystem::path m_EditedScenePath;
 
-		Ref<Framebuffer> m_Framebuffer;
+		Ref<Framebuffer> m_RenderFB, m_ViewportFB;
 
 		Scope<HierarchyPanel> m_HierarchyPanel;
 		Scope<AssetBrowser> m_AssetBrowserPanel;

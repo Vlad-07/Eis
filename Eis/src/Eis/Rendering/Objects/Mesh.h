@@ -26,7 +26,7 @@ namespace Eis
 	{
 		uint32_t FirstIndex{};
 		uint32_t IndexCount{};
-		AssetHandle Material{ 0 };
+		AssetHandle Tex{ 0 };
 	};
 
 	class Mesh : public Asset
@@ -35,6 +35,8 @@ namespace Eis
 		virtual ~Mesh() = default;
 
 		void AddSubMesh(std::vector<MeshVertex>&& vertices, std::vector<uint32_t>&& indices, AssetHandle material);
+
+		void Upload();
 
 		Ref<VertexArray> GetVA() { return m_VertexArray; }
 		const std::vector<SubMesh>& GetSubMeshes() const { return m_SubMeshes; }

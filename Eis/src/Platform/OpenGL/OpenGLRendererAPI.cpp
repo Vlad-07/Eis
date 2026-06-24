@@ -36,7 +36,7 @@ namespace Eis
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount, uint32_t firstIndex)
 	{
 		va->Bind();
-		uint32_t count = indexCount ? indexCount : va->GetIndexBuffer()->GetCount();
+		GLsizei count = indexCount ? indexCount : va->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)(firstIndex * sizeof(uint32_t))); // TODO: mode api
 	}
 
@@ -49,7 +49,7 @@ namespace Eis
 	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount) // TODO: stupid???
 	{
 		va->Bind();
-		uint32_t count = vertexCount ? vertexCount : va->GetIndexBuffer()->GetCount();
+		GLsizei count = vertexCount ? vertexCount : va->GetIndexBuffer()->GetCount();
 		glDrawArrays(GL_LINES, 0, count);
 	}
 

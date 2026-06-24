@@ -10,9 +10,12 @@
 
 namespace Eis
 {
-	static GLFWwindow* GetNativeWindow()
+	namespace
 	{
-		return static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
+		GLFWwindow* GetNativeWindow()
+		{
+			return static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
+		}
 	}
 
 

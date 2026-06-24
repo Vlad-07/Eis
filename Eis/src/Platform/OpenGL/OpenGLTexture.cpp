@@ -6,28 +6,31 @@
 
 namespace Eis
 {
-	static GLenum ImageToGLDataFormat(ImageFormat format)
+	namespace
 	{
-		switch (format)
+		GLenum ImageToGLDataFormat(ImageFormat format)
 		{
+			switch (format)
+			{
 			case ImageFormat::RGB8: return GL_RGB;
 			case ImageFormat::RGBA8: return GL_RGBA;
+			}
+
+			EIS_CORE_ASSERT(false);
+			return 0;
 		}
 
-		EIS_CORE_ASSERT(false);
-		return 0;
-	}
-
-	static GLenum ImageToGLInternalFormat(ImageFormat format)
-	{
-		switch (format)
+		GLenum ImageToGLInternalFormat(ImageFormat format)
 		{
+			switch (format)
+			{
 			case ImageFormat::RGB8: return GL_RGB8;
 			case ImageFormat::RGBA8: return GL_RGBA8;
-		}
+			}
 
-		EIS_CORE_ASSERT(false);
-		return 0;
+			EIS_CORE_ASSERT(false);
+			return 0;
+		}
 	}
 
 
@@ -40,15 +43,26 @@ namespace Eis
 		m_InternalFormat = ImageToGLInternalFormat(m_Spec.Format);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, m_InternalFormat, m_Spec.Width, m_Spec.Height);
 
-		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		const int mipCount = (int)glm::floor(glm::log2((float)glm::max(m_Spec.Width, m_Spec.Height))) + 1;
+		glTextureStorage2D(m_RendererId, mipCount, m_InternalFormat, m_Spec.Width, m_Spec.Height);
+
+		if (data)
+		{
+			SetData(data);
+			glGenerateTextureMipmap(m_RendererId);
+		}
+
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		if (data) SetData(data);
+		float maxAniso{};
+		// TODO: centralize hardware querries and graphics settings
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAniso);
+		glTextureParameterf(m_RendererId, GL_TEXTURE_MAX_ANISOTROPY, glm::min(8.0f, maxAniso));
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()

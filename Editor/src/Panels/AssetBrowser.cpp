@@ -10,12 +10,12 @@
 namespace Eis
 {
 	AssetBrowser::AssetBrowser()
-		: m_BasePath{ Project::GetAssetsDir() }, m_CurrentPath{ Project::GetAssetsDir() }
+		: m_BasePath{ Project::GetAssetDir() }, m_CurrentPath{ Project::GetAssetDir() }
 	{
 		m_DirectoryTex = TextureImporter::LoadTexture2D("resources/icons/folder.png");
 		m_FileTex = TextureImporter::LoadTexture2D("resources/icons/file.png");
 
-		ChangeDir(Project::GetAssetsDir());
+		ChangeDir(Project::GetAssetDir());
 	}
 
 
@@ -37,7 +37,7 @@ namespace Eis
 			ImGui::EndMenuBar();
 		}
 
-		if (m_CurrentPath != Project::GetAssetsDir())
+		if (m_CurrentPath != Project::GetAssetDir())
 		{
 			if (ImGui::Button("<-"))
 				ChangeDir(m_CurrentPath.parent_path());
@@ -60,9 +60,8 @@ namespace Eis
 					DirEntry& dirEntry = *it;
 
 					const auto& path = dirEntry.Path;
-					const auto& relativePath = std::filesystem::relative(dirEntry.Path, Project::GetAssetsDir());
 					const bool isDir = dirEntry.IsDir;
-					const AssetType type = dirEntry.AssetType;
+					const AssetType type = dirEntry.Type;
 					const std::string fileName = path.filename().string();
 
 					// Hide unimported files
@@ -72,6 +71,7 @@ namespace Eis
 					ImGui::TableNextColumn();
 					ImGui::PushID(fileName.c_str());
 
+					// Icon
 					ImGui::ImageButton(fileName.c_str(),
 						SelectIcon(dirEntry)->GetRendererId(),
 						{ m_ItemSize, m_ItemSize }, { 0,1 }, { 1,0 });
@@ -79,27 +79,27 @@ namespace Eis
 					// Options
 					if (ImGui::BeginPopupContextItem("ItemOptions"))
 					{
-						// Common
-
-						if (ImGui::MenuItem("Delete"))
+						if (!isDir)
 						{
-							Delete(it);
-							ImGui::EndPopup();
-							ImGui::PopID();
-							break;
-						}
-
-						// Importing
-
-						if (!isDir && type == AssetType::None)
-						{
-							if (ImGui::MenuItem("Import"))
+							if (type == AssetType::None)
 							{
-								Project::GetEditorAssetManager()->ImportAsset(relativePath);
-								RefreshFileStatus(dirEntry);
+								if (ImGui::MenuItem("Import"))
+								{
+									dirEntry.Handle = Project::GetEditorAssetManager()->ImportAsset(path);
+									RefreshFileStatus(dirEntry);
+								}
+							}
+							else
+							{
+								if (ImGui::MenuItem("Remove"))
+								{
+									Delete(it);
+									ImGui::EndPopup();
+									ImGui::PopID();
+									break;
+								}
 							}
 						}
-
 						ImGui::EndPopup();
 					}
 
@@ -126,11 +126,12 @@ namespace Eis
 						}
 					}
 
+					// Name
 					ImGui::TextWrapped("%s", fileName.c_str());
 					if (ImGui::IsItemHovered())
 					{
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-						{}// rename
+						{}// TODO: rename
 					}
 
 					ImGui::PopID();
@@ -167,21 +168,10 @@ namespace Eis
 		m_CurrentPath = path;
 
 		m_Files.clear();
-		for (auto& p : std::filesystem::directory_iterator{ m_CurrentPath })
-			m_Files.emplace_back(p.path(), p.is_directory());
-
-		RefreshAllFileAssetStatus();
-	}
-
-	void AssetBrowser::RefreshAllFileAssetStatus()
-	{
-		// feels slow...
-		for (auto& dirEntry : m_Files)
+		for (const auto& dirIt : std::filesystem::directory_iterator{ m_CurrentPath })
 		{
-			if (dirEntry.IsDir)
-				continue;
-
-			RefreshFileStatus(dirEntry);
+			DirEntry& entry = m_Files.emplace_back(dirIt.path(), dirIt.is_directory());
+			RefreshFileStatus(entry);
 		}
 	}
 
@@ -190,10 +180,9 @@ namespace Eis
 		if (dirEntry.IsDir)
 			return;
 
-		const std::filesystem::path& relativePath = std::filesystem::relative(dirEntry.Path, Project::GetAssetsDir());
-
-		dirEntry.Handle = Project::GetEditorAssetManager()->GetAssetByPath(relativePath);
-		dirEntry.AssetType = Project::GetEditorAssetManager()->GetAssetType(dirEntry.Handle);
+		if (!dirEntry.Handle)
+			dirEntry.Handle = Project::GetEditorAssetManager()->GetAsset(dirEntry.Path);
+		dirEntry.Type = Project::GetEditorAssetManager()->GetAssetType(dirEntry.Handle);
 	}
 
 	void AssetBrowser::OpenFile(const std::filesystem::path& path)
@@ -203,7 +192,7 @@ namespace Eis
 			// TODO: open scene
 		}
 		// and edit selected asset etc...
-		// kind of requires an asset manager or editor event system
+		// kind of requires an editor event system
 	}
 
 
@@ -211,28 +200,33 @@ namespace Eis
 	{
 		EIS_CORE_ASSERT(std::filesystem::is_directory(dir));
 
-		m_Files.emplace_back(dir / name, true);
 		std::filesystem::create_directory(m_Files.back().Path);
+		m_Files.emplace_back(dir / name, true);
 	}
 
 	void AssetBrowser::CreateFile(const std::filesystem::path& dir, AssetType type)
 	{
 		EIS_CORE_ASSERT(std::filesystem::is_directory(dir));
 
-		std::string stem = AssetTypeToString(type) + AssetTypeToExtension(type);
+		std::string filename = AssetTypeToString(type) + AssetTypeToExtension(type);
 
-		std::filesystem::path path = dir / stem;
+		std::filesystem::path path = dir / filename;
 		if (std::filesystem::exists(path))
 		{
-			// TODO:
+			// TODO: add (1), (2), ... to existing filenames
 		}
 
-		std::ofstream out{ path };
+		std::ofstream out{ path, std::ios::app }; out.close();
+
+		AssetHandle handle = Project::GetEditorAssetManager()->ImportAsset(path);
+		DirEntry& entry = m_Files.emplace_back(path, false);
+		entry.Type = type;
+		entry.Handle = handle;
 	}
 
 	void AssetBrowser::Delete(std::vector<DirEntry>::iterator it)
 	{
-		std::filesystem::remove_all(it->Path);
+		Project::GetEditorAssetManager()->RemoveAsset(it->Handle);
 		m_Files.erase(it);
 	}
 
@@ -242,7 +236,7 @@ namespace Eis
 		if (dirEntry.IsDir)
 			return m_DirectoryTex;
 
-		switch (dirEntry.AssetType)
+		switch (dirEntry.Type)
 		{
 			case AssetType::Texture2D:
 				// TODO: asset type icons

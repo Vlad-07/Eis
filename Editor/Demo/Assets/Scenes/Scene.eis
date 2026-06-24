@@ -2,32 +2,6 @@
     "Scene": "",
     "Entities": [
         {
-            "Entity": 2028252382891048635,
-            "TagComponent": {
-                "Tag": "Sponza"
-            },
-            "TransformComponent": {
-                "Translation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "Scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "MeshRendererComponent": {
-                "Mesh": 17321223398129636912
-            }
-        },
-        {
             "Entity": 9575750589947905502,
             "TagComponent": {
                 "Tag": "Mouche"

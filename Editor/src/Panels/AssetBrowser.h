@@ -22,17 +22,19 @@ namespace Eis
 		struct DirEntry
 		{
 			std::filesystem::path Path;
-			bool IsDir{ false };
+			bool IsDir{};
 			AssetHandle Handle{ 0 };
-			AssetType AssetType = AssetType::None;
+			AssetType Type = AssetType::None;
 
 			DirEntry(const std::filesystem::path& path, bool isDir)
 				: Path{ path }, IsDir{ isDir } {}
+
+			DirEntry(const std::filesystem::path& path, bool isDir, AssetHandle handle, AssetType type)
+				: Path{ path }, IsDir{ isDir }, Handle{ handle }, Type{ type } {}
 		};
 
 
 		void ChangeDir(const std::filesystem::path& path);
-		void RefreshAllFileAssetStatus();
 		void RefreshFileStatus(DirEntry& path);
 
 		void OpenFile(const std::filesystem::path& path);

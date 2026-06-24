@@ -21,86 +21,89 @@ using json = nlohmann::json;
 
 namespace Eis
 {
-	static GLenum ShaderStageToGL(ShaderStage stage)
+	namespace
 	{
-		switch (stage)
+		GLenum ShaderStageToGL(ShaderStage stage)
 		{
-			case Eis::ShaderStage::Vertex: return GL_VERTEX_SHADER;
-			case Eis::ShaderStage::Fragment: return GL_FRAGMENT_SHADER;
-			default: EIS_CORE_ASSERT(false); return 0;
+			switch (stage)
+			{
+				case Eis::ShaderStage::Vertex: return GL_VERTEX_SHADER;
+				case Eis::ShaderStage::Fragment: return GL_FRAGMENT_SHADER;
+				default: EIS_CORE_ASSERT(false); return 0;
+			}
 		}
-	}
 
-	static shaderc_shader_kind GLShaderStageToShaderc(ShaderStage stage)
-	{
-		switch (stage)
+		shaderc_shader_kind GLShaderStageToShaderc(ShaderStage stage)
 		{
-			case ShaderStage::Vertex: return shaderc_shader_kind::shaderc_vertex_shader;
-			case ShaderStage::Fragment: return shaderc_shader_kind::shaderc_fragment_shader;
-			default: EIS_CORE_ASSERT(false); return {};
+			switch (stage)
+			{
+				case ShaderStage::Vertex: return shaderc_shader_kind::shaderc_vertex_shader;
+				case ShaderStage::Fragment: return shaderc_shader_kind::shaderc_fragment_shader;
+				default: EIS_CORE_ASSERT(false); return {};
+			}
 		}
-	}
 
-	static std::string ShaderStageCacheFileExtVK(ShaderStage stage)
-	{
-		switch (stage)
+		std::string ShaderStageCacheFileExtVK(ShaderStage stage)
 		{
-			case ShaderStage::Vertex: return ".cached_vk.vert";
-			case ShaderStage::Fragment: return ".cached_vk.frag";
-			default: EIS_CORE_ASSERT(false); return "";
+			switch (stage)
+			{
+				case ShaderStage::Vertex: return ".cached_vk.vert";
+				case ShaderStage::Fragment: return ".cached_vk.frag";
+				default: EIS_CORE_ASSERT(false); return "";
+			}
 		}
-	}
 
-	static const std::filesystem::path& GetCacheDir()
-	{
-		static const std::filesystem::path cacheDir{ "resources/cache/shaders/opengl" };
-		return cacheDir;
-	}
-	static const std::filesystem::path& GetCacheRegistryPath()
-	{
-		static const std::filesystem::path cacheRegPath{ "resources/cache/shaders/opengl/ShaderCacheRegistry.shreg" };
-		return cacheRegPath;
-	}
-
-	static void CheckCache()
-	{
-		const std::filesystem::path& path = GetCacheDir();
-		if (!std::filesystem::exists(path))
-			std::filesystem::create_directories(path);
-
-		const std::filesystem::path& regPath = GetCacheRegistryPath();
-		if (!std::filesystem::exists(regPath))
+		const std::filesystem::path& GetCacheDir()
 		{
-			std::ofstream out{ regPath };
-			out << "{}";
+			static const std::filesystem::path cacheDir{ "resources/cache/shaders/opengl" };
+			return cacheDir;
 		}
-	}
+		const std::filesystem::path& GetCacheRegistryPath()
+		{
+			static const std::filesystem::path cacheRegPath{ "resources/cache/shaders/opengl/ShaderCacheRegistry.shreg" };
+			return cacheRegPath;
+		}
+
+		void CheckCache()
+		{
+			const std::filesystem::path& path = GetCacheDir();
+			if (!std::filesystem::exists(path))
+				std::filesystem::create_directories(path);
+
+			const std::filesystem::path& regPath = GetCacheRegistryPath();
+			if (!std::filesystem::exists(regPath))
+			{
+				std::ofstream out{ regPath };
+				out << "{}";
+			}
+		}
 
 
-	static bool ReadBinary(std::vector<uint32_t>& data, const std::filesystem::path& path)
-	{
-		std::ifstream in{ path, std::ios::binary };
+		bool ReadBinary(std::vector<uint32_t>& data, const std::filesystem::path& path)
+		{
+			std::ifstream in{ path, std::ios::binary };
 
-		if (!in.is_open())
-			return false;
+			if (!in.is_open())
+				return false;
 
-		in.seekg(0, std::ios::end);
-		size_t size = in.tellg();
-		in.seekg(0, std::ios::beg);
+			in.seekg(0, std::ios::end);
+			size_t size = in.tellg();
+			in.seekg(0, std::ios::beg);
 
-		data.resize(size / sizeof(uint32_t));
-		in.read((char*)data.data(), size);
+			data.resize(size / sizeof(uint32_t));
+			in.read((char*)data.data(), size);
 
-		return true;
-	}
-	static void WriteBinary(const std::vector<uint32_t>& data, const std::filesystem::path& path)
-	{
-		std::ofstream out{ path, std::ios::binary };
+			return true;
+		}
+		void WriteBinary(const std::vector<uint32_t>& data, const std::filesystem::path& path)
+		{
+			std::ofstream out{ path, std::ios::binary };
 
-		if (!out.is_open())
-			return;
+			if (!out.is_open())
+				return;
 
-		out.write((const char*)data.data(), data.size() * sizeof(uint32_t));
+			out.write((const char*)data.data(), data.size() * sizeof(uint32_t));
+		}
 	}
 
 

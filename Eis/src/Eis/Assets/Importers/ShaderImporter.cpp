@@ -9,7 +9,7 @@ namespace Eis
 {
 	Ref<Shader> ShaderImporter::ImportShader(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return LoadShader(Project::GetAssetsDir() / metadata.FilePath);
+		return LoadShader(Project::GetAssetDir() / metadata.FilePath);
 	}
 
 	Ref<Shader> ShaderImporter::LoadShader(const std::filesystem::path& path)

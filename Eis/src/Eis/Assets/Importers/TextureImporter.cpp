@@ -10,7 +10,7 @@ namespace Eis
 {
 	Ref<Texture2D> TextureImporter::ImportTexture2D(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return LoadTexture2D(Project::GetAssetsDir() / metadata.FilePath);
+		return LoadTexture2D(Project::GetAssetDir() / metadata.FilePath);
 	}
 
 	Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& path)

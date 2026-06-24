@@ -2,6 +2,7 @@
 
 #include "Eis/Assets/Importers/TextureImporter.h"
 #include "Eis/Assets/Importers/SceneImporter.h"
+#include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Utils/PlatformUtils.h"
 
 #include "Eis/ImGui/ImGuiLayer.h"
@@ -28,14 +29,21 @@ namespace Eis
 		m_PlayIcon = TextureImporter::LoadTexture2D("resources/icons/play.png");
 		m_StopIcon = TextureImporter::LoadTexture2D("resources/icons/stop.png");
 
-		FramebufferSpec fbSpec;
-		fbSpec.Width = 1280;
-		fbSpec.Height = 720;
-		fbSpec.AttachmentsSpec = {
-			{ FramebufferTexFormat::RGBA8, FramebufferClearValue{ glm::vec4{ 35, 45, 61, 255 } / 255.0f} },
-			{ FramebufferTexFormat::R32I, FramebufferClearValue{ -1 } }
+		FramebufferSpec renderFbSpec;
+		renderFbSpec.Samples = 4;
+		renderFbSpec.AttachmentsSpec = {
+			{ FramebufferTexFormat::RGBA8, glm::vec4{ 35, 45, 61, 255 } / 255.0f },
+			{ FramebufferTexFormat::R32I, -1 },
+			{ FramebufferTexFormat::DEPTH24, DepthStencilClear{} }
 		};
-		m_Framebuffer = Framebuffer::Create(fbSpec);
+		m_RenderFB = Framebuffer::Create(renderFbSpec);
+
+		FramebufferSpec viewportFbSpec;
+		viewportFbSpec.AttachmentsSpec = {
+			{ FramebufferTexFormat::RGBA8 },
+			{ FramebufferTexFormat::R32I }
+		};
+		m_ViewportFB = Framebuffer::Create(viewportFbSpec);
 
 		m_HierarchyPanel = CreateScope<HierarchyPanel>();
 
@@ -47,19 +55,16 @@ namespace Eis
 		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 	}
 
-	void EditorLayer::Detach()
-	{
-	}
-
 
 	void EditorLayer::Update()
 	{
 		// Resize
 		if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0
-			&& (m_Framebuffer->GetSpec().Width != m_ViewportSize.x
-			|| m_Framebuffer->GetSpec().Height != m_ViewportSize.y))
+			&& (m_RenderFB->GetSpec().Width != m_ViewportSize.x
+			|| m_RenderFB->GetSpec().Height != m_ViewportSize.y))
 		{
-			m_Framebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
+			m_RenderFB->Resize(m_ViewportSize.x, m_ViewportSize.y);
+			m_ViewportFB->Resize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
 
@@ -72,15 +77,18 @@ namespace Eis
 		RenderCommands::SetClearColor(glm::vec3{});
 		RenderCommands::Clear();
 
-		m_Framebuffer->Bind();
-		m_Framebuffer->Clear();
+		m_RenderFB->Bind();
+		m_RenderFB->Clear();
 
 		if (m_State == EditorState::EDIT)
 			m_ActiveScene->OnUpdateEditor(m_EditorCam);
 		else if (m_State == EditorState::PLAY)
 			m_ActiveScene->OnUpdateRuntime();
 
-		m_Framebuffer->Unbind();
+		m_RenderFB->Unbind();
+
+		m_RenderFB->Blit(m_ViewportFB, AttachmentBit::Color);
+		m_RenderFB->Blit(m_ViewportFB, AttachmentBit::Color, 1, 1);
 	}
 
 	void EditorLayer::ImGuiRender()
@@ -119,6 +127,13 @@ namespace Eis
 
 		// Viewport Window
 		{
+			/*ImGui::Begin("dbg");
+
+			ImGui::Text("Focused: %i", m_ViewportFocused);
+			ImGui::Text("Hovered: %i", m_ViewportHovered);
+
+			ImGui::End();//*/
+
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, glm::vec2{});
 			ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 
@@ -150,11 +165,11 @@ namespace Eis
 
 			m_ViewportScreenPos = ImGui::GetCursorScreenPos();
 			m_MousePosInViewport = glm::vec2{ ImGui::GetMousePos() } - m_ViewportScreenPos;
-			// OpenGL has (0,0) at bottom left, ImGui at top left
+			// OpenGL has origin at bottom left, ImGui at top left
 			m_MousePosInViewport.y = m_ViewportSize.y - m_MousePosInViewport.y;
 
 			// View
-			uint64_t texId{ m_Framebuffer->GetColorAttachmentsIds()[0] };
+			uint64_t texId{ m_ViewportFB->GetColorAttachmentsIds()[0] };
 			ImGui::Image(static_cast<ImTextureID>(texId), glm::vec2{ m_ViewportSize }, { 0,1 }, { 1,0 });
 
 			if (ImGui::BeginDragDropTarget())
@@ -299,7 +314,7 @@ namespace Eis
 		if (path.empty())
 			return;
 
-		path = std::filesystem::relative(path, Project::GetAssetsDir());
+		path = std::filesystem::relative(path, Project::GetAssetDir());
 
 		SceneImporter::SaveScene(m_EditedScene, path);
 		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
@@ -317,7 +332,7 @@ namespace Eis
 		if (path.empty())
 			return;
 
-		path = std::filesystem::relative(path, Project::GetAssetsDir());
+		path = std::filesystem::relative(path, Project::GetAssetDir());
 
 		AssetHandle sceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
 		OpenScene(sceneHandle);
@@ -447,7 +462,7 @@ namespace Eis
 					&& (!ImGuizmo::IsOver() || !m_HierarchyPanel->GetSelectedEntity()) // IsOver is buggy, not enough alone
 					&& !Input::IsKeyPressed(Key::LeftShift))
 				{
-					const int pixelData = m_Framebuffer->ReadPixel(1, m_MousePosInViewport.x, m_MousePosInViewport.y);
+					const int pixelData = m_ViewportFB->ReadPixel(1, m_MousePosInViewport.x, m_MousePosInViewport.y);
 					if (pixelData != -1)
 					{
 						Entity selected{ (entt::entity)pixelData, m_ActiveScene.get() };

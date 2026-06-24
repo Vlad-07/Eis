@@ -30,7 +30,7 @@ namespace Eis
 			return s_ActiveProject->m_ProjectPath;
 		}
 
-		static std::filesystem::path GetAssetsDir()
+		static std::filesystem::path GetAssetDir()
 		{
 			EIS_CORE_ASSERT(s_ActiveProject);
 			return GetProjectPath() / s_ActiveProject->m_Config.AssetsDirectory;

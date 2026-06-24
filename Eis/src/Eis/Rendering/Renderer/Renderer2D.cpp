@@ -164,9 +164,6 @@ namespace Eis
 		s_Data.QuadVertexBuffer->SetLayout(quadLayout);
 		s_Data.QuadVertexBufferData.SetLayout(quadLayout, s_Data.MaxQuadVertices);
 
-		s_Data.QuadVertexArray = VertexArray::Create();
-		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-
 		uint32_t* quadIndices = new uint32_t[s_Data.MaxQuadIndices];
 		for (uint32_t i = 0, off = 0; i < s_Data.MaxQuadIndices; i += 6)
 		{
@@ -181,8 +178,11 @@ namespace Eis
 			off += 4;
 		}
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxQuadIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
+
+		s_Data.QuadVertexArray = VertexArray::Create();
+		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 
 
 
@@ -333,7 +333,7 @@ namespace Eis
 		if (s_Data.QuadVertexCount == 0)
 			return;
 
-		const uint32_t dataSize = s_Data.QuadVertexBufferData.GetVertexDataSize() * s_Data.QuadVertexCount;
+		const uint32_t dataSize = s_Data.QuadVertexBufferData.GetVertexDataStride() * s_Data.QuadVertexCount;
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferData.GetData(), dataSize);
 
 		// Bind textures

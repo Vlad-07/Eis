@@ -1,8 +1,7 @@
 {
   "Project": {
-    "Name": "Untitled",
     "AssetDir": "Assets",
     "AssetReg": "Assets/AssetRegistry.ereg",
-    "StartScene": 696969696969696969
+    "StartScene": 67
   }
 }

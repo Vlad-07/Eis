@@ -185,8 +185,11 @@ namespace Eis
 		bool removeComponent{};
 		if (ImGui::BeginPopup("ComponentSettings"))
 		{
-			if (ImGui::MenuItem("Remove Component"))
-				removeComponent = true;
+			if constexpr (!std::is_same_v<T, TransformComponent>)
+			{
+				if (ImGui::MenuItem("Remove Component"))
+					removeComponent = true;
+			}
 			ImGui::EndPopup();
 		}
 

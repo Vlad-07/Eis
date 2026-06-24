@@ -25,7 +25,8 @@ namespace Eis
 		}
 
 		const void* GetData() const { return m_Data.data(); }
-		uint32_t GetVertexDataSize() const { return m_Layout.Stride; }
+		uint64_t GetDataSize() const { return m_Data.size(); }
+		uint32_t GetVertexDataStride() const { return m_Layout.Stride; }
 		const AttributeLayout& GetLayout() const { return m_Layout; }
 
 		bool Has(AttribSemantic semantic) const;
