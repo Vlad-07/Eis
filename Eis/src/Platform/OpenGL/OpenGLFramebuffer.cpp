@@ -4,6 +4,7 @@
 #include "Eis/Debug/Assert.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -84,7 +85,6 @@ namespace Eis
 				glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTextureParameteri(id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 				glTextureStorage2D(id, 1, FormatToGLFormat(spec.Format), width, height);
 			}
@@ -245,15 +245,10 @@ namespace Eis
 		if (width == m_Spec.Width && height == m_Spec.Height)
 			return;
 
-		if (width == 0 || height == 0)
+		if (width == 0 || height == 0
+			|| width >= c_MaxFramebufferSize || height >= c_MaxFramebufferSize)
 		{
 			EIS_CORE_ERROR("Requested invalid framebuffer size: {}, {}", width, height);
-			return;
-		}
-
-		if (width >= c_MaxFramebufferSize || height >= c_MaxFramebufferSize)
-		{
-			EIS_CORE_ERROR("Requested framebuffer size too large: {}, {}", width, height);
 			return;
 		}
 

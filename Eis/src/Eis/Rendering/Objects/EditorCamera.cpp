@@ -58,7 +58,7 @@ namespace Eis
 	void EditorCamera::OnEvent(Event& e)
 	{
 		EventDispatcher d{ e };
-		d.Dispatch<MouseScrolledEvent>(EIS_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+		d.Dispatch<MouseScrolledEvent>(EIS_BIND_EVENT_FN(OnMouseScroll));
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)

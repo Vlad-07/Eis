@@ -58,7 +58,7 @@ namespace Eis
 			if (id == 131185) return;
 
 			std::string_view glMessage{ message, (size_t)length };
-			std::string msg = "OpenGL Error (" + std::to_string(id) + "): "
+			std::string msg = "OpenGL: (" + std::to_string(id) + ") "
 				+ std::string{ glMessage } + " "
 				+ GLErrTypeToString(type) + " "
 				+ GLErrSrcToString(source) + " "

@@ -8,7 +8,7 @@ layout(location = 3) in float a_TexIndex;
 layout(location = 4) in float a_TilingFactor;
 layout(location = 5) in int a_EntityId;
 
-layout(std140, binding = 0) uniform Camera
+layout(binding = 0, std140) uniform Camera
 {
 	mat4 u_ViewProjection;
 };

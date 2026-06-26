@@ -11,7 +11,7 @@ namespace Eis
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(std::string_view name, const std::string& source);
+		OpenGLShader(std::string_view name, const std::string& source, const std::vector<std::string>& defines);
 		virtual ~OpenGLShader();
 
 		virtual void Bind() const override;
@@ -31,9 +31,6 @@ namespace Eis
 		//virtual const std::string& GetName() const override { return m_Name; }
 
 	private:
-		static ShaderSources PreProcess(const std::string& source);
-
-		static ShaderBinaries CompileToVK(const ShaderSources& glslSources, std::string_view name);
 		static ShaderSources CompileToGLSL(const ShaderBinaries& vkBinaries);
 
 

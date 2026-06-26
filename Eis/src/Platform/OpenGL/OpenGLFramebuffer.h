@@ -2,10 +2,6 @@
 
 #include "Eis/Rendering/Objects/Framebuffer.h"
 
-#include <vector>
-#include <variant>
-#include <glm/glm.hpp>
-
 
 typedef unsigned int GLuint;
 
@@ -46,7 +42,7 @@ namespace Eis
 		GLuint m_RendererId{};
 
 		std::vector<FramebufferTexSpec> m_ColorAttachmentSpecs;
-		FramebufferTexSpec m_DepthAttachmentSpec{};
+		FramebufferTexSpec m_DepthAttachmentSpec{ FramebufferTexFormat::NONE };
 
 		std::vector<GLuint> m_ColorIds;
 		GLuint m_DepthId{};

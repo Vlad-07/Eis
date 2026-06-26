@@ -29,7 +29,7 @@ namespace Eis
 		Time::Init();
 		Random::Init();
 		m_Window = Window::Create(WindowProps{ spec.Name });
-		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(Application::OnEvent));
+		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(OnEvent));
 		Renderer2D::Init();
 		SceneRenderer::Init();
 
@@ -126,8 +126,8 @@ namespace Eis
 		EIS_PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(Application::OnWindowResize));
-		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(EIS_BIND_EVENT_FN(OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>(EIS_BIND_EVENT_FN(OnWindowClose));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{

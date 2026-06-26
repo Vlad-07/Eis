@@ -38,6 +38,8 @@ namespace Eis
 		virtual const ShaderReflection& GetReflection() const = 0;
 		virtual const AttributeLayout& GetAttributeLayout() const = 0;
 
+		// TODO: figure out push_constant api...
+
 		virtual void SetInt(const std::string& name, int value) = 0;
 		virtual void SetIntArray(const std::string& name, const int* values, uint32_t count) = 0;
 		virtual void SetFloat(const std::string& name, float value) = 0;

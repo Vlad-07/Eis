@@ -33,16 +33,15 @@ namespace Eis
 			: Depth{ depth }, Stencil{ stencil } {}
 	};
 
-	using FramebufferClearValue = std::variant<int, uint32_t, float, DepthStencilClear, glm::vec4>;
+	using FramebufferClearValue = std::variant<int32_t, uint32_t, float, DepthStencilClear, glm::vec4>;
 
 	struct FramebufferTexSpec
 	{
-		FramebufferTexSpec() = default;
 		FramebufferTexSpec(FramebufferTexFormat format) : Format{ format } {}
 		FramebufferTexSpec(FramebufferTexFormat format, FramebufferClearValue clearVal)
 			: Format{ format }, ClearValue{ clearVal } {}
 
-		FramebufferTexFormat Format{ FramebufferTexFormat::NONE };
+		FramebufferTexFormat Format;
 		FramebufferClearValue ClearValue{ glm::vec4{ 0, 0, 0, 1 } }; // defaulting to vec4 might cause problems with int textures
 
 		// TODO: wrap, filtering

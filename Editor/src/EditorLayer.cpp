@@ -32,7 +32,8 @@ namespace Eis
 		FramebufferSpec renderFbSpec;
 		renderFbSpec.Samples = 4;
 		renderFbSpec.AttachmentsSpec = {
-			{ FramebufferTexFormat::RGBA8, glm::vec4{ 35, 45, 61, 255 } / 255.0f },
+			// 8 bits are wasted, A channel can be used for other data
+			{ FramebufferTexFormat::RGB8, glm::vec4{ 35, 45, 61, 255 } / 255.0f },
 			{ FramebufferTexFormat::R32I, -1 },
 			{ FramebufferTexFormat::DEPTH24, DepthStencilClear{} }
 		};
@@ -40,7 +41,7 @@ namespace Eis
 
 		FramebufferSpec viewportFbSpec;
 		viewportFbSpec.AttachmentsSpec = {
-			{ FramebufferTexFormat::RGBA8 },
+			{ FramebufferTexFormat::RGB8 },
 			{ FramebufferTexFormat::R32I }
 		};
 		m_ViewportFB = Framebuffer::Create(viewportFbSpec);
@@ -159,7 +160,7 @@ namespace Eis
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			m_ViewportFocused = ImGui::IsWindowFocused();
 
-			Application::Get().GetImGuiLayer().BlockEvents(!m_ViewportHovered);
+			Application::Get().GetImGuiLayer().BlockEvents(!m_ViewportHovered && !m_EditorCam.IsUsing());
 
 			m_ViewportSize = glm::vec2{ ImGui::GetContentRegionAvail() };
 
