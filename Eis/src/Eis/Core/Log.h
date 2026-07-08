@@ -17,16 +17,19 @@ namespace Eis
 	class Log
 	{
 	public:
-		static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+		static Log& Get() { static Log log; return log; }
+
+		static Ref<spdlog::logger>& GetCoreLogger() { return Get().m_CoreLogger; }
+		static Ref<spdlog::logger>& GetClientLogger() { return Get().m_ClientLogger; }
 
 	private:
-		static void Init();
-
-		static inline Ref<spdlog::logger> s_CoreLogger{};
-		static inline Ref<spdlog::logger> s_ClientLogger{};
+		void Init();
 
 		friend int ::main(int argc, char** args);
+
+	private:
+		Ref<spdlog::logger> m_CoreLogger;
+		Ref<spdlog::logger> m_ClientLogger;
 	};
 }
 

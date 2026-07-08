@@ -2,7 +2,7 @@
 
 #include "Eis.h"
 
-#include "Eis/Rendering/Objects/EditorCamera.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
 #include "Panels/Hierarchy.h"
 #include "Panels/AssetBrowser.h"
@@ -17,7 +17,6 @@ namespace Eis
 		virtual ~EditorLayer() = default;
 
 		virtual void Attach() override;
-		virtual void Detach() override;
 
 		virtual void Update() override;
 		virtual void ImGuiRender() override;
@@ -60,14 +59,14 @@ namespace Eis
 		Ref<Scene> m_ActiveScene, m_EditedScene;
 		std::filesystem::path m_EditedScenePath;
 
-		Ref<Framebuffer> m_Framebuffer;
+		Ref<Framebuffer> m_RenderFB, m_ViewportFB;
 
 		Scope<HierarchyPanel> m_HierarchyPanel;
 		Scope<AssetBrowser> m_AssetBrowserPanel;
 
 		int m_GizmoType{ -1 };
 
-		EditorCamera m_EditorCam;
+		EditorCamera2 m_EditorCam;
 
 
 		bool m_ViewportHovered{};

@@ -29,9 +29,9 @@ namespace Eis
 			int succes = glfwInit();
 			EIS_CORE_ASSERT(succes, "Could not initialize GLFW!");
 
-			glfwSetErrorCallback([](int error_code, const char* description)
+			glfwSetErrorCallback([](int errorCode, const char* description)
 			{
-				EIS_CORE_ERROR("OpenGL Error: {} ({})", error_code, description);
+				EIS_CORE_ERROR("GLFW Error: {} ({})", description, errorCode);
 			});
 		}
 
@@ -45,14 +45,17 @@ namespace Eis
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWindowHint(GLFW_MAXIMIZED, true);
+		glfwWindowHint(GLFW_MAXIMIZED, true);
+#ifdef EIS_DEBUG
+		glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_TRUE);
+#endif
 
 		{
 			EIS_PROFILE_SCOPE("glfwCreateWindow");
 
 			m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-			EIS_CORE_ASSERT(m_Window, "Failed to create {} window!", m_Data.Title);
+			EIS_CORE_ASSERT(m_Window, "Failed to create window!");
 
 			s_WindowCount++;
 		}

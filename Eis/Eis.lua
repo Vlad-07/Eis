@@ -16,9 +16,6 @@ project "Eis"
 		"src/**.hpp",
 		"src/**.cpp",
 
-		"vendor/glm/glm/**.hpp",
-		"vendor/glm/glm/**.inl",
-
 		"vendor/stb_image/stb_image.h",
 		"vendor/stb_image/stb_image.cpp"
 	}
@@ -42,7 +39,8 @@ project "Eis"
 		"vendor/stb_image",
 		"vendor/SPIRV-Cross",
 		"vendor/shaderc/include",
-		"vendor/rapidhash/include"
+		"vendor/rapidhash/include",
+		"vendor/fastgltf/include"
 	}
 
 	defines
@@ -58,6 +56,7 @@ project "Eis"
 		"Glad",
 		"ImGui",
 		"spdlog",
+		"fastgltf",
 		"SPIRV-Cross",
 		"opengl32.lib"
 	}

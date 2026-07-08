@@ -12,6 +12,14 @@ namespace Eis
 		m_Data.resize(m_MaxVertexCount * m_Layout.Stride, 0);
 	}
 
+	bool VertexBufferData::Has(AttribSemantic semantic) const
+	{
+		for (const VertexAttribute& attrib : m_Layout.Attributes)
+			if (attrib.Semantic == semantic)
+				return true;
+		return false;
+	}
+
 	const VertexAttribute& VertexBufferData::GetAttribBySemantic(AttribSemantic semantic) const
 	{
 		for (const VertexAttribute& attrib : m_Layout.Attributes)

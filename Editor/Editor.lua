@@ -41,6 +41,13 @@ project "Editor"
 		"GLM_ENABLE_EXPERIMENTAL"
 	}
 
+	filter "action:vs*"
+		files
+		{
+			"%{wks.location}/Eis/vendor/glm/util/glm.natvis",
+            "%{wks.location}/Eis/vendor/imgui/misc/debuggers/imgui.natvis",
+            "%{wks.location}/Eis/vendor/imgui/misc/debuggers/imgui.natstepfilter",
+		}
 	filter "toolset:msc*"
 		multiprocessorcompile "on"
 		buildoptions { "/utf-8", "/Zc:preprocessor" }

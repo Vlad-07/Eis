@@ -1,12 +1,52 @@
 [
     {
-        "Handle": 696969696969696969,
+        "Handle": 67,
+        "FilePath": "Scenes/Sponza.eis",
+        "Type": "Scene"
+    },
+    {
+        "Handle": 69,
         "FilePath": "Scenes/Scene.eis",
         "Type": "Scene"
     },
     {
+        "Handle": 846156141656606394,
+        "FilePath": "Meshes/Sponza/5823059166183034438.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 1284081546784562679,
+        "FilePath": "Meshes/Sponza/6151467286084645207.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 3082620948460635586,
+        "FilePath": "Meshes/Sponza/8481240838833932244.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 4463207662400542957,
+        "FilePath": "Meshes/Sponza/9288698199695299068.jpg",
+        "Type": "Texture2D"
+    },
+    {
         "Handle": 4846061153772448282,
         "FilePath": "Textures/mouce.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 6205995760329567089,
+        "FilePath": "Meshes/Sponza/755318871556304029.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 6700918878890708490,
+        "FilePath": "Meshes/Sponza/white.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 7143431352505767069,
+        "FilePath": "Meshes/Sponza/15295713303328085182.jpg",
         "Type": "Texture2D"
     },
     {
@@ -15,8 +55,103 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 7778585412880189019,
+        "FilePath": "Meshes/Sponza/4975155472559461469.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 7784293280836999321,
+        "FilePath": "Meshes/Sponza/2969916736137545357.jpg",
+        "Type": "Texture2D"
+    },
+    {
         "Handle": 7818644652425530162,
         "FilePath": "Textures/circle.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 8901492689753948110,
+        "FilePath": "Meshes/Sponza/11474523244911310074.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 9627966980436304740,
+        "FilePath": "Meshes/Sponza/8006627369776289000.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 10289449022417427241,
+        "FilePath": "Meshes/Sponza/14650633544276105767.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 10457790678366360418,
+        "FilePath": "Meshes/Sponza/5792855332885324923.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 10858514347003235852,
+        "FilePath": "Meshes/Sponza/8750083169368950601.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 10888627871347642587,
+        "FilePath": "Meshes/Sponza/6047387724914829168.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 10892157552693195514,
+        "FilePath": "Meshes/Sponza/6772804448157695701.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 11169875698934330383,
+        "FilePath": "Meshes/Sponza/17876391417123941155.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 11291810416221528398,
+        "FilePath": "Meshes/Sponza/4675343432951571524.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 11657616482067000896,
+        "FilePath": "Meshes/Sponza/16275776544635328252.png",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 13087180329282666832,
+        "FilePath": "Meshes/Sponza/11490520546946913238.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 13438461952350723329,
+        "FilePath": "Meshes/Sponza/2775690330959970771.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 14815287388470267152,
+        "FilePath": "Meshes/Sponza/7441062115984513793.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 15383351882056934505,
+        "FilePath": "Meshes/Sponza/7268504077753552595.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 17321223398129636912,
+        "FilePath": "Meshes/Sponza/Sponza.gltf",
+        "Type": "StaticMesh"
+    },
+    {
+        "Handle": 17710154271666650549,
+        "FilePath": "Meshes/Sponza/2185409758123873465.jpg",
+        "Type": "Texture2D"
+    },
+    {
+        "Handle": 18155397706135396278,
+        "FilePath": "Meshes/Sponza/5061699253647017043.png",
         "Type": "Texture2D"
     }
 ]

@@ -1,7 +1,11 @@
 #include "EditorLayer.h"
 
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/TextureImporter.h"
+#include "Eis/Assets/Importers/SceneImporter.h"
+#include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Utils/PlatformUtils.h"
+
+#include "Eis/ImGui/ImGuiLayer.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -25,18 +29,24 @@ namespace Eis
 		m_PlayIcon = TextureImporter::LoadTexture2D("resources/icons/play.png");
 		m_StopIcon = TextureImporter::LoadTexture2D("resources/icons/stop.png");
 
-		FramebufferSpec fbSpec;
-		fbSpec.Width = 1280;
-		fbSpec.Height = 720;
-		fbSpec.AttachmentsSpec = {
-			{ FramebufferTexFormat::RGBA8, FramebufferClearValue{ glm::vec4{ 35, 45, 61, 255 } / 255.0f} },
-			{ FramebufferTexFormat::R32I, FramebufferClearValue{ -1 } }
+		FramebufferSpec renderFbSpec;
+		renderFbSpec.Samples = 4;
+		renderFbSpec.AttachmentsSpec = {
+			// 8 bits are wasted, A channel can be used for other data
+			{ FramebufferTexFormat::RGB8, glm::vec4{ 35, 45, 61, 255 } / 255.0f },
+			{ FramebufferTexFormat::R32I, -1 },
+			{ FramebufferTexFormat::DEPTH24, DepthStencilClear{} }
 		};
-		m_Framebuffer = Framebuffer::Create(fbSpec);
+		m_RenderFB = Framebuffer::Create(renderFbSpec);
+
+		FramebufferSpec viewportFbSpec;
+		viewportFbSpec.AttachmentsSpec = {
+			{ FramebufferTexFormat::RGB8 },
+			{ FramebufferTexFormat::R32I }
+		};
+		m_ViewportFB = Framebuffer::Create(viewportFbSpec);
 
 		m_HierarchyPanel = CreateScope<HierarchyPanel>();
-
-		m_EditorCam = EditorCamera{ 80.0f, 16.0f / 9.0f, 0.1f, 1000.0f };
 
 		m_ProjectPath = FileDialogs::OpenFile("Eis Project (.eproj)\0*.eproj\0");
 		if (m_ProjectPath.empty())
@@ -46,19 +56,16 @@ namespace Eis
 		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 	}
 
-	void EditorLayer::Detach()
-	{
-	}
-
 
 	void EditorLayer::Update()
 	{
 		// Resize
 		if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0
-			&& (m_Framebuffer->GetSpec().Width != m_ViewportSize.x
-			|| m_Framebuffer->GetSpec().Height != m_ViewportSize.y))
+			&& (m_RenderFB->GetSpec().Width != m_ViewportSize.x
+			|| m_RenderFB->GetSpec().Height != m_ViewportSize.y))
 		{
-			m_Framebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
+			m_RenderFB->Resize(m_ViewportSize.x, m_ViewportSize.y);
+			m_ViewportFB->Resize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize(m_ViewportSize.x, m_ViewportSize.y);
 
@@ -71,15 +78,18 @@ namespace Eis
 		RenderCommands::SetClearColor(glm::vec3{});
 		RenderCommands::Clear();
 
-		m_Framebuffer->Bind();
-		m_Framebuffer->Clear();
+		m_RenderFB->Bind();
+		m_RenderFB->Clear();
 
 		if (m_State == EditorState::EDIT)
 			m_ActiveScene->OnUpdateEditor(m_EditorCam);
 		else if (m_State == EditorState::PLAY)
 			m_ActiveScene->OnUpdateRuntime();
 
-		m_Framebuffer->Unbind();
+		m_RenderFB->Unbind();
+
+		m_RenderFB->Blit(m_ViewportFB, AttachmentBit::Color);
+		m_RenderFB->Blit(m_ViewportFB, AttachmentBit::Color, 1, 1);
 	}
 
 	void EditorLayer::ImGuiRender()
@@ -118,6 +128,13 @@ namespace Eis
 
 		// Viewport Window
 		{
+			/*ImGui::Begin("dbg");
+
+			ImGui::Text("Focused: %i", m_ViewportFocused);
+			ImGui::Text("Hovered: %i", m_ViewportHovered);
+
+			ImGui::End();//*/
+
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, glm::vec2{});
 			ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 
@@ -125,9 +142,13 @@ namespace Eis
 			{
 				if (ImGui::BeginMenu("Cam"))
 				{
-					ImGui::Text("TODO");
-					// TODO: better editor camera
-					// TODO: camera settings
+					bool stale{};
+					stale |= ImGui::SliderFloat("FOV", m_EditorCam.GetFov(), 30.0f, 120.0f, "%.0f");
+					stale |= ImGui::InputFloat("Near", m_EditorCam.GetNearClip());
+					stale |= ImGui::InputFloat("Far", m_EditorCam.GetFarClip());
+					stale |= ImGui::DragFloat("Speed", m_EditorCam.GetSpeed(), 0.1f, 0.1f, 100.0f);
+					stale |= ImGui::DragFloat("Sensitivity  ", m_EditorCam.GetSensitivity(), 0.05f, 0.05f, 10.0f);
+					if (stale) m_EditorCam.UpdateProjection();
 
 					ImGui::EndMenu();
 				}
@@ -139,15 +160,17 @@ namespace Eis
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			m_ViewportFocused = ImGui::IsWindowFocused();
 
+			Application::Get().GetImGuiLayer().BlockEvents(!m_ViewportHovered && !m_EditorCam.IsUsing());
+
 			m_ViewportSize = glm::vec2{ ImGui::GetContentRegionAvail() };
 
 			m_ViewportScreenPos = ImGui::GetCursorScreenPos();
 			m_MousePosInViewport = glm::vec2{ ImGui::GetMousePos() } - m_ViewportScreenPos;
-			// OpenGL has (0,0) at bottom left, ImGui at top left
+			// OpenGL has origin at bottom left, ImGui at top left
 			m_MousePosInViewport.y = m_ViewportSize.y - m_MousePosInViewport.y;
 
 			// View
-			uint64_t texId{ m_Framebuffer->GetColorAttachmentsIds()[0] };
+			uint64_t texId{ m_ViewportFB->GetColorAttachmentsIds()[0] };
 			ImGui::Image(static_cast<ImTextureID>(texId), glm::vec2{ m_ViewportSize }, { 0,1 }, { 1,0 });
 
 			if (ImGui::BeginDragDropTarget())
@@ -173,7 +196,7 @@ namespace Eis
 
 					// Camera...
 					glm::mat4 camProj = m_EditorCam.GetProjection();
-					glm::mat4 camView = m_EditorCam.GetViewMatrix();
+					glm::mat4 camView = m_EditorCam.GetView();
 
 					auto& tc = selected.GetComponent<TransformComponent>();
 					glm::mat4 transform = tc.GetTransform();
@@ -292,7 +315,7 @@ namespace Eis
 		if (path.empty())
 			return;
 
-		path = std::filesystem::relative(path, Project::GetAssetsDir());
+		path = std::filesystem::relative(path, Project::GetAssetDir());
 
 		SceneImporter::SaveScene(m_EditedScene, path);
 		const AssetHandle newSceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
@@ -310,7 +333,7 @@ namespace Eis
 		if (path.empty())
 			return;
 
-		path = std::filesystem::relative(path, Project::GetAssetsDir());
+		path = std::filesystem::relative(path, Project::GetAssetDir());
 
 		AssetHandle sceneHandle = Project::GetEditorAssetManager()->ImportAsset(path);
 		OpenScene(sceneHandle);
@@ -405,22 +428,22 @@ namespace Eis
 
 			// Tools
 			case Key::Q:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = -1;
 				break;
 
 			case Key::W:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 
 			case Key::E:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 
 			case Key::R:
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !m_EditorCam.IsUsing())
 					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 		}
@@ -440,7 +463,7 @@ namespace Eis
 					&& (!ImGuizmo::IsOver() || !m_HierarchyPanel->GetSelectedEntity()) // IsOver is buggy, not enough alone
 					&& !Input::IsKeyPressed(Key::LeftShift))
 				{
-					const int pixelData = m_Framebuffer->ReadPixel(1, m_MousePosInViewport.x, m_MousePosInViewport.y);
+					const int pixelData = m_ViewportFB->ReadPixel(1, m_MousePosInViewport.x, m_MousePosInViewport.y);
 					if (pixelData != -1)
 					{
 						Entity selected{ (entt::entity)pixelData, m_ActiveScene.get() };

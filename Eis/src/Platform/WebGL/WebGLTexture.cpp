@@ -7,28 +7,31 @@
 
 namespace Eis
 {
-	static GLenum ImageToGLDataFormat(ImageFormat format)
+	namespace
 	{
-		switch (format)
+		GLenum ImageToGLDataFormat(ImageFormat format)
 		{
+			switch (format)
+			{
 			case ImageFormat::RGB8: return GL_RGB;
 			case ImageFormat::RGBA8: return GL_RGBA;
+			}
+
+			EIS_CORE_ASSERT(false);
+			return 0;
 		}
 
-		EIS_CORE_ASSERT(false);
-		return 0;
-	}
-
-	static GLenum ImageToGLInternalFormat(ImageFormat format)
-	{
-		switch (format)
+		GLenum ImageToGLInternalFormat(ImageFormat format)
 		{
+			switch (format)
+			{
 			case ImageFormat::RGB8: return GL_RGB8;
 			case ImageFormat::RGBA8: return GL_RGBA8;
-		}
+			}
 
-		EIS_CORE_ASSERT(false);
-		return 0;
+			EIS_CORE_ASSERT(false);
+			return 0;
+		}
 	}
 
 

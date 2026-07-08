@@ -92,6 +92,14 @@ namespace Eis
 			j["SpriteRendererComponent"]["Tint"] = component.Tint;
 			j["SpriteRendererComponent"]["Texture"] = (uint64_t)component.Texture;
 		}
+
+		if (entity.HasComponent<MeshRendererComponent>())
+		{
+			auto& component = entity.GetComponent<MeshRendererComponent>();
+
+			j["MeshRendererComponent"] = json::object();
+			j["MeshRendererComponent"]["Mesh"] = (uint64_t)component.Mesh;
+		}
 	}
 
 
@@ -190,6 +198,15 @@ namespace Eis
 
 				src.Tint = component["Tint"].get<glm::vec4>();
 				src.Texture = component["Texture"].get<uint64_t>();
+			}
+
+			if (entity.contains("MeshRendererComponent"))
+			{
+				const auto& component = entity["MeshRendererComponent"];
+
+				auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
+
+				mrc.Mesh = component["Mesh"].get<uint64_t>();
 			}
 		}
 

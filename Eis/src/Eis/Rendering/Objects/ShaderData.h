@@ -27,14 +27,14 @@ namespace Eis
 	enum class AttribSemantic : uint8_t
 	{
 		None = 0,
-		Position,
-		Normal,
-		Tangent,
-		Color,
-		TexCoord0,
-		TexIndex,
-		TilingFactor,
-		EntityId
+		Position,     // a_Position
+		Normal,       // a_Normal
+		Tangent,      // a_Tangent
+		Color,        // a_Color
+		TexCoord0,    // a_TexCoord
+		TexIndex,     // a_TexIndex
+		TilingFactor, // a_TilingFactor
+		EntityId      // a_EntityId
 	};
 
 	struct VertexAttribute : public ShaderMemberType

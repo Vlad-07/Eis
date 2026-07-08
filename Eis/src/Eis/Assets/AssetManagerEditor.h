@@ -26,11 +26,12 @@ namespace Eis
 		// Otherwise a new asset is created
 		AssetHandle ImportAsset(const std::filesystem::path& path);
 
+		void RemoveAsset(AssetHandle handle);
 
 		const AssetMetadata& GetMetadata(AssetHandle handle) const;
 		const std::filesystem::path& GetFilePath(AssetHandle handle) const;
 
-		AssetHandle GetAssetByPath(const std::filesystem::path& path) const;
+		AssetHandle GetAsset(const std::filesystem::path& path) const;
 
 		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
 

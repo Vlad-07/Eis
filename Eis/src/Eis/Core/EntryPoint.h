@@ -11,7 +11,7 @@ extern Eis::Application* Eis::CreateApplication(ApplicationCommandLineArgs args)
 int main(int argc, char** argv)
 {
 	EIS_PROFILE_BEGIN_SESSION("Startup", "EisProfile-Startup.json");
-	Eis::Log::Init();
+	Eis::Log::Get().Init();
 	EIS_CORE_TRACE("Init");
 
 	auto app = Eis::CreateApplication({ argc, argv });

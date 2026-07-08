@@ -2,10 +2,6 @@
 
 #include "Eis/Rendering/Objects/Framebuffer.h"
 
-#include <vector>
-#include <variant>
-#include <glm/glm.hpp>
-
 
 typedef unsigned int GLuint;
 
@@ -25,7 +21,10 @@ namespace Eis
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void BindTextures(uint32_t offset = 0) override;
+		virtual void BindDepthTexture(uint32_t binding = 0) override;
 		virtual uint32_t GetAttachmentsNumber() const override { return static_cast<uint32_t>(m_ColorIds.size()); }
+
+		virtual void Blit(const Ref<Framebuffer>& target, AttachmentBit bit, uint32_t srcAttachment = 0, uint32_t dstAttachment = 0) const override;
 
 		// Only for R32I!
 		virtual int ReadPixel(uint32_t attachmentId, int x, int y) override;
@@ -43,7 +42,7 @@ namespace Eis
 		GLuint m_RendererId{};
 
 		std::vector<FramebufferTexSpec> m_ColorAttachmentSpecs;
-		FramebufferTexSpec m_DepthAttachmentSpec{};
+		FramebufferTexSpec m_DepthAttachmentSpec{ FramebufferTexFormat::NONE };
 
 		std::vector<GLuint> m_ColorIds;
 		GLuint m_DepthId{};

@@ -14,7 +14,7 @@ namespace Eis
 		{
 			case RendererAPI::API::OpenGL:
 			case RendererAPI::API::WebGL:
-				return CreateRef<OpenGLShader>(name, source);
+				return CreateRef<OpenGLShader>(name, source, std::vector<std::string>{});
 
 			default:
 				EIS_CORE_ASSERT(false, "Invalid graphics API: {}!", (uint8_t)RendererAPI::GetAPI());

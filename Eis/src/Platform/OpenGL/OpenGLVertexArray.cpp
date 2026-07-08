@@ -6,17 +6,18 @@
 
 namespace Eis
 {
-	static GLenum ShaderDataTypeToOpenGLType(BaseDataType type)
+	namespace
 	{
-		switch (type)
+		GLenum ShaderDataTypeToOpenGLType(BaseDataType type)
 		{
-			case BaseDataType::Bool:  return GL_BOOL;
-			case BaseDataType::Int:   return GL_INT;
-			case BaseDataType::Float: return GL_FLOAT;
+			switch (type)
+			{
+				case BaseDataType::Bool:  return GL_BOOL;
+				case BaseDataType::Int:   return GL_INT;
+				case BaseDataType::Float: return GL_FLOAT;
+				default: EIS_CORE_ASSERT(false); return 0;
+			}
 		}
-
-		EIS_CORE_ASSERT(false);
-		return 0;
 	}
 
 

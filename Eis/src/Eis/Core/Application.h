@@ -49,6 +49,8 @@ namespace Eis
 
 		const ApplicationSpecification& GetSpec() const { return m_Spec; }
 
+		ImGuiLayer& GetImGuiLayer() { return *m_ImGuiLayer; }
+
 	protected:
 		void PushLayer(Scope<Layer> layer);
 		void PushOverlay(Scope<Layer> overlay);

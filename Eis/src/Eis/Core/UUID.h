@@ -10,6 +10,7 @@ namespace Eis
 	public:
 		UUID();
 		UUID(uint64_t uuid) : m_UUID{ uuid } {}
+		UUID(const UUID& uuid) : m_UUID{ uuid.m_UUID } {}
 		~UUID() = default;
 
 		operator uint64_t() const { return m_UUID; }

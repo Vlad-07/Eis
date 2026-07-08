@@ -16,7 +16,8 @@ namespace Eis
 		Scene,
 		Texture2D,
 		Shader,
-		Material
+		Material,
+		StaticMesh
 	};
 
 	std::string AssetTypeToString(AssetType type);
@@ -26,6 +27,8 @@ namespace Eis
 	class Asset
 	{
 	public:
+		virtual ~Asset() = default;
+
 		AssetHandle Handle{ 0 };
 
 		virtual AssetType GetType() const = 0;

@@ -19,23 +19,23 @@ namespace Eis
 		logSinks[1] = std::make_shared<spdlog::sinks::basic_file_sink_mt>("Eis.log", true);
 		logSinks[1]->set_pattern("[%T] %n: [%L] %v");
 
-		s_CoreLogger = std::make_shared<spdlog::logger>("EIS", logSinks.begin(), logSinks.end());
-		s_ClientLogger = std::make_shared<spdlog::logger>("APP", logSinks.begin(), logSinks.end());
+		m_CoreLogger = std::make_shared<spdlog::logger>("EIS", logSinks.begin(), logSinks.end());
+		m_ClientLogger = std::make_shared<spdlog::logger>("APP", logSinks.begin(), logSinks.end());
 
 #else
 		spdlog::sink_ptr sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
 		sink->set_pattern("[%T] %n: [%L] %v");
 
-		s_CoreLogger = std::make_shared<spdlog::logger>("EIS", sink);
-		s_ClientLogger = std::make_shared<spdlog::logger>("APP", sink);
+		m_CoreLogger = std::make_shared<spdlog::logger>("EIS", sink);
+		m_ClientLogger = std::make_shared<spdlog::logger>("APP", sink);
 #endif
 
-		spdlog::register_logger(s_CoreLogger);
-		s_CoreLogger->set_level(spdlog::level::trace);
-		s_CoreLogger->flush_on(spdlog::level::trace);
+		spdlog::register_logger(m_CoreLogger);
+		m_CoreLogger->set_level(spdlog::level::trace);
+		m_CoreLogger->flush_on(spdlog::level::trace);
 
-		spdlog::register_logger(s_ClientLogger);
-		s_ClientLogger->set_level(spdlog::level::trace);
-		s_ClientLogger->flush_on(spdlog::level::trace);
+		spdlog::register_logger(m_ClientLogger);
+		m_ClientLogger->set_level(spdlog::level::trace);
+		m_ClientLogger->flush_on(spdlog::level::trace);
 	}
 }

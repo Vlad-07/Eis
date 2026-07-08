@@ -1,0 +1,31 @@
+{
+    "Scene": "",
+    "Entities": [
+        {
+            "Entity": 1116740534554766456,
+            "TagComponent": {
+                "Tag": "Sponza"
+            },
+            "TransformComponent": {
+                "Translation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "Scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "MeshRendererComponent": {
+                "Mesh": 17321223398129636912
+            }
+        }
+    ]
+}

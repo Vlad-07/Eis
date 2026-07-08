@@ -15,7 +15,8 @@ namespace Eis
 		{ ".jpg",  AssetType::Texture2D },
 		{ ".jpeg", AssetType::Texture2D },
 		{ ".glsl", AssetType::Shader },
-		{ ".emat", AssetType::Material }
+		{ ".emat", AssetType::Material },
+		{ ".gltf", AssetType::StaticMesh }
 	};
 
 	std::string AssetTypeToExtension(AssetType type)
@@ -26,7 +27,6 @@ namespace Eis
 			case Eis::AssetType::Shader:   return ".glsl";
 			case Eis::AssetType::Material: return ".emat";
 		}
-
 		EIS_CORE_ASSERT(false);
 		return "";
 	}
@@ -101,6 +101,27 @@ namespace Eis
 		}
 	}
 
+	AssetHandle AssetManagerEditor::GetAsset(const std::filesystem::path& path) const
+	{
+		EIS_PROFILE_FUNCTION();
+		// this might be expensive
+
+		if (!std::filesystem::exists(path))
+		{
+			EIS_CORE_ERROR("Asset path does not exist: {}", path.string());
+			return 0;
+		}
+
+		const std::filesystem::path canonical = std::filesystem::canonical(path);
+		for (const auto& [handle, metadata] : m_AssetRegistry)
+		{
+			if ((Project::GetAssetDir() / metadata.FilePath) == canonical)
+				return handle;
+		}
+
+		return 0;
+	}
+
 	AssetType AssetManagerEditor::GetAssetType(AssetHandle handle) const
 	{
 		auto it = m_AssetRegistry.find(handle);
@@ -110,27 +131,22 @@ namespace Eis
 		return it->second.Type;
 	}
 
-	AssetHandle AssetManagerEditor::GetAssetByPath(const std::filesystem::path& path) const
-	{
-		for (const auto& [handle, metadata] : m_AssetRegistry)
-		{
-			if (metadata.FilePath == path)
-				return handle;
-		}
-
-		return 0;
-	}
-
 
 	AssetHandle AssetManagerEditor::ImportAsset(const std::filesystem::path& path)
 	{
-		AssetHandle handle = GetAssetByPath(path);
+		if (!std::filesystem::exists(path))
+		{
+			EIS_CORE_ERROR("File does not exist: {}", path.string());
+			return 0;
+		}
+
+		AssetHandle handle = GetAsset(path);
 		if (handle) return handle; // Already imported
 
 		handle = AssetHandle{}; // Generate a new handle
 		AssetMetadata metadata;
 		metadata.Type = AssetTypeFromExtension(path.extension().string());
-		metadata.FilePath = path;
+		metadata.FilePath = std::filesystem::relative(path, Project::GetAssetDir());
 
 		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
 		if (!asset)
@@ -149,6 +165,12 @@ namespace Eis
 		return handle;
 	}
 
+
+	void AssetManagerEditor::RemoveAsset(AssetHandle handle)
+	{
+		m_AssetRegistry.erase(handle);
+		SerializeAssetRegistry();
+	}
 
 
 	using json = nlohmann::ordered_json;

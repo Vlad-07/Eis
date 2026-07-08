@@ -1,60 +1,97 @@
 #include "Eispch.h"
 #include "OpenGLFramebuffer.h"
 
-#include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Eis/Debug/Assert.h"
+
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 namespace Eis
 {
-	static constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // TODO: querry gpu
-
-
-	static bool IsDepthFormat(FramebufferTexFormat format)
+	namespace
 	{
-		switch (format)
+		constexpr uint32_t c_MaxFramebufferSize{ 8192 }; // TODO: querry gpu
+
+		bool IsInteger(FramebufferTexFormat format)
 		{
-			case FramebufferTexFormat::DEPTH24STENCIL8:
+			if (format == FramebufferTexFormat::R32I)
 				return true;
-		}
-		return false;
-	}
-
-	static GLenum AttachmentToGLFormat(FramebufferTexFormat format)
-	{
-		switch (format)
-		{
-			case FramebufferTexFormat::R32I:
-				return GL_R32I;
-			case FramebufferTexFormat::RGB8:
-				return GL_RGB8;
-			case FramebufferTexFormat::RGBA8:
-				return GL_RGBA8;
-			case FramebufferTexFormat::DEPTH24STENCIL8:
-				return GL_DEPTH24_STENCIL8;
+			return false;
 		}
 
-		EIS_CORE_ASSERT(false, "Invalid attachment!");
-		return 0;
-	}
-
-	static void TextureSetup(GLuint id, uint32_t samples, FramebufferTexSpec spec, uint32_t width, uint32_t height)
-	{
-		if (samples > 1)
+		bool IsDepthFormat(FramebufferTexFormat format)
 		{
-			glTextureStorage2DMultisample(id, samples, AttachmentToGLFormat(spec.Format), width, height, GL_FALSE);
+			switch (format)
+			{
+				case FramebufferTexFormat::DEPTH16:
+				case FramebufferTexFormat::DEPTH24:
+				case FramebufferTexFormat::DEPTH24STENCIL8:
+					return true;
+			}
+			return false;
 		}
-		else
-		{
-			glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTextureParameteri(id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-			glTextureStorage2D(id, 1, AttachmentToGLFormat(spec.Format), width, height);
+		GLenum FormatToGLFormat(FramebufferTexFormat format)
+		{
+			switch (format)
+			{
+				case FramebufferTexFormat::R32I:
+					return GL_R32I;
+				case FramebufferTexFormat::RGB8:
+					return GL_RGB8;
+				case FramebufferTexFormat::RGBA8:
+					return GL_RGBA8;
+				case FramebufferTexFormat::DEPTH16:
+					return GL_DEPTH_COMPONENT16;
+				case FramebufferTexFormat::DEPTH24:
+					return GL_DEPTH_COMPONENT24;
+				case FramebufferTexFormat::DEPTH24STENCIL8:
+					return GL_DEPTH24_STENCIL8;
+			}
+			EIS_CORE_ASSERT(false, "Invalid attachment!");
+			return 0;
+		}
+
+		GLenum DepthFormatToGLAttachmentType(FramebufferTexFormat format)
+		{
+			switch (format)
+			{
+				case FramebufferTexFormat::DEPTH16:
+				case FramebufferTexFormat::DEPTH24:
+					return GL_DEPTH_ATTACHMENT;
+
+				case FramebufferTexFormat::DEPTH24STENCIL8:
+					return GL_DEPTH_STENCIL_ATTACHMENT;
+			}
+			EIS_CORE_ASSERT(false);
+			return 0;
+		}
+
+		void CreateTextures(GLuint* ids, GLsizei count, uint32_t samples)
+		{
+			if (samples == 1)
+				glCreateTextures(GL_TEXTURE_2D, count, ids);
+			else
+				glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, count, ids);
+		}
+
+		void TextureSetup(GLuint id, const FramebufferTexSpec& spec, uint32_t width, uint32_t height, uint32_t samples)
+		{
+			if (samples == 1)
+			{
+				glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+				glTextureStorage2D(id, 1, FormatToGLFormat(spec.Format), width, height);
+			}
+			else
+			{
+				glTextureStorage2DMultisample(id, samples, FormatToGLFormat(spec.Format), width, height, GL_FALSE);
+			}
 		}
 	}
 
@@ -63,6 +100,8 @@ namespace Eis
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpec& fbSpec)
 		: m_Spec{ fbSpec }
 	{
+		EIS_CORE_ASSERT(fbSpec.Samples);
+
 		for (const auto& spec : m_Spec.AttachmentsSpec.Attachments)
 		{
 			if (!IsDepthFormat(spec.Format))
@@ -97,20 +136,21 @@ namespace Eis
 		m_ColorIds.resize(m_ColorAttachmentSpecs.size());
 		if (!m_ColorAttachmentSpecs.empty())
 		{
-			glCreateTextures(GL_TEXTURE_2D, static_cast<GLsizei>(m_ColorIds.size()), m_ColorIds.data());
+			CreateTextures(m_ColorIds.data(), static_cast<GLsizei>(m_ColorIds.size()), m_Spec.Samples);
 
 			for (GLenum i{}; i < m_ColorAttachmentSpecs.size(); i++)
 			{
-				TextureSetup(m_ColorIds[i], m_Spec.Samples, m_ColorAttachmentSpecs[i], m_Spec.Width, m_Spec.Height);
+				TextureSetup(m_ColorIds[i], m_ColorAttachmentSpecs[i], m_Spec.Width, m_Spec.Height, m_Spec.Samples);
 				glNamedFramebufferTexture(m_RendererId, GL_COLOR_ATTACHMENT0 + i, m_ColorIds[i], 0);
 			}
 		}
 
 		if (m_DepthAttachmentSpec.Format != FramebufferTexFormat::NONE)
 		{
-			glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthId);
+			CreateTextures(&m_DepthId, 1, m_Spec.Samples);
+			TextureSetup(m_DepthId, m_DepthAttachmentSpec, m_Spec.Width, m_Spec.Height, m_Spec.Samples);
 
-			TextureSetup(m_DepthId, m_Spec.Samples, m_DepthAttachmentSpec, m_Spec.Width, m_Spec.Height);
+			glNamedFramebufferTexture(m_RendererId, DepthFormatToGLAttachmentType(m_DepthAttachmentSpec.Format), m_DepthId, 0);
 		}
 
 		// Draw buffers
@@ -155,6 +195,11 @@ namespace Eis
 		}
 	}
 
+	void OpenGLFramebuffer::BindDepthTexture(uint32_t binding)
+	{
+		glBindTextureUnit(binding, m_DepthId);
+	}
+
 	void OpenGLFramebuffer::Clear()
 	{
 		for (GLint i{}; i < m_ColorAttachmentSpecs.size(); i++)
@@ -183,6 +228,11 @@ namespace Eis
 			const auto& clearVals = std::get<DepthStencilClear>(m_DepthAttachmentSpec.ClearValue);
 			switch (m_DepthAttachmentSpec.Format)
 			{
+				case FramebufferTexFormat::DEPTH16:
+				case FramebufferTexFormat::DEPTH24:
+					glClearNamedFramebufferfv(m_RendererId, GL_DEPTH, 0, &clearVals.Depth);
+					break;
+
 				case FramebufferTexFormat::DEPTH24STENCIL8:
 					glClearNamedFramebufferfi(m_RendererId, GL_DEPTH_STENCIL, 0, clearVals.Depth, clearVals.Stencil);
 					break;
@@ -195,15 +245,10 @@ namespace Eis
 		if (width == m_Spec.Width && height == m_Spec.Height)
 			return;
 
-		if (width == 0 || height == 0)
+		if (width == 0 || height == 0
+			|| width >= c_MaxFramebufferSize || height >= c_MaxFramebufferSize)
 		{
 			EIS_CORE_ERROR("Requested invalid framebuffer size: {}, {}", width, height);
-			return;
-		}
-
-		if (width >= c_MaxFramebufferSize || height >= c_MaxFramebufferSize)
-		{
-			EIS_CORE_ERROR("Requested framebuffer size too large: {}, {}", width, height);
 			return;
 		}
 
@@ -234,5 +279,44 @@ namespace Eis
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
 		return pixelData;
+	}
+
+	void OpenGLFramebuffer::Blit(const Ref<Framebuffer>& target, AttachmentBit bit, uint32_t srcAttachment, uint32_t dstAttachment) const
+	{
+		const auto& fb = *dynamic_cast<const OpenGLFramebuffer*>(target.get());
+
+		GLbitfield bits{};
+		GLenum filter{};
+		switch (bit)
+		{
+			case Eis::AttachmentBit::Color:
+				glNamedFramebufferReadBuffer(m_RendererId, GL_COLOR_ATTACHMENT0 + srcAttachment);
+				glNamedFramebufferDrawBuffer(fb.m_RendererId, GL_COLOR_ATTACHMENT0 + dstAttachment);
+				bits = GL_COLOR_BUFFER_BIT;
+				filter = IsInteger(m_Spec.AttachmentsSpec.Attachments[srcAttachment].Format) ? GL_NEAREST : GL_LINEAR;
+				break;
+
+			case Eis::AttachmentBit::Depth:
+				bits = GL_DEPTH_BUFFER_BIT;
+				filter = GL_NEAREST;
+				break;
+
+			case Eis::AttachmentBit::Stencil:
+				bits = GL_STENCIL_BUFFER_BIT;
+				filter = GL_NEAREST;
+				break;
+
+			case Eis::AttachmentBit::DepthStencil:
+				bits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+				filter = GL_NEAREST;
+				break;
+
+			default: EIS_CORE_ASSERT(false);
+		}
+
+		glBlitNamedFramebuffer(m_RendererId, fb.m_RendererId,
+			0, 0, m_Spec.Width, m_Spec.Height,
+			0, 0, fb.m_Spec.Width, fb.m_Spec.Height,
+			bits, filter);
 	}
 }

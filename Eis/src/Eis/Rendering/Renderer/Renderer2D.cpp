@@ -6,9 +6,9 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/VertexBufferData.h"
 #include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
-#include "Eis/Assets/Importers.h"
+#include "Eis/Assets/Importers/ShaderImporter.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -164,9 +164,6 @@ namespace Eis
 		s_Data.QuadVertexBuffer->SetLayout(quadLayout);
 		s_Data.QuadVertexBufferData.SetLayout(quadLayout, s_Data.MaxQuadVertices);
 
-		s_Data.QuadVertexArray = VertexArray::Create();
-		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-
 		uint32_t* quadIndices = new uint32_t[s_Data.MaxQuadIndices];
 		for (uint32_t i = 0, off = 0; i < s_Data.MaxQuadIndices; i += 6)
 		{
@@ -181,8 +178,11 @@ namespace Eis
 			off += 4;
 		}
 		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxQuadIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
+
+		s_Data.QuadVertexArray = VertexArray::Create();
+		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 
 
 
@@ -243,7 +243,7 @@ namespace Eis
 	}
 
 
-	void Renderer2D::BeginScene(const EditorCamera& camera)
+	void Renderer2D::BeginScene(const EditorCamera2& camera)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -333,7 +333,7 @@ namespace Eis
 		if (s_Data.QuadVertexCount == 0)
 			return;
 
-		const uint32_t dataSize = s_Data.QuadVertexBufferData.GetVertexDataSize() * s_Data.QuadVertexCount;
+		const uint32_t dataSize = s_Data.QuadVertexBufferData.GetVertexDataStride() * s_Data.QuadVertexCount;
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferData.GetData(), dataSize);
 
 		// Bind textures
@@ -490,9 +490,9 @@ namespace Eis
 	}
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& tint, float tiling, int32_t entityId)
 	{
-		const glm::mat4 verts{ transform * s_Data.QuadVertexPositions };
-
 		EIS_PROFILE_RENDERER_FUNCTION();
+
+		const glm::mat4 verts{ transform * s_Data.QuadVertexPositions };
 
 		if (s_Data.QuadVertexCount >= s_Data.MaxQuadIndices)
 			NextBatchQuads();

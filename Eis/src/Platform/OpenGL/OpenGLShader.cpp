@@ -1,168 +1,43 @@
 #include "Eispch.h"
 #include "OpenGLShader.h"
 
-#include "Eis/Project/Project.h"
+#include "Eis/Rendering/Objects/ShaderCompiler.h"
 #include "Eis/Rendering/Objects/ShaderReflector.h"
 
-#include <ios>
-#include <fstream>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shaderc/shaderc.hpp>
 #include <spirv_cross.hpp>
 #include <spirv_glsl.hpp>
 
-#include <rapidhash/rapidhash.h>
-#include <json/json.hpp>
-
-
-using json = nlohmann::json;
 
 namespace Eis
 {
-	static GLenum ShaderStageToGL(ShaderStage stage)
+	namespace
 	{
-		switch (stage)
+		GLenum ShaderStageToGL(ShaderStage stage)
 		{
-			case Eis::ShaderStage::Vertex: return GL_VERTEX_SHADER;
-			case Eis::ShaderStage::Fragment: return GL_FRAGMENT_SHADER;
-			default: EIS_CORE_ASSERT(false); return 0;
-		}
-	}
-
-	static shaderc_shader_kind GLShaderStageToShaderc(ShaderStage stage)
-	{
-		switch (stage)
-		{
-			case ShaderStage::Vertex: return shaderc_shader_kind::shaderc_vertex_shader;
-			case ShaderStage::Fragment: return shaderc_shader_kind::shaderc_fragment_shader;
-			default: EIS_CORE_ASSERT(false); return {};
-		}
-	}
-
-	static std::string ShaderStageCacheFileExtVK(ShaderStage stage)
-	{
-		switch (stage)
-		{
-			case ShaderStage::Vertex: return ".cached_vk.vert";
-			case ShaderStage::Fragment: return ".cached_vk.frag";
-			default: EIS_CORE_ASSERT(false); return "";
-		}
-	}
-
-	static const std::filesystem::path& GetCacheDir()
-	{
-		static const std::filesystem::path cacheDir{ "resources/cache/shaders/opengl" };
-		return cacheDir;
-	}
-	static const std::filesystem::path& GetCacheRegistryPath()
-	{
-		static const std::filesystem::path cacheRegPath{ "resources/cache/shaders/opengl/ShaderCacheRegistry.shreg" };
-		return cacheRegPath;
-	}
-
-	static void CheckCache()
-	{
-		const std::filesystem::path& path = GetCacheDir();
-		if (!std::filesystem::exists(path))
-			std::filesystem::create_directories(path);
-
-		const std::filesystem::path& regPath = GetCacheRegistryPath();
-		if (!std::filesystem::exists(regPath))
-		{
-			std::ofstream out{ regPath };
-			out << "{}";
+			switch (stage)
+			{
+				case Eis::ShaderStage::Vertex: return GL_VERTEX_SHADER;
+				case Eis::ShaderStage::Fragment: return GL_FRAGMENT_SHADER;
+				default: EIS_CORE_ASSERT(false); return 0;
+			}
 		}
 	}
 
 
-	static bool ReadBinary(std::vector<uint32_t>& data, const std::filesystem::path& path)
-	{
-		std::ifstream in{ path, std::ios::binary };
-
-		if (!in.is_open())
-			return false;
-
-		in.seekg(0, std::ios::end);
-		size_t size = in.tellg();
-		in.seekg(0, std::ios::beg);
-
-		data.resize(size / sizeof(uint32_t));
-		in.read((char*)data.data(), size);
-
-		return true;
-	}
-	static void WriteBinary(const std::vector<uint32_t>& data, const std::filesystem::path& path)
-	{
-		std::ofstream out{ path, std::ios::binary };
-
-		if (!out.is_open())
-			return;
-
-		out.write((const char*)data.data(), data.size() * sizeof(uint32_t));
-	}
-
-
-	OpenGLShader::OpenGLShader(std::string_view name, const std::string& source)
+	OpenGLShader::OpenGLShader(std::string_view name, const std::string& source, const std::vector<std::string>& defines)
 		: m_Name{ name }
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
-		CheckCache();
+		m_VKBinaries = ShaderCompiler::Compile(source, m_Name, defines);
+		m_GLSLsources = CompileToGLSL(m_VKBinaries);
+		UploadSources(m_GLSLsources);
 
-		const uint64_t hash = rapidhash(source.data(), source.size());
+		// cache glsl and reflection too?
 
-		bool upToDate{ false };
-		std::ifstream in{ GetCacheRegistryPath() };
-		json j = json::parse(in);
-		in.close();
-
-		if (j.contains(m_Name))
-		{
-			const uint64_t oldHash = j[m_Name]["Hash"].get<uint64_t>();
-			upToDate = (oldHash == hash);
-		}
-
-		// TODO: take this registry garbage out of the shader class
-
-		if (!upToDate)
-		{
-			// Compile
-			ShaderSources shaderSources = PreProcess(source);
-			m_VKBinaries = CompileToVK(shaderSources, m_Name);
-			m_GLSLsources = CompileToGLSL(m_VKBinaries);
-			UploadSources(m_GLSLsources);
-
-			// Write KV
-			for (const auto& [stage, binary] : m_VKBinaries)
-				WriteBinary(binary, GetCacheDir() / (m_Name + ShaderStageCacheFileExtVK(stage)));
-
-			// Write registry
-			j[m_Name]["Hash"] = hash;
-			for (const auto& [stage, unused] : m_VKBinaries)
-				j[m_Name]["Stages"].push_back(ShaderStageToString(stage));
-
-			std::ofstream out{ GetCacheRegistryPath() };
-			out << j.dump(4);
-		}
-		else
-		{
-			// Load VK
-			for (const auto& s : j[m_Name]["Stages"])
-			{
-				ShaderStage stage = ShaderStageFromString(s.get<std::string>());
-
-				auto& binary = m_VKBinaries[stage];
-				ReadBinary(binary, GetCacheDir() / (m_Name + ShaderStageCacheFileExtVK(stage)));
-			}
-
-			// cahce intermediate glsl?
-			m_GLSLsources = CompileToGLSL(m_VKBinaries);
-			UploadSources(m_GLSLsources);
-		}
-
-		// TODO: cache reflection
 		m_Reflection = ShaderReflector::Reflect(m_VKBinaries);
 	}
 
@@ -173,65 +48,6 @@ namespace Eis
 		glDeleteProgram(m_RendererId);
 	}
 
-
-	ShaderSources OpenGLShader::PreProcess(const std::string& source)
-	{
-		EIS_PROFILE_RENDERER_FUNCTION();
-
-		ShaderSources shaderSources;
-
-		const std::string typeToken{ "//type" };
-		size_t pos = source.find(typeToken, 0); // Start of shader type declaration line
-		while (pos != std::string::npos)
-		{
-			// End of shader type declaration line
-			const size_t eol = source.find_first_of("\r\n", pos);
-			EIS_CORE_ASSERT(eol != std::string::npos, "Shader source must have CRLF line endings!");
-
-			// Start of shader type name (after "//type" keyword)
-			const size_t begin = pos + typeToken.length() + 1;
-
-			const std::string type = source.substr(begin, eol - begin);
-			const ShaderStage stage = ShaderStageFromString(type);
-
-
-			// Start of shader code after shader type declaration line
-			const size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-
-			pos = source.find(typeToken, nextLinePos); // Start of next shader type declaration line
-
-			shaderSources[stage] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
-		}
-
-		return shaderSources;
-	}
-
-	ShaderBinaries OpenGLShader::CompileToVK(const ShaderSources& glslSources, std::string_view name)
-	{
-		shaderc::Compiler compiler;
-		shaderc::CompileOptions options;
-		// vk 1.3+ breaks discard
-		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
-		options.SetOptimizationLevel(shaderc_optimization_level_zero);
-
-		ShaderBinaries output;
-		for (const auto& [stage, src] : glslSources)
-		{
-			shaderc::SpvCompilationResult module
-				= compiler.CompileGlslToSpv(src, GLShaderStageToShaderc(stage), name.data(), options);
-			if (module.GetCompilationStatus() != shaderc_compilation_status_success)
-			{
-				EIS_CORE_ERROR("GLSL to SPIR-V compilation failed!");
-				EIS_CORE_ERROR("{}", module.GetErrorMessage());
-				EIS_CORE_ASSERT(false);
-			}
-
-			std::vector<uint32_t>& stageData = output[stage];
-			stageData.assign(module.cbegin(), module.cend());
-		}
-
-		return output;
-	}
 
 	ShaderSources OpenGLShader::CompileToGLSL(const ShaderBinaries& vkBinaries)
 	{
@@ -330,7 +146,6 @@ namespace Eis
 		glUseProgram(0);
 	}
 
-	// TODO: maybe location caching
 
 	void OpenGLShader::SetInt(const std::string& name, int value)
 	{
