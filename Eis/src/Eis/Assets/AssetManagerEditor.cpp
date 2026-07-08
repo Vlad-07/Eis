@@ -16,7 +16,7 @@ namespace Eis
 		{ ".jpeg", AssetType::Texture2D },
 		{ ".glsl", AssetType::Shader },
 		{ ".emat", AssetType::Material },
-		{ ".gltf", AssetType::Mesh }
+		{ ".gltf", AssetType::StaticMesh }
 	};
 
 	std::string AssetTypeToExtension(AssetType type)
@@ -27,7 +27,6 @@ namespace Eis
 			case Eis::AssetType::Shader:   return ".glsl";
 			case Eis::AssetType::Material: return ".emat";
 		}
-
 		EIS_CORE_ASSERT(false);
 		return "";
 	}

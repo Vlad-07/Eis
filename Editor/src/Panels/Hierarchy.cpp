@@ -378,7 +378,7 @@ namespace Eis
 		{
 			DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](MeshRendererComponent& component)
 			{
-				DrawAssetTarget("Mesh", AssetType::Mesh, component.Mesh);
+				DrawAssetTarget("Mesh", AssetType::StaticMesh, component.Mesh);
 			});
 		}
 	}

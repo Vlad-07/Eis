@@ -5,9 +5,6 @@
 #include <optional>
 
 
-#include "Eis/Rendering/Objects/VertexArray.h"
-
-
 namespace Eis
 {
 	struct MeshVertex
@@ -26,31 +23,27 @@ namespace Eis
 	{
 		uint32_t FirstIndex{};
 		uint32_t IndexCount{};
-		AssetHandle Tex{ 0 };
+		AssetHandle Material{ 0 };
 	};
 
-	class Mesh : public Asset
+
+	class VertexArray;
+
+	class StaticMesh : public Asset
 	{
 	public:
-		virtual ~Mesh() = default;
+		virtual ~StaticMesh() = default;
 
-		void AddSubMesh(std::vector<MeshVertex>&& vertices, std::vector<uint32_t>&& indices, AssetHandle material);
+		virtual void Bind() const = 0;
 
-		void Upload();
+		// TODO: remove after renderer rewrite
+		virtual const Ref<VertexArray>& GetVA() const = 0;
 
-		Ref<VertexArray> GetVA() { return m_VertexArray; }
-		const std::vector<SubMesh>& GetSubMeshes() const { return m_SubMeshes; }
+		virtual const std::vector<SubMesh>& GetSubMeshes() const = 0;
 
-		static AssetType GetStaticType() { return AssetType::Mesh; }
+		static Ref<StaticMesh> Create(std::vector<MeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<SubMesh>&& subMeshes);
+
+		static AssetType GetStaticType() { return AssetType::StaticMesh; }
 		virtual AssetType GetType() const override { return GetStaticType(); }
-
-	private:
-		std::vector<MeshVertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
-
-		std::vector<SubMesh> m_SubMeshes;
-
-
-		Ref<VertexArray> m_VertexArray;
 	};
 }

@@ -31,12 +31,12 @@ namespace Eis
 
 
 
-	Ref<Mesh> MeshImporter::ImportMesh(AssetHandle handle, const AssetMetadata& metadata)
+	Ref<StaticMesh> MeshImporter::ImportStaticMesh(AssetHandle handle, const AssetMetadata& metadata)
 	{
-		return LoadMesh(Project::GetAssetDir() / metadata.FilePath);
+		return LoadStaticMesh(Project::GetAssetDir() / metadata.FilePath);
 	}
 
-	Ref<Mesh> MeshImporter::LoadMesh(const std::filesystem::path& path)
+	Ref<StaticMesh> MeshImporter::LoadStaticMesh(const std::filesystem::path& path)
 	{
 		// not thread safe!
 		static fastgltf::Parser gltfparser;
@@ -66,9 +66,11 @@ namespace Eis
 		}
 
 		fastgltf::Asset& asset = loadedAsset.get();
-		Ref<Mesh> mesh = CreateRef<Mesh>();
+		std::vector<MeshVertex> vertices;
+		std::vector<uint32_t> indices;
+		std::vector<SubMesh> subMeshes;
 
-		/*std::vector<MeshVertex> vertices{8};
+		/*vertices.resize(8);
 		vertices[0].Position = { -0.5, -0.5,  0.5, };
 		vertices[1].Position = {  0.5, -0.5,  0.5, };
 		vertices[2].Position = {  0.5,  0.5,  0.5, };
@@ -78,18 +80,16 @@ namespace Eis
 		vertices[6].Position = {  0.5,  0.5, -0.5, };
 		vertices[7].Position = { -0.5,  0.5, -0.5, };
 
+		indices = std::vector{
+			0, 1, 2,   2, 3, 0,
+			5, 4, 7,   7, 6, 5,
+			4, 0, 3,   3, 7, 4,
+			1, 5, 6,   6, 2, 1,
+			4, 5, 1,   1, 0, 4,
+			3, 2, 6,   6, 7, 3
+		};
 
-		std::vector<uint32_t> indices{
-			0, 1, 2,    2, 3, 0,
-			5, 4, 7,    7, 6, 5,
-			4, 0, 3,    3, 7, 4,
-			1, 5, 6,    6, 2, 1,
-			4, 5, 1,    1, 0, 4,
-			3, 2, 6,    6, 7, 3 };
-
-		mesh->AddSubMesh(std::move(vertices), std::move(indices), 0);
-
-		return mesh;//*/
+		return StaticMesh::Create(std::move(vertices), std::move(indices), std::move(subMeshes));//*/
 
 		fastgltf::iterateSceneNodes(asset, 0, fastgltf::math::fmat4x4{},
 			[&](fastgltf::Node& node, const fastgltf::math::fmat4x4& matrix) -> void
@@ -102,23 +102,26 @@ namespace Eis
 				const fastgltf::Mesh& meshdata = asset.meshes[*node.meshIndex];
 				for (const fastgltf::Primitive& primitive : meshdata.primitives)
 				{
-					std::vector<MeshVertex> vertices;
-					std::vector<uint32_t> indices;
+					SubMesh submesh;
+					submesh.FirstIndex = (uint32_t)indices.size();
 
 					// Indices
 					if (primitive.indicesAccessor.has_value())
 					{
 						const auto& acc = asset.accessors[*primitive.indicesAccessor];
-						indices.reserve(acc.count);
+						indices.reserve(indices.size() + acc.count);
+						submesh.IndexCount = (uint32_t)acc.count;
 
 						fastgltf::iterateAccessor<uint32_t>(asset, acc,
 							[&](uint32_t i)
 							{
-								indices.push_back(i);
+								indices.push_back(i + vertices.size());
 							});
 					}
 
 					// Attributes
+
+					const size_t vertexOff{ vertices.size() };
 
 					auto* posAttrib = primitive.findAttribute("POSITION");
 					if (posAttrib != primitive.attributes.end())
@@ -130,56 +133,58 @@ namespace Eis
 							[&](glm::vec3 pos, size_t i)
 							{
 								// Bake transform into vertices
-								vertices[i].Position = transform * glm::vec4{ pos, 1.0f };
+								vertices[vertexOff + i].Position = transform * glm::vec4{ pos, 1.0f };
 							});
 					}
+					else EIS_CORE_ASSERT(false);
 
 					GetAttribute<glm::vec3>("NORMAL", asset, primitive,
 						[&](glm::vec3 normal, size_t i)
 						{
-							vertices[i].Normal = normal;
+							vertices[vertexOff + i].Normal = normal;
 						});
 
 					GetAttribute<glm::vec2>("TEXCOORD_0", asset, primitive,
 						[&](glm::vec2 uv, size_t i)
 						{
-							uv.y = 1.0f - uv.y; // gltf 2.0 spec has origin in the top left corner (see 3.8.3)
-							vertices[i].TexCoord = uv;
+							uv.y = 1.0f - uv.y; // gltf 2.0 spec has origin in the top left corner (3.8.3)
+							vertices[vertexOff + i].TexCoord = uv;
 						});
 
 					GetAttribute<glm::vec4>("TANGENT", asset, primitive,
 						[&](glm::vec4 tangent, size_t i)
 						{
-							vertices[i].Tangent = tangent;
+							vertices[vertexOff + i].Tangent = tangent;
 						});
 
 					// Material
-					AssetHandle material{ 0 };
 					if (primitive.materialIndex.has_value())
 					{
 						auto& mat = asset.materials[*primitive.materialIndex];
 
 						// TODO: material system
 
-						const fastgltf::Texture& texture = asset.textures[mat.pbrData.baseColorTexture->textureIndex];
+						if (mat.pbrData.baseColorTexture.has_value())
+						{
+							const fastgltf::Texture& texture = asset.textures[mat.pbrData.baseColorTexture->textureIndex];
 
-						const fastgltf::Image& image = asset.images[*texture.imageIndex];
+							const fastgltf::Image& image = asset.images[*texture.imageIndex];
 
-						std::visit(fastgltf::visitor{
-							[&](const fastgltf::sources::URI& uri)
-							{
-								material = Project::GetEditorAssetManager()->ImportAsset(parentPath / uri.uri.c_str());
-							},
-							[](auto&& c) {}
-						}, image.data);
+							std::visit(fastgltf::visitor{
+									[&](const fastgltf::sources::URI& uri)
+									{
+										submesh.Material = Project::GetEditorAssetManager()->ImportAsset(parentPath / uri.uri.c_str());
+									},
+									[](auto&& c) {}
+								},
+								image.data);
+						}
 					}
 
-					mesh->AddSubMesh(std::move(vertices), std::move(indices), material);
+					subMeshes.push_back(submesh);
 				}
 			});
 
-		mesh->Upload();
-
-		return mesh;
+		return StaticMesh::Create(std::move(vertices), std::move(indices), std::move(subMeshes));
 	}
 }

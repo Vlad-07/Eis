@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera2.h"
-
 
 namespace Eis
 {
-	class Mesh;
+	class Camera;
+	class EditorCamera2;
+	class StaticMesh;
 
 	class SceneRenderer
 	{
@@ -15,7 +14,7 @@ namespace Eis
 		static void BeginScene(const EditorCamera2& cam);
 		static void EndScene();
 
-		static void DrawMesh(const glm::mat4& transform, const Ref<Mesh>& mesh);
+		static void DrawMesh(const glm::mat4& transform, const Ref<StaticMesh>& mesh);
 
 	private:
 		static void Init();

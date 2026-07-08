@@ -142,7 +142,7 @@
     {
         "Handle": 17321223398129636912,
         "FilePath": "Meshes/Sponza/Sponza.gltf",
-        "Type": "Mesh"
+        "Type": "StaticMesh"
     },
     {
         "Handle": 17710154271666650549,

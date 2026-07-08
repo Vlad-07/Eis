@@ -13,8 +13,8 @@ namespace Eis
 	class MeshImporter
 	{
 	public:
-		static Ref<Mesh> ImportMesh(AssetHandle handle, const AssetMetadata& metadata);
+		static Ref<StaticMesh> ImportStaticMesh(AssetHandle handle, const AssetMetadata& metadata);
 
-		static Ref<Mesh> LoadMesh(const std::filesystem::path& path);
+		static Ref<StaticMesh> LoadStaticMesh(const std::filesystem::path& path);
 	};
 }

@@ -149,7 +149,7 @@ namespace Eis
 			auto [trc, src] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
 			const glm::mat4 tr = trc.GetTransform();
-			if (src.Texture != 0)
+			if (src.Texture)
 			{
 				Ref<Texture2D> tex = AssetManager::GetAsset<Texture2D>(src.Texture);
 				Renderer2D::DrawQuad(tr, tex, src.Tint, 1.0f, (int32_t)entity);
@@ -171,8 +171,9 @@ namespace Eis
 			const glm::mat4 tr = trc.GetTransform();
 			if (mrc.Mesh)
 			{
-				Ref<Mesh> mesh = AssetManager::GetAsset<Mesh>(mrc.Mesh);
-				SceneRenderer::DrawMesh(tr, mesh);
+				Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(mrc.Mesh);
+				if (mesh)
+					SceneRenderer::DrawMesh(tr, mesh);
 			}
 		}
 

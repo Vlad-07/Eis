@@ -16,7 +16,7 @@ namespace Eis
 		{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
 		{ AssetType::Shader, ShaderImporter::ImportShader },
 		//{ AssetType::Material, MaterialImporter::ImportMaterial },
-		{ AssetType::Mesh, MeshImporter::ImportMesh }
+		{ AssetType::StaticMesh, MeshImporter::ImportStaticMesh }
 	};
 
 	Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata)

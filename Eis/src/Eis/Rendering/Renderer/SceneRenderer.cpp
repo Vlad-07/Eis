@@ -3,12 +3,14 @@
 
 #include "RenderCommands.h"
 
+#include "Eis/Rendering/Objects/Camera.h"
+#include "Eis/Rendering/Objects/Framebuffer.h"
 #include "Eis/Rendering/Objects/VertexArray.h"
-#include "Eis/Rendering/Objects/Mesh.h"
-#include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Rendering/Objects/VertexBufferData.h"
 #include "Eis/Rendering/Objects/Shader.h"
-#include "Eis/Rendering/Objects/Framebuffer.h"
+#include "Eis/Rendering/Objects/Texture.h"
+#include "Eis/Rendering/Objects/Mesh.h"
+#include "Eis/Rendering/Objects/EditorCamera2.h"
 
 #include "Eis/Assets/AssetManager.h"
 #include "Eis/Assets/Importers/ShaderImporter.h"
@@ -87,7 +89,7 @@ namespace Eis
 
 
 
-	void SceneRenderer::DrawMesh(const glm::mat4& transform, const Ref<Mesh>& mesh)
+	void SceneRenderer::DrawMesh(const glm::mat4& transform, const Ref<StaticMesh>& mesh)
 	{
 		s_Data.MeshShader->Bind();
 
@@ -96,8 +98,8 @@ namespace Eis
 
 		for (const SubMesh& submesh : mesh->GetSubMeshes())
 		{
-			if (submesh.Tex)
-				AssetManager::GetAsset<Texture2D>(submesh.Tex)->Bind(1);
+			if (submesh.Material)
+				AssetManager::GetAsset<Texture2D>(submesh.Material)->Bind(1);
 			RenderCommands::DrawIndexed(mesh->GetVA(), submesh.IndexCount, submesh.FirstIndex);
 		}
 	}

@@ -93,10 +93,10 @@ namespace Eis
 	}
 	glm::vec3 EditorCamera2::GetForwardDir()
 	{
-		return glm::quat{ m_Rotation } *glm::vec3{ 0, 0, -1 };
+		return glm::quat{ m_Rotation } * glm::vec3{ 0, 0, -1 };
 	}
 	glm::vec3 EditorCamera2::GetRightDir()
 	{
-		return glm::quat{ m_Rotation } *glm::vec3{ 1, 0, 0 };
+		return glm::quat{ m_Rotation } * glm::vec3{ 1, 0, 0 };
 	}
 }
