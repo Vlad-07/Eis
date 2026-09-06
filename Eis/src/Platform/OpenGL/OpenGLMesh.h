@@ -19,6 +19,9 @@ namespace Eis
 
 		virtual const std::vector<SubMesh>& GetSubMeshes() const override { return m_SubMeshes; }
 
+		virtual const BoundingSphere& GetBoundingSphere() const override { return m_BoundingSphere; }
+		virtual const BoundingBox& GetBoundingBox() const override { return m_BoundingBox; }
+
 	private:
 	//	std::vector<MeshVertex> m_Vertices;
 	//	std::vector<uint32_t> m_Indices;
@@ -27,5 +30,8 @@ namespace Eis
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
+
+		BoundingSphere m_BoundingSphere{};
+		BoundingBox m_BoundingBox{};
 	};
 }

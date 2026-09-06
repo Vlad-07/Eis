@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Eis/Rendering/Objects/Mesh.h"
+
 
 namespace Eis
 {
 	class Camera;
 	class EditorCamera2;
-	class StaticMesh;
 
 	class SceneRenderer
 	{
@@ -17,10 +18,14 @@ namespace Eis
 		static void DrawMesh(const glm::mat4& transform, const Ref<StaticMesh>& mesh);
 
 	private:
+		friend class Application;
 		static void Init();
+
 
 		static void Pass();
 
-		friend class Application;
+
+		static void CalcFrustumPlanes(const glm::mat4& viewProj);
+		static bool IsInsideFrustum(const StaticMesh& mesh);
 	};
 }

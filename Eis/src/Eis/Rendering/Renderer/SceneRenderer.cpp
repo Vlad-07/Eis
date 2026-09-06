@@ -22,6 +22,13 @@ namespace Eis
 {
 	struct RendererData
 	{
+		struct Plane
+		{
+			glm::vec3 Normal{};
+			float Dist{};
+		};
+		std::array<Plane, 6> FrustumPlanes;
+
 		struct SceneData
 		{
 			glm::mat4 ViewProjection{};
@@ -70,6 +77,10 @@ namespace Eis
 		//s_Data.CameraBuf.ViewProjection = cam.GetViewProjection();
 		//s_Data.CameraUniformBuf->SetData(&s_Data.CameraBuf, sizeof(RendererData::CameraData));
 
+		CalcFrustumPlanes(cam.GetViewProjection());
+
+		
+
 		Pass();
 	}
 
@@ -85,13 +96,16 @@ namespace Eis
 		glDepthFunc(GL_LESS);
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		s_Data.MeshShader->Bind();
 	}
 
 
 
 	void SceneRenderer::DrawMesh(const glm::mat4& transform, const Ref<StaticMesh>& mesh)
 	{
-		s_Data.MeshShader->Bind();
+		if (!IsInsideFrustum(*mesh))
+			return;
 
 		s_Data.ObjectData.Model = transform;
 		s_Data.ObjectDataBuf->SetData(&s_Data.ObjectData, sizeof(RendererData::ObjectData));
@@ -102,5 +116,56 @@ namespace Eis
 				AssetManager::GetAsset<Texture2D>(submesh.Material)->Bind(1);
 			RenderCommands::DrawIndexed(mesh->GetVA(), submesh.IndexCount, submesh.FirstIndex);
 		}
+	}
+
+
+
+	void SceneRenderer::CalcFrustumPlanes(const glm::mat4& viewProj)
+	{
+		// Gribb - Hartmann method
+
+		const glm::mat4 transposed = glm::transpose(viewProj);
+
+		s_Data.FrustumPlanes[0].Normal = glm::vec3{ transposed[3] + transposed[0] }; // left
+		s_Data.FrustumPlanes[0].Dist = transposed[3][3] + transposed[0][3];
+
+		s_Data.FrustumPlanes[1].Normal = glm::vec3{ transposed[3] - transposed[0] }; // right
+		s_Data.FrustumPlanes[1].Dist = transposed[3][3] - transposed[0][3];
+
+		s_Data.FrustumPlanes[2].Normal = glm::vec3{ transposed[3] + transposed[1] }; // bottom
+		s_Data.FrustumPlanes[2].Dist = transposed[3][3] + transposed[1][3];
+
+		s_Data.FrustumPlanes[3].Normal = glm::vec3{ transposed[3] - transposed[1] }; // top
+		s_Data.FrustumPlanes[3].Dist = transposed[3][3] - transposed[1][3];
+
+		s_Data.FrustumPlanes[4].Normal = glm::vec3{ transposed[3] + transposed[2] }; // near
+		s_Data.FrustumPlanes[4].Dist = transposed[3][3] + transposed[2][3];
+
+		s_Data.FrustumPlanes[5].Normal = glm::vec3{ transposed[3] - transposed[2] }; // far
+		s_Data.FrustumPlanes[5].Dist = transposed[3][3] - transposed[2][3];
+
+		for (RendererData::Plane& p : s_Data.FrustumPlanes)
+		{
+			const float len = glm::length(p.Normal);
+			p.Normal /= len;
+			p.Dist /= len;
+		}
+	}
+
+	bool SceneRenderer::IsInsideFrustum(const StaticMesh& mesh)
+	{
+		const BoundingSphere& bs{ mesh.GetBoundingSphere() };
+		for (RendererData::Plane& p : s_Data.FrustumPlanes)
+		{
+			const float dist = glm::dot(p.Normal, bs.Center) + p.Dist;
+			
+			// (dist > bs.Radius) -> Inside
+			if (dist < -bs.Radius)
+				return false; // Outside the frustum
+
+			// TODO: handle intersection (test bb, maybe check submeshes)
+		}
+
+		return true;
 	}
 }

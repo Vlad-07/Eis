@@ -7,6 +7,19 @@
 
 namespace Eis
 {
+	struct BoundingSphere
+	{
+		glm::vec3 Center;
+		float Radius;
+	};
+
+	struct BoundingBox
+	{
+		glm::vec3 Min;
+		glm::vec3 Max;
+	};
+
+
 	struct MeshVertex
 	{
 		glm::vec3 Position{};
@@ -40,6 +53,10 @@ namespace Eis
 		virtual const Ref<VertexArray>& GetVA() const = 0;
 
 		virtual const std::vector<SubMesh>& GetSubMeshes() const = 0;
+
+		virtual const BoundingSphere& GetBoundingSphere() const = 0;
+		virtual const BoundingBox& GetBoundingBox() const = 0;
+
 
 		static Ref<StaticMesh> Create(std::vector<MeshVertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<SubMesh>&& subMeshes);
 
