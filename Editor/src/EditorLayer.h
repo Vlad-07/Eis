@@ -2,7 +2,9 @@
 
 #include "Eis.h"
 
-#include "Eis/Rendering/Objects/EditorCamera2.h"
+#include "Eis/Rendering/Objects/EditorCamera.h"
+
+#include "Eis/Rendering/Renderer/BasicRenderer.h"
 
 #include "Panels/Hierarchy.h"
 #include "Panels/AssetBrowser.h"
@@ -59,6 +61,8 @@ namespace Eis
 		Ref<Scene> m_ActiveScene, m_EditedScene;
 		std::filesystem::path m_EditedScenePath;
 
+		BasicRenderer m_Renderer;
+
 		Ref<Framebuffer> m_RenderFB, m_ViewportFB;
 
 		Scope<HierarchyPanel> m_HierarchyPanel;
@@ -66,7 +70,7 @@ namespace Eis
 
 		int m_GizmoType{ -1 };
 
-		EditorCamera2 m_EditorCam;
+		EditorCamera m_EditorCam;
 
 
 		bool m_ViewportHovered{};

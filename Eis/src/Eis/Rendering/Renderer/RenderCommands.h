@@ -23,23 +23,8 @@ namespace Eis
 		static void Clear()
 		{ s_RenderAPI->Clear(); }
 
-		static void DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount = 0, uint32_t firstIndex = 0)
-		{ s_RenderAPI->DrawIndexed(va, indexCount, firstIndex); }
-
-		static void DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)
-		{ s_RenderAPI->DrawArrays(va, vertexCount); }
-
-		static void DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount = 0)
-		{ s_RenderAPI->DrawLines(va, vertexCount); }
-
-		static void SetLineWidth(float width)
-		{ s_RenderAPI->SetLineWidth(width); }
-
-		static void Enable(uint32_t code)
-		{ s_RenderAPI->Enable(code); }
-
-		static void Disable(uint32_t code)
-		{ s_RenderAPI->Disable(code); }
+		static void DrawMesh(const Ref<StaticMesh>& mesh)
+		{ s_RenderAPI->DrawMesh(mesh); }
 
 	private:
 		static Scope<RendererAPI> s_RenderAPI;

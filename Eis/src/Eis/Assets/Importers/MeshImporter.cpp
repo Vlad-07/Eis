@@ -115,7 +115,7 @@ namespace Eis
 						fastgltf::iterateAccessor<uint32_t>(asset, acc,
 							[&](uint32_t i)
 							{
-								indices.push_back(i + vertices.size());
+								indices.push_back(i + (uint32_t)vertices.size());
 							});
 					}
 

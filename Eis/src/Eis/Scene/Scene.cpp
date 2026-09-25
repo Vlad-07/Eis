@@ -7,7 +7,7 @@
 #include "Eis/Scene/ScriptableEntity.h"
 #include "Eis/Rendering/Renderer/Renderer2D.h"
 #include "Eis/Rendering/Renderer/SceneRenderer.h"
-#include "Eis/Rendering/Objects/EditorCamera2.h"
+#include "Eis/Rendering/Objects/EditorCamera.h"
 #include "Eis/Rendering/Objects/Mesh.h"
 
 
@@ -92,6 +92,8 @@ namespace Eis
 			nsc.Instance->OnUpdate();
 		});
 
+
+		/*
 		// TODO: active camera system
 		Camera* mainCamera{};
 		glm::mat4 cameraTransform{};
@@ -125,7 +127,7 @@ namespace Eis
 			}
 
 			Renderer2D::EndScene();
-		}
+		}//*/
 	}
 
 	void Scene::OnEndRuntime()
@@ -139,8 +141,9 @@ namespace Eis
 
 
 
-	void Scene::OnUpdateEditor(EditorCamera2& camera)
+	void Scene::OnUpdateEditor(EditorCamera& camera)
 	{
+		/*
 		Renderer2D::BeginScene(camera);
 
 		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
@@ -177,7 +180,7 @@ namespace Eis
 			}
 		}
 
-		SceneRenderer::EndScene();
+		SceneRenderer::EndScene();//*/
 	}
 
 

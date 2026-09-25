@@ -82,9 +82,15 @@ namespace Eis
 		m_RenderFB->Clear();
 
 		if (m_State == EditorState::EDIT)
+		{
 			m_ActiveScene->OnUpdateEditor(m_EditorCam);
+			m_Renderer.RenderEditor(m_EditorCam);
+		}
 		else if (m_State == EditorState::PLAY)
+		{
 			m_ActiveScene->OnUpdateRuntime();
+			m_Renderer.Render();
+		}
 
 		m_RenderFB->Unbind();
 
@@ -359,6 +365,8 @@ namespace Eis
 
 			m_ActiveScene = m_EditedScene;
 
+			m_Renderer.SetScene(m_ActiveScene);
+
 			// TODO: reset editor camera
 		}
 	}
@@ -370,6 +378,7 @@ namespace Eis
 		
 		m_ActiveScene = Scene::Copy(m_EditedScene);
 		m_ActiveScene->OnStartRuntime();
+		m_Renderer.SetScene(m_ActiveScene);
 
 		m_HierarchyPanel->SetScene(m_ActiveScene);
 	}
@@ -380,6 +389,7 @@ namespace Eis
 
 		m_ActiveScene = m_EditedScene;
 		m_ActiveScene->OnEndRuntime();
+		m_Renderer.SetScene(m_ActiveScene);
 
 		m_HierarchyPanel->SetScene(m_ActiveScene);
 	}

@@ -30,8 +30,7 @@ namespace Eis
 		Random::Init();
 		m_Window = Window::Create(WindowProps{ spec.Name });
 		m_Window->SetEventCallback(EIS_BIND_EVENT_FN(OnEvent));
-		Renderer2D::Init();
-		SceneRenderer::Init();
+		RenderCommands::Init();
 
 		// Init ImGui overlay
 		Scope<Layer> imlayer = CreateScope<ImGuiLayer>();
@@ -42,8 +41,6 @@ namespace Eis
 	Application::~Application()
 	{
 		EIS_PROFILE_FUNCTION();
-
-		Renderer2D::Shutdown();
 	}
 
 
@@ -139,7 +136,7 @@ namespace Eis
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		Renderer2D::OnWindowResized(e.GetSize().x, e.GetSize().y);
+		RenderCommands::SetViewport(0, 0, e.GetSize().x, e.GetSize().y);
 
 		return false;
 	}

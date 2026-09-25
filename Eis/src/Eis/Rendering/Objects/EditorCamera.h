@@ -9,60 +9,54 @@ namespace Eis
 	class EditorCamera : public Camera
 	{
 	public:
-		EditorCamera() = default;
-		EditorCamera(float vFov, float aspectRatio, float nearClip, float farClip);
+		EditorCamera() { UpdateProjection(); }
 		~EditorCamera() = default;
 
 		void OnUpdate();
-		void OnEvent(Event& e);
-
-		float GetDistance() const {}
-		void SetDistance(float distance) {}
+		void OnEvent(Event& event);
 
 		void SetViewportSize(float width, float height)
 		{ m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
-		glm::mat4 GetViewMatrix() const { return m_ViewMatrix; }
+
+		glm::mat4 GetView() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 
-		glm::vec3 GetUpDir() const;
-		glm::vec3 GetRightDir() const;
-		glm::vec3 GetForwardDir() const;
-		glm::vec3 GetPosition() const { return m_Position; }
-		glm::quat GetOrientation() const;
+		bool IsUsing() const { return m_Interacting; }
 
-		float GetPitch() const { return m_Pitch; }
-		float GetYaw() const { return m_Yaw; }
+		// ImGui widget utilities
+
+		float* GetNearClip() { return &m_NearClip; }
+		float* GetFarClip() { return &m_FarClip; }
+		float* GetFov() { return &m_Fov; }
+		float* GetSpeed() { return &m_Speed; }
+		float* GetSensitivity() { return &m_Sensitivity; }
+
+		void UpdateProjection();
 
 	private:
-		void UpdateProjection();
 		void UpdateView();
 
-		bool OnMouseScroll(MouseScrolledEvent& e);
-
-		void MousePan(glm::vec2 delta);
-		void MouseRotate(glm::vec2 delta);
-		void MouseZoom(float delta);
-
-		glm::vec3 CalculatePosition() const;
-
-		glm::vec2 PanSpeed() const;
-		float RotationSpeed() const;
-		float ZoomSpeed() const;
-
+		glm::vec3 GetUpDir();
+		glm::vec3 GetForwardDir();
+		glm::vec3 GetRightDir();
 
 	private:
-		float m_FOV{ 80.0f }, m_AspectRatio{ 16.0f / 9.0f }, m_NearClip{ 0.1f }, m_FarClip{ 1000.0f };
+		glm::vec3 m_Position{ 0, 0, 5 };
+		glm::vec3 m_Rotation{};
+
+		float m_Speed{ 5.0f };
+		float m_Sensitivity{ 0.8f };
+
+		float m_Fov{ 80 }; // Vertical fov
+		float m_NearClip{ 0.1f }, m_FarClip{ 1000 };
+		float m_ViewportWidth{ 16 }, m_ViewportHeight{ 9 };
+		float m_AspectRatio{};
 
 		glm::mat4 m_ViewMatrix{};
-		glm::vec3 m_Position{};
-		glm::vec3 m_FocalPoint{};
 
-		glm::vec2 m_InitialMousePos{};
+		glm::vec2 m_LastMousePos{};
 
-		float m_Distance{ 5.0f };
-		float m_Pitch{}, m_Yaw{};
-
-		float m_ViewportWidth{}, m_ViewportHeight{};
+		bool m_Interacting{};
 	};
 }

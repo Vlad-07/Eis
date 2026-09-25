@@ -9,7 +9,7 @@
 namespace Eis
 {
 	class Entity;
-	class EditorCamera2;
+	class EditorCamera;
 
 	class Scene : public Asset
 	{
@@ -27,7 +27,7 @@ namespace Eis
 		void DestroyEntity(Entity entity);
 
 
-		void OnUpdateEditor(EditorCamera2& camera);
+		void OnUpdateEditor(EditorCamera& camera);
 
 		void OnStartRuntime();
 		void OnUpdateRuntime();
@@ -50,5 +50,7 @@ namespace Eis
 		friend class Entity;
 		friend class HierarchyPanel;
 		friend class SceneSerializer;
+
+		friend class BasicRenderer; // TODO: shady
 	};
 }

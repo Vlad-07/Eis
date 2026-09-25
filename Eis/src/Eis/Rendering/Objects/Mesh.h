@@ -49,9 +49,6 @@ namespace Eis
 
 		virtual void Bind() const = 0;
 
-		// TODO: remove after renderer rewrite
-		virtual const Ref<VertexArray>& GetVA() const = 0;
-
 		virtual const std::vector<SubMesh>& GetSubMeshes() const = 0;
 
 		virtual const BoundingSphere& GetBoundingSphere() const = 0;

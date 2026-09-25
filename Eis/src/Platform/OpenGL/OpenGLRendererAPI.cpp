@@ -1,9 +1,10 @@
 #include "Eispch.h"
 #include "OpenGLRendererAPI.h"
 
-#include <glad/glad.h>
-
 #include "Eis/Rendering/Objects/VertexArray.h"
+#include "Eis/Assets/AssetManager.h"
+
+#include <glad/glad.h>
 
 
 namespace Eis
@@ -33,38 +34,17 @@ namespace Eis
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32_t indexCount, uint32_t firstIndex)
-	{
-		va->Bind();
-		GLsizei count = indexCount ? indexCount : va->GetIndexBuffer()->GetCount();
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)(firstIndex * sizeof(uint32_t))); // TODO: mode api
-	}
 
-	void OpenGLRendererAPI::DrawArrays(const Ref<VertexArray>& va, uint32_t vertexCount)
+	void OpenGLRendererAPI::DrawMesh(const Ref<StaticMesh>& mesh)
 	{
-		va->Bind();
-		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-	}
+		mesh->Bind();
 
-	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32_t vertexCount) // TODO: stupid???
-	{
-		va->Bind();
-		GLsizei count = vertexCount ? vertexCount : va->GetIndexBuffer()->GetCount();
-		glDrawArrays(GL_LINES, 0, count);
-	}
+		for (const SubMesh& sm : mesh->GetSubMeshes())
+		{
+			const Ref<Material> material{ AssetManager::GetAsset<Material>(sm.Material) };
+			material->GetShader()->Bind();
 
-	void OpenGLRendererAPI::SetLineWidth(float width)
-	{
-		glLineWidth(width);
-	}
-
-	void OpenGLRendererAPI::Enable(uint32_t code)
-	{
-		glEnable(code);
-	}
-
-	void OpenGLRendererAPI::Disable(uint32_t code)
-	{
-		glDisable(code);
+			glDrawElements(GL_TRIANGLES, sm.IndexCount, GL_UNSIGNED_INT, (void*)(sm.FirstIndex * sizeof(uint32_t)));
+		}
 	}
 }

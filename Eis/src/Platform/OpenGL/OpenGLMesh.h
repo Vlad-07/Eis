@@ -15,8 +15,6 @@ namespace Eis
 
 		virtual void Bind() const override;
 
-		virtual const Ref<VertexArray>& GetVA() const override { return m_VertexArray; }
-
 		virtual const std::vector<SubMesh>& GetSubMeshes() const override { return m_SubMeshes; }
 
 		virtual const BoundingSphere& GetBoundingSphere() const override { return m_BoundingSphere; }
