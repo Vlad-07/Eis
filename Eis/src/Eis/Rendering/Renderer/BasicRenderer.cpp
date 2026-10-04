@@ -44,8 +44,20 @@ namespace Eis
 		auto meshes{ m_Scene->m_Registry.view<MeshRendererComponent>() };
 		meshes.each([](const MeshRendererComponent& mrc)
 			{
-				// TODO: shady, who handles submeshes?
-				RenderCommands::DrawMesh(AssetManager::GetAsset<StaticMesh>(mrc.Mesh));
+				Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(mrc.Mesh);
+
+				mesh->Bind();
+
+				for (const SubMesh& submesh : mesh->GetSubMeshes())
+				{
+					// TODO: render queue
+
+					Ref<Material> material = AssetManager::GetAsset<Material>(submesh.Material);
+
+					material->GetShader()->Bind();
+
+					RenderCommands::DrawSubMesh(submesh);
+				}
 			});
 	}
 }

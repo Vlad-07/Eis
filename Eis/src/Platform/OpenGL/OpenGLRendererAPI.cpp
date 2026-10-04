@@ -35,16 +35,8 @@ namespace Eis
 	}
 
 
-	void OpenGLRendererAPI::DrawMesh(const Ref<StaticMesh>& mesh)
+	void OpenGLRendererAPI::DrawSubMesh(const SubMesh& submesh)
 	{
-		mesh->Bind();
-
-		for (const SubMesh& sm : mesh->GetSubMeshes())
-		{
-			const Ref<Material> material{ AssetManager::GetAsset<Material>(sm.Material) };
-			material->GetShader()->Bind();
-
-			glDrawElements(GL_TRIANGLES, sm.IndexCount, GL_UNSIGNED_INT, (void*)(sm.FirstIndex * sizeof(uint32_t)));
-		}
+		glDrawElements(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(submesh.FirstIndex * sizeof(uint32_t)));
 	}
 }

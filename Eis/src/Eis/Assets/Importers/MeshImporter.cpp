@@ -164,21 +164,7 @@ namespace Eis
 
 						// TODO: material system
 
-						if (mat.pbrData.baseColorTexture.has_value())
-						{
-							const fastgltf::Texture& texture = asset.textures[mat.pbrData.baseColorTexture->textureIndex];
-
-							const fastgltf::Image& image = asset.images[*texture.imageIndex];
-
-							std::visit(fastgltf::visitor{
-									[&](const fastgltf::sources::URI& uri)
-									{
-										submesh.Material = Project::GetEditorAssetManager()->ImportAsset(parentPath / uri.uri.c_str());
-									},
-									[](auto&& c) {}
-								},
-								image.data);
-						}
+						
 					}
 
 					subMeshes.push_back(submesh);

@@ -23,8 +23,8 @@ namespace Eis
 		static void Clear()
 		{ s_RenderAPI->Clear(); }
 
-		static void DrawMesh(const Ref<StaticMesh>& mesh)
-		{ s_RenderAPI->DrawMesh(mesh); }
+		static void DrawSubMesh(const SubMesh& submesh)
+		{ s_RenderAPI->DrawSubMesh(submesh); }
 
 	private:
 		static Scope<RendererAPI> s_RenderAPI;
