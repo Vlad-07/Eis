@@ -11,10 +11,12 @@ namespace Eis
 	{
 	public:
 		Material() = default;
+		Material(AssetHandle shaderHandle) { SetShader(shaderHandle); }
 		Material(const Ref<Shader>& shader) : m_Shader{ shader } {}
 
 
 		const Ref<Shader>& GetShader() const { return m_Shader; }
+		void SetShader(AssetHandle shaderHandle);
 
 
 	private:
