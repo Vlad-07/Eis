@@ -51,6 +51,8 @@ namespace Eis
 		OpenGLUniformBuffer(uint64_t size, uint32_t binding);
 		virtual ~OpenGLUniformBuffer();
 
+		virtual void Bind(uint32_t binding) const override;
+
 		virtual void SetData(const void* data, uint64_t size, uint64_t offset = 0) override;
 
 	private:

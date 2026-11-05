@@ -6,6 +6,8 @@
 
 namespace Eis
 {
+	// TODO: use only DSA or legacy objects
+
 	// Vertex Buffer
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
@@ -100,12 +102,17 @@ namespace Eis
 	{
 		glCreateBuffers(1, &m_RendererId);
 		glNamedBufferData(m_RendererId, size, nullptr, GL_DYNAMIC_DRAW); // TODO: usage?
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererId);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererId); // TODO: is this bind necesarry?
 	}
 
 	OpenGLUniformBuffer::~OpenGLUniformBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererId);
+	}
+
+	void OpenGLUniformBuffer::Bind(uint32_t binding) const
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererId);
 	}
 
 	void OpenGLUniformBuffer::SetData(const void* data, uint64_t size, uint64_t offset)

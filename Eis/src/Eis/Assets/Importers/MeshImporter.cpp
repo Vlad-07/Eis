@@ -5,6 +5,8 @@
 
 #include "Eis/Assets/AssetManager.h"
 
+#include "Eis/Rendering/Objects/Material.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -38,8 +40,7 @@ namespace Eis
 
 	Ref<StaticMesh> MeshImporter::LoadStaticMesh(const std::filesystem::path& path)
 	{
-		// not thread safe!
-		static fastgltf::Parser gltfparser;
+		static fastgltf::Parser gltfparser; // not thread safe!
 
 		std::filesystem::path parentPath{ path.parent_path() };
 
@@ -69,6 +70,7 @@ namespace Eis
 		std::vector<MeshVertex> vertices;
 		std::vector<uint32_t> indices;
 		std::vector<SubMesh> subMeshes;
+		std::vector<AssetHandle> materials;
 
 		/*vertices.resize(8);
 		vertices[0].Position = { -0.5, -0.5,  0.5, };
@@ -91,7 +93,54 @@ namespace Eis
 
 		return StaticMesh::Create(std::move(vertices), std::move(indices), std::move(subMeshes));//*/
 
-		fastgltf::iterateSceneNodes(asset, 0, fastgltf::math::fmat4x4{},
+
+		// This is hacky and stupid
+
+		const std::filesystem::path materialsPath{ Project::GetAssetDir() / "Materials" / path.stem() };
+		materials.reserve(asset.materials.size());
+		if (std::filesystem::exists(materialsPath))
+		{
+			for (size_t i{}; i < materials.capacity(); i++)
+			{
+				materials.push_back(Project::GetEditorAssetManager()->ImportAsset(
+					materialsPath / (std::to_string(i) + AssetTypeToExtension(AssetType::Material))
+				));
+			}
+		}
+		else
+		{
+			std::filesystem::create_directories(materialsPath);
+
+			int i{};
+			for (const fastgltf::Material& material : asset.materials)
+			{
+				DefaultPBRMaterial mat;
+
+				if (material.pbrData.baseColorTexture.has_value())
+				{
+					const fastgltf::Texture& texture = asset.textures[material.pbrData.baseColorTexture->textureIndex];
+					const fastgltf::Image& image = asset.images[*texture.imageIndex];
+
+					std::visit(
+						fastgltf::visitor{
+							[&](const fastgltf::sources::URI& uri)
+							{
+								mat.SetDiffuseMap(Project::GetEditorAssetManager()->ImportAsset(parentPath / uri.uri.c_str()));
+							},
+							[](auto&& c) {}
+						},
+						image.data);
+				}
+
+
+				const std::filesystem::path materialPath{ materialsPath / (std::to_string(i++) + AssetTypeToExtension(AssetType::Material)) };
+				mat.Serialize(materialPath);
+
+				materials.push_back(Project::GetEditorAssetManager()->ImportAsset(materialPath));
+			}
+		}
+
+ 		fastgltf::iterateSceneNodes(asset, 0, fastgltf::math::fmat4x4{},
 			[&](fastgltf::Node& node, const fastgltf::math::fmat4x4& matrix) -> void
 			{
 				if (!node.meshIndex.has_value())
@@ -159,13 +208,7 @@ namespace Eis
 
 					// Material
 					if (primitive.materialIndex.has_value())
-					{
-						auto& mat = asset.materials[*primitive.materialIndex];
-
-						// TODO: material system
-
-						
-					}
+						submesh.Material = materials[*primitive.materialIndex];
 
 					subMeshes.push_back(submesh);
 				}

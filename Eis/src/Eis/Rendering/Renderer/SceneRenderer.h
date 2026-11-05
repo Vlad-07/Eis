@@ -6,13 +6,13 @@
 namespace Eis
 {
 	class Camera;
-	class EditorCamera2;
+	class EditorCamera;
 
 	class SceneRenderer
 	{
 	public:
 		static void BeginScene(const Camera& cam, const glm::mat4& transform);
-		static void BeginScene(const EditorCamera2& cam);
+		static void BeginScene(const EditorCamera& cam);
 		static void EndScene();
 
 		static void DrawMesh(const glm::mat4& transform, const Ref<StaticMesh>& mesh);

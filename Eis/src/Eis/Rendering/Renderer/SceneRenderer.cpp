@@ -10,7 +10,7 @@
 #include "Eis/Rendering/Objects/Shader.h"
 #include "Eis/Rendering/Objects/Texture.h"
 #include "Eis/Rendering/Objects/Mesh.h"
-#include "Eis/Rendering/Objects/EditorCamera2.h"
+#include "Eis/Rendering/Objects/EditorCamera.h"
 
 #include "Eis/Assets/AssetManager.h"
 #include "Eis/Assets/Importers/ShaderImporter.h"
@@ -72,7 +72,7 @@ namespace Eis
 		Pass();
 	}
 
-	void SceneRenderer::BeginScene(const EditorCamera2& cam)
+	void SceneRenderer::BeginScene(const EditorCamera& cam)
 	{
 		//s_Data.CameraBuf.ViewProjection = cam.GetViewProjection();
 		//s_Data.CameraUniformBuf->SetData(&s_Data.CameraBuf, sizeof(RendererData::CameraData));
@@ -114,7 +114,7 @@ namespace Eis
 		{
 			if (submesh.Material)
 				AssetManager::GetAsset<Texture2D>(submesh.Material)->Bind(1);
-			RenderCommands::DrawIndexed(mesh->GetVA(), submesh.IndexCount, submesh.FirstIndex);
+	//		RenderCommands::DrawIndexed(mesh->GetVA(), submesh.IndexCount, submesh.FirstIndex);
 		}
 	}
 

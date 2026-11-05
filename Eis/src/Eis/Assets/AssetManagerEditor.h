@@ -33,6 +33,17 @@ namespace Eis
 
 		AssetHandle GetAsset(const std::filesystem::path& path) const;
 
+		/*
+		template<typename Fn>
+		void ForEachOfType(AssetType type, Fn&& fn) const
+		{
+			for (const auto& [handle, meta] : m_AssetRegistry)
+			{
+				if (meta.Type == type)
+					fn(handle, meta);
+			}
+		}//*/
+
 		const AssetRegistry& GetAssetRegistry() const { return m_AssetRegistry; }
 
 

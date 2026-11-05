@@ -45,6 +45,8 @@ namespace Eis
 	public:
 		virtual ~UniformBuffer() = default;
 
+		virtual void Bind(uint32_t binding) const = 0;
+
 		virtual void SetData(const void* data, uint64_t size, uint64_t offset = 0) = 0;
 
 		static Ref<UniformBuffer> Create(uint64_t size, uint32_t binding);

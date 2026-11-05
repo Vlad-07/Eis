@@ -15,9 +15,39 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 967130732010244941,
+        "FilePath": "Materials/Sponza/1.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 1284081546784562679,
         "FilePath": "Meshes/Sponza/6151467286084645207.jpg",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 1476158936937550007,
+        "FilePath": "Materials/Sponza/22.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 1987538371443410241,
+        "FilePath": "Materials/Sponza/9.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 2250578801868266680,
+        "FilePath": "Shaders/DefaultPBR.glsl",
+        "Type": "Shader"
+    },
+    {
+        "Handle": 2281622592674713962,
+        "FilePath": "Materials/Sponza/10.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 2623222950049542215,
+        "FilePath": "Materials/Sponza/17.emat",
+        "Type": "Material"
     },
     {
         "Handle": 3082620948460635586,
@@ -30,9 +60,19 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 4732913104219726719,
+        "FilePath": "Materials/Sponza/6.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 4846061153772448282,
         "FilePath": "Textures/mouce.png",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 6110663804816536158,
+        "FilePath": "Materials/Sponza/21.emat",
+        "Type": "Material"
     },
     {
         "Handle": 6205995760329567089,
@@ -40,9 +80,19 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 6527276905046633546,
+        "FilePath": "Materials/Sponza/3.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 6700918878890708490,
         "FilePath": "Meshes/Sponza/white.png",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 7100607028234210674,
+        "FilePath": "Materials/Sponza/4.emat",
+        "Type": "Material"
     },
     {
         "Handle": 7143431352505767069,
@@ -70,6 +120,16 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 7916116840442709068,
+        "FilePath": "Materials/Sponza/5.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 8678067107801203289,
+        "FilePath": "Materials/Sponza/13.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 8901492689753948110,
         "FilePath": "Meshes/Sponza/11474523244911310074.jpg",
         "Type": "Texture2D"
@@ -80,6 +140,16 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 9706736805089650707,
+        "FilePath": "Materials/Sponza/20.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 10029723833750909469,
+        "FilePath": "Materials/Sponza/12.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 10289449022417427241,
         "FilePath": "Meshes/Sponza/14650633544276105767.jpg",
         "Type": "Texture2D"
@@ -88,6 +158,11 @@
         "Handle": 10457790678366360418,
         "FilePath": "Meshes/Sponza/5792855332885324923.jpg",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 10765120714833715883,
+        "FilePath": "Materials/Sponza/19.emat",
+        "Type": "Material"
     },
     {
         "Handle": 10858514347003235852,
@@ -105,6 +180,11 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 10944012696528762426,
+        "FilePath": "Materials/Sponza/15.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 11169875698934330383,
         "FilePath": "Meshes/Sponza/17876391417123941155.jpg",
         "Type": "Texture2D"
@@ -115,9 +195,29 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 11519525376488785567,
+        "FilePath": "Materials/Sponza/24.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 11657616482067000896,
         "FilePath": "Meshes/Sponza/16275776544635328252.png",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 11784652179796004312,
+        "FilePath": "Materials/Sponza/14.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 12255125969496669600,
+        "FilePath": "Materials/Sponza/8.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 13069694420443248258,
+        "FilePath": "Materials/Sponza/16.emat",
+        "Type": "Material"
     },
     {
         "Handle": 13087180329282666832,
@@ -130,9 +230,34 @@
         "Type": "Texture2D"
     },
     {
+        "Handle": 13560475924669426689,
+        "FilePath": "Materials/Sponza/18.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 14355791965628293888,
+        "FilePath": "Materials/Sponza/0.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 14749243338727677422,
+        "FilePath": "Materials/Sponza/7.emat",
+        "Type": "Material"
+    },
+    {
         "Handle": 14815287388470267152,
         "FilePath": "Meshes/Sponza/7441062115984513793.jpg",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 15244388654990054677,
+        "FilePath": "Materials/Sponza/2.emat",
+        "Type": "Material"
+    },
+    {
+        "Handle": 15274596665221209859,
+        "FilePath": "Materials/Sponza/23.emat",
+        "Type": "Material"
     },
     {
         "Handle": 15383351882056934505,
@@ -148,6 +273,11 @@
         "Handle": 17710154271666650549,
         "FilePath": "Meshes/Sponza/2185409758123873465.jpg",
         "Type": "Texture2D"
+    },
+    {
+        "Handle": 17858790448914894474,
+        "FilePath": "Materials/Sponza/11.emat",
+        "Type": "Material"
     },
     {
         "Handle": 18155397706135396278,

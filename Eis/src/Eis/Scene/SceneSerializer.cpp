@@ -3,44 +3,11 @@
 #include "Entity.h"
 #include "Components.h"
 
+#include "Eis/Utils/JsonUtils.h"
 #include <json/json.hpp>
 
 
 using json = nlohmann::ordered_json;
-
-namespace glm
-{
-	// TODO: move to common file
-
-	static void to_json(json& j, vec2 v)
-	{
-		j = { v.x, v.y };
-	}
-	static void from_json(const json& j, vec2& v)
-	{
-		v.x = j[0]; v.y = j[1];
-	}
-
-
-	static void to_json(json& j, vec3 v)
-	{
-		j = { v.x, v.y, v.z };
-	}
-	static void from_json(const json& j, vec3& v)
-	{
-		v.x = j[0]; v.y = j[1]; v.z = j[2];
-	}
-
-
-	static void to_json(json& j, vec4 v)
-	{
-		j = { v.x, v.y, v.z, v.w };
-	}
-	static void from_json(const json& j, vec4& v)
-	{
-		v.x = j[0]; v.y = j[1]; v.z = j[2]; v.w = j[3];
-	}
-}
 
 namespace Eis
 {

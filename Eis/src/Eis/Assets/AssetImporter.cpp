@@ -5,6 +5,7 @@
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
 #include "Importers/MeshImporter.h"
+#include "Importers/MaterialImporter.h"
 
 
 namespace Eis
@@ -15,7 +16,7 @@ namespace Eis
 		{ AssetType::Scene, SceneImporter::ImportScene },
 		{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
 		{ AssetType::Shader, ShaderImporter::ImportShader },
-		//{ AssetType::Material, MaterialImporter::ImportMaterial },
+		{ AssetType::Material, MaterialImporter::ImportMaterial },
 		{ AssetType::StaticMesh, MeshImporter::ImportStaticMesh }
 	};
 

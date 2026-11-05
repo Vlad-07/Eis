@@ -8,7 +8,7 @@
 
 namespace Eis
 {
-	static std::map<std::string, AssetType> s_AssetExtensionMap
+	static const std::map<std::string, AssetType> s_AssetExtensionMap
 	{
 		{ ".eis",  AssetType::Scene },
 		{ ".png",  AssetType::Texture2D },
@@ -32,7 +32,7 @@ namespace Eis
 	}
 	AssetType AssetTypeFromExtension(const std::string& ext)
 	{
-		auto it = s_AssetExtensionMap.find(ext);
+		const auto it = s_AssetExtensionMap.find(ext);
 		if (it == s_AssetExtensionMap.end())
 		{
 			EIS_CORE_ERROR("Unknown extension: {}", ext);
@@ -58,7 +58,7 @@ namespace Eis
 	{
 		static AssetMetadata nullMetadata{};
 
-		auto it = m_AssetRegistry.find(handle);
+		const auto it = m_AssetRegistry.find(handle);
 		if (it == m_AssetRegistry.end())
 			return nullMetadata;
 
@@ -95,6 +95,8 @@ namespace Eis
 				return nullptr;
 			}
 
+			asset->Handle = handle;
+
 			m_LoadedAssets[handle] = asset;
 
 			return asset;
@@ -124,7 +126,7 @@ namespace Eis
 
 	AssetType AssetManagerEditor::GetAssetType(AssetHandle handle) const
 	{
-		auto it = m_AssetRegistry.find(handle);
+		const auto it = m_AssetRegistry.find(handle);
 		if (it == m_AssetRegistry.end())
 			return AssetType::None;
 
@@ -148,17 +150,7 @@ namespace Eis
 		metadata.Type = AssetTypeFromExtension(path.extension().string());
 		metadata.FilePath = std::filesystem::relative(path, Project::GetAssetDir());
 
-		Ref<Asset> asset = AssetImporter::ImportAsset(handle, metadata);
-		if (!asset)
-		{
-			EIS_CORE_ERROR("Failed to import asset!");
-			return 0;
-		}
-
-		asset->Handle = handle;
-
 		m_AssetRegistry[handle] = std::move(metadata);
-		m_LoadedAssets[handle] = std::move(asset);
 
 		SerializeAssetRegistry();
 

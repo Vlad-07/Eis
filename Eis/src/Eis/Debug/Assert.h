@@ -20,3 +20,15 @@
 	#define EIS_CORE_ASSERT(x, ...) ((void)0);
 	#define EIS_ASSERT(x, ...) ((void)0);
 #endif
+
+#define EIS_CORE_VERIFY(x, ...)\
+	{ if(!(x)) {\
+		EIS_CORE_CRITICAL("Assertion Failed" __VA_OPT__(": {}", __VA_ARGS__))\
+		EIS_DEBUGBREAK()\
+	} }
+
+#define EIS_VERIFY(x, ...)\
+	{ if(!(x)) {\
+		EIS_CRITICAL("Assertion Failed" __VA_OPT__(": {}", __VA_ARGS__))\
+		EIS_DEBUGBREAK()\
+	} }

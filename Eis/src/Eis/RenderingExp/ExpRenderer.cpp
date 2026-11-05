@@ -277,7 +277,7 @@ namespace Eis
 			};
 			s_Data.LightVB->SetData((void*)&vertices, sizeof(vertices));
 
-			RenderCommands::DrawIndexed(s_Data.LightVA);
+	//		RenderCommands::DrawIndexed(s_Data.LightVA);
 		}
 
 		// Composite pass
@@ -292,7 +292,7 @@ namespace Eis
 		// there must be a better way to bind textures from different framebuffers
 		s_Data.LightFramebuffer->BindTextures(s_Data.GeometryFramebuffer->GetAttachmentsNumber());
 
-		RenderCommands::DrawArrays(s_Data.FullscreenVA, 3);
+	//	RenderCommands::DrawArrays(s_Data.FullscreenVA, 3);
 	}
 
 
@@ -328,7 +328,7 @@ namespace Eis
 			s_Data.TextureSlots[i]->Bind(i);
 
 		s_Data.QuadShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+	//	RenderCommands::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 	}
 
 

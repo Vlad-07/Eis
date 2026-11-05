@@ -6,7 +6,7 @@
 #include "Eis/Rendering/Objects/VertexArray.h"
 #include "Eis/Rendering/Objects/VertexBufferData.h"
 #include "Eis/Rendering/Objects/Camera.h"
-#include "Eis/Rendering/Objects/EditorCamera2.h"
+#include "Eis/Rendering/Objects/EditorCamera.h"
 
 #include "Eis/Assets/Importers/ShaderImporter.h"
 
@@ -243,7 +243,7 @@ namespace Eis
 	}
 
 
-	void Renderer2D::BeginScene(const EditorCamera2& camera)
+	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		EIS_PROFILE_RENDERER_FUNCTION();
 
@@ -322,7 +322,7 @@ namespace Eis
 		s_Data.TriangleVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
 
 		s_Data.ColorShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
+	//	RenderCommands::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -343,7 +343,7 @@ namespace Eis
 		const uint32_t indexCount = static_cast<uint32_t>(s_Data.QuadVertexCount * 1.5f);
 
 		s_Data.QuadShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.QuadVertexArray, indexCount);
+	//	RenderCommands::DrawIndexed(s_Data.QuadVertexArray, indexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -358,7 +358,7 @@ namespace Eis
 		s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
 
 		s_Data.CircleShader->Bind();
-		RenderCommands::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+	//	RenderCommands::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
@@ -373,8 +373,8 @@ namespace Eis
 		s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
 
 		s_Data.ColorShader->Bind();
-		RenderCommands::SetLineWidth(s_Data.LineWidth);
-		RenderCommands::DrawLines(s_Data.LineVertexArray, s_Data.LineIndexCount);
+	//	RenderCommands::SetLineWidth(s_Data.LineWidth);
+	//	RenderCommands::DrawLines(s_Data.LineVertexArray, s_Data.LineIndexCount);
 
 		s_Data.Stats.DrawCalls++;
 	}
